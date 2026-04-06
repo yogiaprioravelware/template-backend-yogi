@@ -17,7 +17,7 @@ const updateUser = async (id, userData) => {
   if (!user) {
     logger.warn(`Update failed: User with id ${id} not found`);
     const err = new Error("User not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

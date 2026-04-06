@@ -22,7 +22,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
   if (!outbound) {
     logger.warn(`Outbound not found for ID: ${outboundId}`);
     const err = new Error("Outbound not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 
@@ -39,7 +39,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
   if (!scannedItem) {
     logger.warn(`RFID tag not found in system: ${rfid_tag}`);
     const err = new Error("RFID tag tidak ditemukan di sistem");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
   logger.info(`Found item with SKU: ${scannedItem.sku_code} for RFID tag: ${rfid_tag}`);

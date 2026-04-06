@@ -10,7 +10,7 @@ const getInboundDetail = async (inboundId) => {
   if (!inbound) {
     logger.warn(`Inbound with id: ${inboundId} not found`);
     const err = new Error("Inbound not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

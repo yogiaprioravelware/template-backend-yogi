@@ -17,7 +17,7 @@ const assignRole = async (id, roleData) => {
   if (!user) {
     logger.warn(`Role assignment failed: User with id ${id} not found`);
     const err = new Error("User not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

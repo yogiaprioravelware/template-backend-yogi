@@ -11,7 +11,7 @@ const scanItem = async (inboundId, rfidTag) => {
     const inbound = await Inbound.findByPk(inboundId);
     if (!inbound) {
       logger.warn(`Scan failed: Inbound with id ${inboundId} not found`);
-      return errorResponse(404, "Inbound not found", {
+      return errorResponse(400, "Inbound not found", {
         message: "PO tidak ditemukan",
       });
     }
@@ -30,7 +30,7 @@ const scanItem = async (inboundId, rfidTag) => {
 
     if (!item) {
       logger.warn(`Scan failed: Item with RFID tag ${rfidTag} not found`);
-      return errorResponse(404, "Item not found", {
+      return errorResponse(400, "Item not found", {
         message: "Item dengan RFID tag tidak ditemukan",
       });
     }

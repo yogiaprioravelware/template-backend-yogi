@@ -17,7 +17,7 @@ const updateItem = async (id, itemData) => {
   if (!item) {
     logger.warn(`Update failed: Item with id ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

@@ -20,7 +20,7 @@ const getItemById = async (id) => {
   if (!item) {
     logger.warn(`Item with id: ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
   logger.info(`Item with id: ${id} found`);

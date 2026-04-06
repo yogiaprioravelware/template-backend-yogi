@@ -16,7 +16,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
 
     if (!location) {
       logger.warn(`Set location failed: Location with QR string ${qrString} not found`);
-      return errorResponse(404, "Location not found", {
+      return errorResponse(400, "Location not found", {
         message: "Lokasi dengan QR code tidak ditemukan",
       });
     }
@@ -32,7 +32,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     const inbound = await Inbound.findByPk(inboundId);
     if (!inbound) {
       logger.warn(`Set location failed: Inbound with id ${inboundId} not found`);
-      return errorResponse(404, "Inbound not found", {
+      return errorResponse(400, "Inbound not found", {
         message: "PO tidak ditemukan",
       });
     }
@@ -46,7 +46,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
 
     if (!inboundItem) {
       logger.warn(`Set location failed: Inbound item with id ${inboundItemId} not found in inbound ${inboundId}`);
-      return errorResponse(404, "Inbound item not found", {
+      return errorResponse(400, "Inbound item not found", {
         message: "Item dalam PO tidak ditemukan",
       });
     }

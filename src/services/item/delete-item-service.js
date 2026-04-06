@@ -8,7 +8,7 @@ const deleteItem = async (id) => {
   if (!item) {
     logger.warn(`Deletion failed: Item with id ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

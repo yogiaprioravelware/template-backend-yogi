@@ -10,7 +10,7 @@ const getOutboundDetail = async (outboundId) => {
   if (!outbound) {
     logger.warn(`Outbound with ID: ${outboundId} not found`);
     const err = new Error("Outbound not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

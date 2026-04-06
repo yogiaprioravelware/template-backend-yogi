@@ -130,8 +130,8 @@ const getLocationById = async (req, res, next) => {
     });
 
     if (!location) {
-      return res.status(404).json(
-        errorResponse(404, "Location not found", {
+      return res.status(400).json(
+        errorResponse(400, "Location not found", {
           message: "Lokasi tidak ditemukan",
         })
       );
@@ -162,8 +162,8 @@ const updateLocation = async (req, res, next) => {
     const location = await Location.findByPk(req.params.id);
 
     if (!location) {
-      return res.status(404).json(
-        errorResponse(404, "Location not found", {
+      return res.status(400).json(
+        errorResponse(400, "Location not found", {
           message: "Lokasi tidak ditemukan",
         })
       );
@@ -238,8 +238,8 @@ const deleteLocation = async (req, res, next) => {
     const location = await Location.findByPk(req.params.id);
 
     if (!location) {
-      return res.status(404).json(
-        errorResponse(404, "Location not found", {
+      return res.status(400).json(
+        errorResponse(400, "Location not found", {
           message: "Lokasi tidak ditemukan",
         })
       );

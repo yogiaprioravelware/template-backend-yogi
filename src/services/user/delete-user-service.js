@@ -8,7 +8,7 @@ const deleteUser = async (id) => {
   if (!user) {
     logger.warn(`Deletion failed: User with id ${id} not found`);
     const err = new Error("User not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
 

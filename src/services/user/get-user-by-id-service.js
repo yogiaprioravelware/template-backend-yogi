@@ -10,7 +10,7 @@ const getUserById = async (id) => {
   if (!user) {
     logger.warn(`User with id: ${id} not found`);
     const err = new Error("User not found");
-    err.status = 404;
+    err.status = 400;
     throw err;
   }
   logger.info(`User with id: ${id} found`);
