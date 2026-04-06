@@ -1,758 +1,3519 @@
 {
-	"info": {
-		"_postman_id": "warehouse-rfid-management-system",
-		"name": "RFID Warehouse Management System",
-		"description": "Complete API collection untuk warehouse management dengan RFID scanning, two-stage inbound receiving, dan order dispatch. Mencakup semua 26 endpoints across 5 modules (Users, Items, Locations, Inbounds, Outbounds).",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:3000",
-			"type": "string"
-		},
-		{
-			"key": "token",
-			"value": "",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "01 - AUTHENTICATION",
-			"item": [
-				{
-					"name": "Register User (Operator)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/register",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "register"]
-						}
-					}
-				},
-				{
-					"name": "Register User (Admin)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"admin123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/register",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "register"]
-						}
-					}
-				},
-				{
-					"name": "Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/login",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "login"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "02 - USER MANAGEMENT (7 endpoints)",
-			"item": [
-				{
-					"name": "Register User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@warehouse.com\",\n  \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/register",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "register"]
-						}
-					}
-				},
-				{
-					"name": "Login",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/login",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "login"]
-						}
-					}
-				},
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users"]
-						}
-					}
-				},
-				{
-					"name": "Get User by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "1"]
-						}
-					}
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"John Operator Updated\",\n  \"email\": \"john.updated@warehouse.com\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/2",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "2"]
-						}
-					}
-				},
-				{
-					"name": "Assign Role",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"role\": \"admin\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/2/assign-role",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "2", "assign-role"]
-						}
-					}
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/users/3",
-							"host": ["{{base_url}}"],
-							"path": ["api", "users", "3"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "03 - ITEM MANAGEMENT (5 endpoints)",
-			"item": [
-				{
-					"name": "Register Item 1",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\",\n  \"item_name\": \"Electronic Component A\",\n  \"sku_code\": \"SKU-001\",\n  \"category\": \"Electronics\",\n  \"uom\": \"PCS\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/items",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items"]
-						}
-					}
-				},
-				{
-					"name": "Register Item 2",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"rfid_tag\": \"RFID-002-SKU-B001\",\n  \"item_name\": \"Mechanical Part B\",\n  \"sku_code\": \"SKU-002\",\n  \"category\": \"Mechanical\",\n  \"uom\": \"BOX\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/items",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items"]
-						}
-					}
-				},
-				{
-					"name": "Get All Items",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/items",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items"]
-						}
-					}
-				},
-				{
-					"name": "Get Item by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/items/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items", "1"]
-						}
-					}
-				},
-				{
-					"name": "Update Item",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"item_name\": \"Electronic Component A - Premium\",\n  \"category\": \"Electronics - Premium\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/items/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items", "1"]
-						}
-					}
-				},
-				{
-					"name": "Delete Item",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/items/2",
-							"host": ["{{base_url}}"],
-							"path": ["api", "items", "2"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "04 - LOCATION MANAGEMENT (5 endpoints)",
-			"item": [
-				{
-					"name": "Create Location 1",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"location_code\": \"LOC-001\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 1\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 1\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/locations",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations"]
-						}
-					}
-				},
-				{
-					"name": "Create Location 2",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"location_code\": \"LOC-002\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-2\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 2\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 2\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/locations",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations"]
-						}
-					}
-				},
-				{
-					"name": "Get All Locations",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/locations",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations"]
-						}
-					}
-				},
-				{
-					"name": "Get Location by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/locations/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations", "1"]
-						}
-					}
-				},
-				{
-					"name": "Update Location Status",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"INACTIVE\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/locations/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations", "1"]
-						}
-					}
-				},
-				{
-					"name": "Delete Location",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/locations/2",
-							"host": ["{{base_url}}"],
-							"path": ["api", "locations", "2"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "05 - INBOUND (TWO-STAGE RECEIVING) (5 endpoints)",
-			"description": "Two-stage inbound receiving process:\nStage 1: Scan RFID tag to identify item\nStage 2: Scan QR code to confirm location and update stock",
-			"item": [
-				{
-					"name": "Create PO (Purchase Order)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"po_number\": \"PO-2026-001\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 100\n    },\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 50\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/inbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "inbounds"]
-						}
-					}
-				},
-				{
-					"name": "Get All POs",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/inbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "inbounds"]
-						}
-					}
-				},
-				{
-					"name": "Get PO Detail (with items)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/inbounds/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "inbounds", "1"]
-						}
-					}
-				},
-				{
-					"name": "STAGE 1: Scan Item (RFID)",
-					"description": "Scan RFID tag to identify item and get pending location. Returns inbound_item_id needed for Stage 2.",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/inbounds/1/scan-item",
-							"host": ["{{base_url}}"],
-							"path": ["api", "inbounds", "1", "scan-item"]
-						}
-					}
-				},
-				{
-					"name": "STAGE 2: Set Location (QR Scan)",
-					"description": "Scan QR code to confirm location, store receiving log, and update stock. Completes two-stage receiving flow.",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"inbound_item_id\": 1,\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/inbounds/1/set-location",
-							"host": ["{{base_url}}"],
-							"path": ["api", "inbounds", "1", "set-location"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "06 - OUTBOUND (ORDER DISPATCH) (4 endpoints)",
-			"description": "Order dispatch with 3 outbound types:\n- LUNAS: Full payment order\n- PINJAM: Loan order\n- RETURN: Return order",
-			"item": [
-				{
-					"name": "Create LUNAS Order",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"order_number\": \"ORD-2026-001\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 10\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/outbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds"]
-						}
-					}
-				},
-				{
-					"name": "Create PINJAM Order",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"order_number\": \"ORD-2026-002\",\n  \"outbound_type\": \"PINJAM\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 5\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/outbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds"]
-						}
-					}
-				},
-				{
-					"name": "Create RETURN Order",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"order_number\": \"ORD-2026-003\",\n  \"outbound_type\": \"RETURN\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 3\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/outbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds"]
-						}
-					}
-				},
-				{
-					"name": "Get All Orders",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/outbounds",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds"]
-						}
-					}
-				},
-				{
-					"name": "Get Order Detail",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/outbounds/1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds", "1"]
-						}
-					}
-				},
-				{
-					"name": "Scan Item for Picking",
-					"description": "Scan RFID tag during picking process. Updates qty_delivered and decrements stock.",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/outbounds/1/scan",
-							"host": ["{{base_url}}"],
-							"path": ["api", "outbounds", "1", "scan"]
-						}
-					}
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "warehouse-rfid-management-system",
+    "name": "RFID Warehouse Management System",
+    "description": "Complete API collection untuk warehouse management dengan RFID scanning, two-stage inbound receiving, dan order dispatch. Mencakup semua 26 endpoints across 5 modules (Users, Items, Locations, Inbounds, Outbounds).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - AUTHENTICATION",
+      "item": [
+        {
+          "name": "Register User (Operator)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - USER MANAGEMENT (7 endpoints)",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@warehouse.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Operator Updated\",\n  \"email\": \"john.updated@warehouse.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Operator Updated\",\n  \"email\": \"john.updated@warehouse.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "2"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Operator Updated\",\n  \"email\": \"john.updated@warehouse.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "2"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Assign Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/2/assign-role",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "2",
+                "assign-role"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"admin\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/2/assign-role",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "2",
+                    "assign-role"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"admin\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/users/2/assign-role",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "2",
+                    "assign-role"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "3"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users/3",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "3"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/users/3",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "3"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - ITEM MANAGEMENT (5 endpoints)",
+      "item": [
+        {
+          "name": "Register Item 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\",\n  \"item_name\": \"Electronic Component A\",\n  \"sku_code\": \"SKU-001\",\n  \"category\": \"Electronics\",\n  \"uom\": \"PCS\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\",\n  \"item_name\": \"Electronic Component A\",\n  \"sku_code\": \"SKU-001\",\n  \"category\": \"Electronics\",\n  \"uom\": \"PCS\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\",\n  \"item_name\": \"Electronic Component A\",\n  \"sku_code\": \"SKU-001\",\n  \"category\": \"Electronics\",\n  \"uom\": \"PCS\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Item 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"RFID-002-SKU-B001\",\n  \"item_name\": \"Mechanical Part B\",\n  \"sku_code\": \"SKU-002\",\n  \"category\": \"Mechanical\",\n  \"uom\": \"BOX\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-002-SKU-B001\",\n  \"item_name\": \"Mechanical Part B\",\n  \"sku_code\": \"SKU-002\",\n  \"category\": \"Mechanical\",\n  \"uom\": \"BOX\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-002-SKU-B001\",\n  \"item_name\": \"Mechanical Part B\",\n  \"sku_code\": \"SKU-002\",\n  \"category\": \"Mechanical\",\n  \"uom\": \"BOX\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/items/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"item_name\": \"Electronic Component A - Premium\",\n  \"category\": \"Electronics - Premium\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/items/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"item_name\": \"Electronic Component A - Premium\",\n  \"category\": \"Electronics - Premium\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"item_name\": \"Electronic Component A - Premium\",\n  \"category\": \"Electronics - Premium\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/items/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/items/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "2"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "2"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/items/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "items",
+                    "2"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - LOCATION MANAGEMENT (5 endpoints)",
+      "item": [
+        {
+          "name": "Create Location 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_code\": \"LOC-001\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 1\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"location_code\": \"LOC-001\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 1\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 1\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"location_code\": \"LOC-001\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 1\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 1\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Location 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_code\": \"LOC-002\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-2\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 2\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"location_code\": \"LOC-002\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-2\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 2\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 2\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"location_code\": \"LOC-002\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-2\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 2\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 2\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Locations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Location by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/locations/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Location Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"INACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/locations/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"INACTIVE\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"INACTIVE\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/locations/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Location",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/locations/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations",
+                "2"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "2"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/locations/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "locations",
+                    "2"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - INBOUND (TWO-STAGE RECEIVING) (5 endpoints)",
+      "description": "Two-stage inbound receiving process:\nStage 1: Scan RFID tag to identify item\nStage 2: Scan QR code to confirm location and update stock",
+      "item": [
+        {
+          "name": "Create PO (Purchase Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"po_number\": \"PO-2026-001\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 100\n    },\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 50\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"po_number\": \"PO-2026-001\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 100\n    },\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 50\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"po_number\": \"PO-2026-001\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 100\n    },\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 50\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All POs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/inbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get PO Detail (with items)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "STAGE 1: Scan Item (RFID)",
+          "description": "Scan RFID tag to identify item and get pending location. Returns inbound_item_id needed for Stage 2.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/1/scan-item",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "1",
+                "scan-item"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1/scan-item",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1",
+                    "scan-item"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1/scan-item",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1",
+                    "scan-item"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "STAGE 2: Set Location (QR Scan)",
+          "description": "Scan QR code to confirm location, store receiving log, and update stock. Completes two-stage receiving flow.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inbound_item_id\": 1,\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/1/set-location",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "1",
+                "set-location"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"inbound_item_id\": 1,\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1/set-location",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1",
+                    "set-location"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"inbound_item_id\": 1,\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/inbounds/1/set-location",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "inbounds",
+                    "1",
+                    "set-location"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 - OUTBOUND (ORDER DISPATCH) (4 endpoints)",
+      "description": "Order dispatch with 3 outbound types:\n- LUNAS: Full payment order\n- PINJAM: Loan order\n- RETURN: Return order",
+      "item": [
+        {
+          "name": "Create LUNAS Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_number\": \"ORD-2026-001\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 10\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-001\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 10\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-001\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 10\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create PINJAM Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_number\": \"ORD-2026-002\",\n  \"outbound_type\": \"PINJAM\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 5\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-002\",\n  \"outbound_type\": \"PINJAM\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 5\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-002\",\n  \"outbound_type\": \"PINJAM\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 5\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create RETURN Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_number\": \"ORD-2026-003\",\n  \"outbound_type\": \"RETURN\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 3\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-003\",\n  \"outbound_type\": \"RETURN\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 3\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"order_number\": \"ORD-2026-003\",\n  \"outbound_type\": \"RETURN\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 3\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/outbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds",
+                    "1"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Scan Item for Picking",
+          "description": "Scan RFID tag during picking process. Updates qty_delivered and decrements stock.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/1/scan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "1",
+                "scan"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds/1/scan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds",
+                    "1",
+                    "scan"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": true,\n  \"message\": \"Operation successful\",\n  \"data\": {\n    \"id\": 1,\n    \"info\": \"Sample response data\"\n  }\n}"
+            },
+            {
+              "name": "Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/outbounds/1/scan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "outbounds",
+                    "1",
+                    "scan"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": false,\n  \"message\": \"Validation failed or resource not found\",\n  \"errors\": \"Sample error details\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
