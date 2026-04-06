@@ -334,6 +334,21 @@
               "cookie": [],
               "body": "{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"Invalid credentials\"\n    }\n  ]\n}"
             }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json();",
+                  "if (response.success && response.data && response.data.token) {",
+                  "    pm.collectionVariables.set(\"token\", response.data.token);",
+                  "    console.log(\"Token successfully saved to collection variables!\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ]
         }
       ]
@@ -548,6 +563,21 @@
               ],
               "cookie": [],
               "body": "{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"Invalid credentials\"\n    }\n  ]\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json();",
+                  "if (response.success && response.data && response.data.token) {",
+                  "    pm.collectionVariables.set(\"token\", response.data.token);",
+                  "    console.log(\"Token successfully saved to collection variables!\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
           ]
         },
