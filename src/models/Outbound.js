@@ -1,41 +1,41 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
 
-const User = sequelize.define(
-  "User",
+const Outbound = sequelize.define(
+  "Outbound",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
+    order_number: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    password: {
-      type: DataTypes.STRING,
+    outbound_type: {
+      type: DataTypes.ENUM("LUNAS", "PINJAM", "RETURN"),
       allowNull: false,
     },
-    role: {
-      type: DataTypes.STRING,
+    status: {
+      type: DataTypes.ENUM("PENDING", "PROCES", "DONE"),
       allowNull: false,
-      defaultValue: "operator",
+      defaultValue: "PENDING",
     },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
-    tableName: "users",
+    tableName: "outbounds",
     timestamps: false,
   }
 );
 
-module.exports = User;
+module.exports = Outbound;

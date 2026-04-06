@@ -1,41 +1,55 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
 
-const User = sequelize.define(
-  "User",
+const Item = sequelize.define(
+  "Item",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
+    rfid_tag: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    password: {
+    item_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: {
+    sku_code: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "operator",
+      unique: true,
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    uom: {
+      type: DataTypes.ENUM("PCS", "BOX", "SET"),
+      allowNull: false,
+      defaultValue: "PCS",
+    },
+    current_stock: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
-    tableName: "users",
+    tableName: "items",
     timestamps: false,
   }
 );
 
-module.exports = User;
+module.exports = Item;

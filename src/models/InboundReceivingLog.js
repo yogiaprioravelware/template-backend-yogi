@@ -1,41 +1,36 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
 
-const User = sequelize.define(
-  "User",
+const InboundReceivingLog = sequelize.define(
+  "InboundReceivingLog",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
+    inbound_item_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
+    location_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    role: {
-      type: DataTypes.STRING,
+    qty_received: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: "operator",
+      defaultValue: 1,
     },
-    created_at: {
+    received_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
   },
   {
-    tableName: "users",
+    tableName: "inbound_receiving_log",
     timestamps: false,
   }
 );
 
-module.exports = User;
+module.exports = InboundReceivingLog;

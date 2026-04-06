@@ -1,13 +1,93 @@
 {
 	"info": {
-		"_postman_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-		"name": "User API - Template YogiRevelware (v5 - Corrected)",
-		"description": "Dokumentasi API lengkap dengan contoh request dan response untuk setiap endpoint.",
+		"_postman_id": "warehouse-rfid-management-system",
+		"name": "RFID Warehouse Management System",
+		"description": "Complete API collection untuk warehouse management dengan RFID scanning, two-stage inbound receiving, dan order dispatch. Mencakup semua 26 endpoints across 5 modules (Users, Items, Locations, Inbounds, Outbounds).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
 	"item": [
 		{
-			"name": "Auth",
+			"name": "01 - AUTHENTICATION",
+			"item": [
+				{
+					"name": "Register User (Operator)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register User (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "02 - USER MANAGEMENT (7 endpoints)",
 			"item": [
 				{
 					"name": "Register User",
@@ -21,319 +101,19 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
+							"raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@warehouse.com\",\n  \"password\": \"password123\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/register",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"register"
-							]
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register"]
 						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (201 Created): POST /api/users/register",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/users/register",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"register"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"created_at\": \"2026-04-01T04:20:00.000Z\"\n    }\n}"
-						},
-						{
-							"name": "ERROR (400 Bad Request): POST /api/users/register",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"invalid-email\",\n    \"password\": \"123\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/users/register",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"register"
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": false,\n    \"errors\": [\n        {\n            \"message\": \"\\\"email\\\" must be a valid email\"\n        }\n    ]\n}"
-						}
-					]
+					}
 				},
 				{
-					"name": "Login User",
+					"name": "Login",
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/users/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"login"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (200 OK): POST /api/users/login",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/users/login",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"login"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\"\n        },\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n    }\n}"
-						},
-						{
-							"name": "ERROR (401 Unauthorized): POST /api/users/login",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"wrongpassword\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/users/login",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"login"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": false,\n    \"errors\": [\n        {\n            \"message\": \"Invalid credentials\"\n        }\n    ]\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Users",
-			"item": [
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (200 OK): GET /api/users",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{jwt_token}}"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/api/users",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"email\": \"john.doe@example.com\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Jane Smith\",\n            \"email\": \"jane.smith@example.com\"\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "Get User By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/users/:id",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (200 OK): GET /api/users/:id",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{jwt_token}}"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/api/users/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"1"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\"\n    }\n}"
-						},
-						{
-							"name": "ERROR (404 Not Found): GET /api/users/:id",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{jwt_token}}"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/api/users/999",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"999"
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": false,\n    \"errors\": [\n        {\n            \"message\": \"User not found\"\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -342,142 +122,637 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.doe.updated@example.com\"\n}"
+							"raw": "{\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/users/:id",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
+							"raw": "{{base_url}}/api/users/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "login"]
 						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (200 OK): PUT /api/users/:id",
-							"originalRequest": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									},
-									{
-										"key": "Authorization",
-										"value": "Bearer {{jwt_token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.doe.updated@example.com\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/users/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"1"
-									]
-								}
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1"]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
 							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe Updated\",\n        \"email\": \"john.doe.updated@example.com\"\n    }\n}"
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Operator Updated\",\n  \"email\": \"john.updated@warehouse.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "2"]
 						}
-					]
+					}
+				},
+				{
+					"name": "Assign Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/2/assign-role",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "2", "assign-role"]
+						}
+					}
 				},
 				{
 					"name": "Delete User",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
 						"url": {
-							"raw": "{{base_url}}/api/users/:id",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
+							"raw": "{{base_url}}/api/users/3",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "3"]
 						}
-					},
-					"response": [
-						{
-							"name": "SUCCESS (200 OK): DELETE /api/users/:id",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{jwt_token}}"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/api/users/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"users",
-										"1"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [],
-							"cookie": [],
-							"body": "{\n    \"success\": true,\n    \"data\": \"User deleted successfully\"\n}"
-						}
-					]
+					}
 				}
 			]
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{jwt_token}}",
-				"type": "string"
-			}
-		]
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:3000"
 		},
 		{
-			"key": "jwt_token",
-			"value": "your_token_here"
+			"name": "03 - ITEM MANAGEMENT (5 endpoints)",
+			"item": [
+				{
+					"name": "Register Item 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\",\n  \"item_name\": \"Electronic Component A\",\n  \"sku_code\": \"SKU-001\",\n  \"category\": \"Electronics\",\n  \"uom\": \"PCS\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/items",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items"]
+						}
+					}
+				},
+				{
+					"name": "Register Item 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rfid_tag\": \"RFID-002-SKU-B001\",\n  \"item_name\": \"Mechanical Part B\",\n  \"sku_code\": \"SKU-002\",\n  \"category\": \"Mechanical\",\n  \"uom\": \"BOX\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/items",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items"]
+						}
+					}
+				},
+				{
+					"name": "Get All Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/items",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items"]
+						}
+					}
+				},
+				{
+					"name": "Get Item by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/items/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items", "1"]
+						}
+					}
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"item_name\": \"Electronic Component A - Premium\",\n  \"category\": \"Electronics - Premium\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/items/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/items/2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "items", "2"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "04 - LOCATION MANAGEMENT (5 endpoints)",
+			"item": [
+				{
+					"name": "Create Location 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"location_code\": \"LOC-001\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 1\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/locations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations"]
+						}
+					}
+				},
+				{
+					"name": "Create Location 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"location_code\": \"LOC-002\",\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-2\",\n  \"warehouse\": \"Gudang A\",\n  \"rack\": \"Rak 1\",\n  \"bin\": \"Bin 2\",\n  \"location_name\": \"Gudang A - Rak 1 - Bin 2\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/locations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations"]
+						}
+					}
+				},
+				{
+					"name": "Get All Locations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/locations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations"]
+						}
+					}
+				},
+				{
+					"name": "Get Location by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/locations/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations", "1"]
+						}
+					}
+				},
+				{
+					"name": "Update Location Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"INACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/locations/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Location",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/locations/2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "locations", "2"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "05 - INBOUND (TWO-STAGE RECEIVING) (5 endpoints)",
+			"description": "Two-stage inbound receiving process:\nStage 1: Scan RFID tag to identify item\nStage 2: Scan QR code to confirm location and update stock",
+			"item": [
+				{
+					"name": "Create PO (Purchase Order)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"po_number\": \"PO-2026-001\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 100\n    },\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 50\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/inbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inbounds"]
+						}
+					}
+				},
+				{
+					"name": "Get All POs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/inbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inbounds"]
+						}
+					}
+				},
+				{
+					"name": "Get PO Detail (with items)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/inbounds/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inbounds", "1"]
+						}
+					}
+				},
+				{
+					"name": "STAGE 1: Scan Item (RFID)",
+					"description": "Scan RFID tag to identify item and get pending location. Returns inbound_item_id needed for Stage 2.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/inbounds/1/scan-item",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inbounds", "1", "scan-item"]
+						}
+					}
+				},
+				{
+					"name": "STAGE 2: Set Location (QR Scan)",
+					"description": "Scan QR code to confirm location, store receiving log, and update stock. Completes two-stage receiving flow.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"inbound_item_id\": 1,\n  \"qr_string\": \"QR-GDG-A-RAK-1-BIN-1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/inbounds/1/set-location",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inbounds", "1", "set-location"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "06 - OUTBOUND (ORDER DISPATCH) (4 endpoints)",
+			"description": "Order dispatch with 3 outbound types:\n- LUNAS: Full payment order\n- PINJAM: Loan order\n- RETURN: Return order",
+			"item": [
+				{
+					"name": "Create LUNAS Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_number\": \"ORD-2026-001\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 10\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/outbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds"]
+						}
+					}
+				},
+				{
+					"name": "Create PINJAM Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_number\": \"ORD-2026-002\",\n  \"outbound_type\": \"PINJAM\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-002\",\n      \"qty_target\": 5\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/outbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds"]
+						}
+					}
+				},
+				{
+					"name": "Create RETURN Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_number\": \"ORD-2026-003\",\n  \"outbound_type\": \"RETURN\",\n  \"items\": [\n    {\n      \"sku_code\": \"SKU-001\",\n      \"qty_target\": 3\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/outbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds"]
+						}
+					}
+				},
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/outbounds",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds"]
+						}
+					}
+				},
+				{
+					"name": "Get Order Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/outbounds/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds", "1"]
+						}
+					}
+				},
+				{
+					"name": "Scan Item for Picking",
+					"description": "Scan RFID tag during picking process. Updates qty_delivered and decrements stock.",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rfid_tag\": \"RFID-001-SKU-A001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/outbounds/1/scan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "outbounds", "1", "scan"]
+						}
+					}
+				}
+			]
 		}
 	]
 }

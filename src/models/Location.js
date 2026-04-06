@@ -1,41 +1,58 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
 
-const User = sequelize.define(
-  "User",
+const Location = sequelize.define(
+  "Location",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
+    location_code: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    password: {
+    qr_string: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    warehouse: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: {
+    rack: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "operator",
+    },
+    bin: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    location_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "ACTIVE",
     },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
-    tableName: "users",
+    tableName: "locations",
     timestamps: false,
   }
 );
 
-module.exports = User;
+module.exports = Location;
