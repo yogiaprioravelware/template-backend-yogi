@@ -17,8 +17,9 @@ Dokumentasi lengkap untuk RFID-based warehouse management system dengan user aut
 3. [Inbound (Two-Stage Receiving)](#inbound-two-stage-receiving) (5 endpoints)
 4. [Outbound (Order Dispatch)](#outbound-order-dispatch) (4 endpoints)
 5. [Location Management](#location-management) (5 endpoints)
-6. [Response Format](#response-format)
-7. [Error Handling](#error-handling)
+6. [Role & Permission Management](#role--permission-management) (3 endpoints)
+7. [Response Format](#response-format)
+8. [Error Handling](#error-handling)
 
 ---
 
@@ -1004,7 +1005,88 @@ Authorization: Bearer <token>
 
 ---
 
-# 📜 RESPONSE FORMAT
+# 🔐 ROLE & PERMISSION MANAGEMENT
+
+## 1. Get All Roles
+
+**Endpoint**: `GET /api/roles`
+
+Mendapatkan daftar semua role yang tersedia untuk dropdown/pemilihan di frontend.
+
+### Headers
+```
+Authorization: Bearer <token>
+```
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": [
+    { "id": 1, "name": "admin" },
+    { "id": 2, "name": "operator" }
+  ]
+}
+```
+
+---
+
+## 2. Get All Permissions
+
+**Endpoint**: `GET /api/roles/permissions`
+
+Mendapatkan daftar semua permission yang terdaftar di sistem untuk ditampilkan di matrix checklist.
+
+### Headers
+```
+Authorization: Bearer <token>
+```
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": [
+    { "id": 1, "name": "user:read", "description": "View users" },
+    { "id": 2, "name": "user:write", "description": "Create users" }
+  ]
+}
+```
+
+---
+
+## 3. Assign Permissions to Role
+
+**Endpoint**: `POST /api/roles/:id/assign-permissions`
+
+Menyimpan konfigurasi permission untuk role tertentu.
+
+### Headers
+```
+Authorization: Bearer <token>
+```
+
+### Path Parameters
+- `id` (required): Role ID
+
+### Request Body
+```json
+{
+  "permissionIds": [1, 2, 3, 5]
+}
+```
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": "Permissions assigned successfully"
+}
+```
+
+---
+
+# 📋 RESPONSE FORMAT
 
 ## Success Response
 ```json

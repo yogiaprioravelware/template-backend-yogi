@@ -39,8 +39,21 @@ const loginUser = async (userData) => {
     { expiresIn: "1h" }
   );
 
+  const getUserPermissions = require("../role/get-user-permissions-service");
+  const permissions = await getUserPermissions(user);
+
   logger.info(`User ${email} logged in successfully`);
-  return { user, token };
+  return { 
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      role_id: user.role_id,
+      permissions
+    }, 
+    token 
+  };
 };
 
 module.exports = loginUser;

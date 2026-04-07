@@ -9,6 +9,7 @@ module.exports = {
         email: "admin@warehouse.com",
         password: hashedPassword,
         role: "admin",
+        role_id: 1,
         created_at: new Date(),
       },
       {
@@ -16,6 +17,7 @@ module.exports = {
         email: "operator1@warehouse.com",
         password: hashedPassword,
         role: "operator",
+        role_id: 2,
         created_at: new Date(),
       },
       {
@@ -23,6 +25,7 @@ module.exports = {
         email: "operator2@warehouse.com",
         password: hashedPassword,
         role: "operator",
+        role_id: 2,
         created_at: new Date(),
       },
       {
@@ -30,6 +33,7 @@ module.exports = {
         email: "operator3@warehouse.com",
         password: hashedPassword,
         role: "operator",
+        role_id: 2,
         created_at: new Date(),
       },
     ]);

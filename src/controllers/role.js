@@ -7,7 +7,7 @@ const logger = require("../utils/logger");
 const getRoles = async (req, res) => {
   try {
     const roles = await Role.findAll();
-    return res.status(200).json(response.success("Roles fetched successfully", roles));
+    return res.status(200).json(response.success(roles));
   } catch (error) {
     logger.error(`Error in getRoles controller: ${error.message}`);
     return res.status(500).json(response.error("Internal Server Error"));
@@ -17,7 +17,7 @@ const getRoles = async (req, res) => {
 const getPermissions = async (req, res) => {
   try {
     const permissions = await getPermissionsService();
-    return res.status(200).json(response.success("Permissions fetched successfully", permissions));
+    return res.status(200).json(response.success(permissions));
   } catch (error) {
     logger.error(`Error in getPermissions controller: ${error.message}`);
     return res.status(500).json(response.error("Internal Server Error"));
@@ -30,7 +30,7 @@ const assignPermissions = async (req, res) => {
 
   try {
     const result = await assignRolePermissionsService(id, permissionIds);
-    return res.status(200).json(response.success("Role permissions updated successfully", result));
+    return res.status(200).json(response.success(result));
   } catch (error) {
     logger.error(`Error in assignPermissions controller: ${error.message}`);
     const status = error.status || 500;
