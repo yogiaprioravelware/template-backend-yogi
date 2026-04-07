@@ -33,9 +33,11 @@ const loginUser = async (userData) => {
     throw err;
   }
 
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign(
+    { id: user.id, role: user.role, role_id: user.role_id },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
   logger.info(`User ${email} logged in successfully`);
   return { user, token };

@@ -15,11 +15,11 @@ const loginSchema = Joi.object({
 const updateUserSchema = Joi.object({
   name: Joi.string().min(3).optional(),
   email: Joi.string().email().optional(),
-  role: Joi.string().valid("admin", "operator").optional(),
+  role_id: Joi.number().integer().optional(),
 });
 
 const assignRoleSchema = Joi.object({
-  role: Joi.string().valid("admin", "operator").required(),
+  role_id: Joi.number().integer().required(),
 });
 
 module.exports = {

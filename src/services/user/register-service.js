@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
+const Role = require("../../models/Role");
 const { registerSchema } = require("../../validations/user-validation");
 const logger = require("../../utils/logger");
 
@@ -26,7 +27,16 @@ const registerUser = async (userData) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await User.create({ name, email, password: hashedPassword, role: "operator" });
+  // Find default operator role
+  const operatorRole = await Role.findOne({ where: { name: "operator" } });
+
+  const newUser = await User.create({ 
+    name, 
+    email, 
+    password: hashedPassword, 
+    role: "operator",
+    role_id: operatorRole ? operatorRole.id : null
+  });
   logger.info(`User ${email} registered successfully`);
   return newUser;
 };

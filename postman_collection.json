@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "warehouse-rfid-management-system",
-    "name": "RFID Warehouse Management System v.1.0.2",
-    "description": "Complete API collection untuk warehouse management dengan RFID scanning, two-stage inbound receiving, dan order dispatch. Mencakup semua 26 endpoints across 5 modules (Users, Items, Locations, Inbounds, Outbounds).",
+    "name": "Warehouse Management System - Dynamic ACL v.2.0.0",
+    "description": "Koleksi API Warehouse Management System dengan fitur baru Dynamic Role-Based Access Control (RBAC). Admin dapat mengelola izin (permissions) untuk setiap role (Admin/Operator) secara dinamis.\n\n### Fitur Utama:\n1. **Dynamic ACL**: Checklist CRUD per modul.\n2. **RFID Scanning**: Integrasi scan untuk Inbound & Outbound.\n3. **Inventory Control**: Manajemen Barang & Lokasi.\n4. **Authentication**: JWT Based dengan auto-save token.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -33,7 +33,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\",\n  \"role_id\": 2\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/users/register",
@@ -84,7 +84,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"John Operator\",\n    \"email\": \"john.operator@warehouse.com\",\n    \"role\": \"operator\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"John Operator\",\n    \"email\": \"john.operator@warehouse.com\",\n    \"role_id\": 2\n  }\n}"
             },
             {
               "name": "Error (Bad Request)",
@@ -138,7 +138,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Operator\",\n  \"email\": \"john.operator@warehouse.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"name\": \"John Admin\",\n  \"email\": \"john.admin@warehouse.com\",\n  \"password\": \"password123\",\n  \"role_id\": 1\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/users/register",
@@ -189,7 +189,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"John Operator\",\n    \"email\": \"john.operator@warehouse.com\",\n    \"role\": \"operator\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"John Admin\",\n    \"email\": \"john.admin@warehouse.com\",\n    \"role_id\": 1\n  }\n}"
             },
             {
               "name": "Error (Bad Request)",
@@ -294,7 +294,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"john.operator@warehouse.com\",\n      \"role\": \"operator\"\n    }\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"john.operator@warehouse.com\",\n      \"role_id\": 2\n    }\n  }\n}"
             },
             {
               "name": "Error (Unauthorized)",
@@ -600,7 +600,8 @@
                 "api",
                 "users"
               ]
-            }
+            },
+            "description": "Mengambil semua daftar user. Membutuhkan izin: `user:read`"
           },
           "response": [
             {
@@ -691,7 +692,8 @@
                 "users",
                 "1"
               ]
-            }
+            },
+            "description": "Mengambil detail user berdasarkan ID. Membutuhkan izin: `user:read`"
           },
           "response": [
             {
@@ -780,7 +782,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role\": \"operator\"\n}"
+              "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role_id\": 2\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/users/2",
@@ -792,7 +794,8 @@
                 "users",
                 "2"
               ]
-            }
+            },
+            "description": "Memperbarui data user. Membutuhkan izin: `user:update`"
           },
           "response": [
             {
@@ -811,7 +814,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role\": \"operator\"\n}"
+                  "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role_id\": 2\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/users/2",
@@ -835,7 +838,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@warehouse.com\",\n    \"role\": \"operator\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@warehouse.com\",\n    \"role_id\": 2\n  }\n}"
             },
             {
               "name": "Error (Not Found)",
@@ -853,7 +856,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role\": \"operator\"\n}"
+                  "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@warehouse.com\",\n  \"role_id\": 2\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/users/2",
@@ -897,7 +900,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"role\": \"admin\"\n}"
+              "raw": "{\n  \"role_id\": 1\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/users/2/role",
@@ -929,7 +932,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"role\": \"admin\"\n}"
+                  "raw": "{\n  \"role_id\": 1\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/users/2/role",
@@ -954,7 +957,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@warehouse.com\",\n    \"role\": \"admin\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"John Updated\",\n    \"email\": \"john.updated@warehouse.com\",\n    \"role_id\": 1\n  }\n}"
             },
             {
               "name": "Error (Bad Request)",
@@ -972,7 +975,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"role\": \"admin\"\n}"
+                  "raw": "{\n  \"role_id\": 1\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/users/2/role",
@@ -997,7 +1000,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"\\\"role\\\" must be one of [admin, operator]\"\n    }\n  ]\n}"
+              "body": "{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"\\\"role_id\\\" must be a number\"\n    }\n  ]\n}"
             }
           ]
         },
@@ -1021,7 +1024,8 @@
                 "users",
                 "3"
               ]
-            }
+            },
+            "description": "Menghapus user. Membutuhkan izin: `user:delete`"
           },
           "response": [
             {
@@ -3334,6 +3338,105 @@
               "body": "{\n  \"success\": false,\n  \"errors\": [\n    {\n      \"message\": \"Stock unavailable or item not in order\"\n    }\n  ]\n}"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "07 - ACL & ROLE MANAGEMENT (3 endpoints)",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles"
+              ]
+            },
+            "description": "Mengambil semua daftar role (Admin, Operator). Membutuhkan izin: `user:read`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Permissions (Checklist)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/roles/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "permissions"
+              ]
+            },
+            "description": "Mengambil semua daftar izin yang bisa di-checklist. Membutuhkan izin: `user:update`"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Permissions to Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [1, 2, 3, 4, 5]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/roles/:id/assign-permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                ":id",
+                "assign-permissions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "2",
+                  "description": "ID dari Role yang akan diupdate (misal ID 2 untuk Operator)"
+                }
+              ]
+            },
+            "description": "Menyimpan hasil checklist permissions untuk role tertentu. Membutuhkan izin: `user:update`"
+          },
+          "response": []
         }
       ]
     }

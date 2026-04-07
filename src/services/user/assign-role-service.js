@@ -21,11 +21,11 @@ const assignRole = async (id, roleData) => {
     throw err;
   }
 
-  const { role } = roleData;
-  await user.update({ role });
+  const { role_id } = roleData;
+  await user.update({ role_id });
 
-  logger.info(`User with id: ${id} role updated to ${role}`);
-  return { message: `User role updated to ${role}`, user };
+  logger.info(`User with id: ${id} role updated to role_id: ${role_id}`);
+  return { message: `User role updated successfully`, user };
 };
 
 module.exports = assignRole;

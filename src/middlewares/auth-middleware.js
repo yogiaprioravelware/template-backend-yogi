@@ -13,7 +13,11 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: payload.id };
+    req.user = { 
+      id: payload.id,
+      role: payload.role,
+      role_id: payload.role_id 
+    };
     next();
   } catch (error) {
     return res.status(401).json(response.error("Authentication invalid"));
