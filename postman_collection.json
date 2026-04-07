@@ -3367,7 +3367,42 @@
             },
             "description": "Mengambil semua daftar role (Admin, Operator). Membutuhkan izin: `user:read`"
           },
-          "response": []
+          "response": [
+            {
+              "name": "200 OK (Success)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/roles",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "roles"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"admin\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"operator\"\n    }\n  ]\n}"
+            }
+          ]
         },
         {
           "name": "Get All Permissions (Checklist)",
@@ -3393,7 +3428,43 @@
             },
             "description": "Mengambil semua daftar izin yang bisa di-checklist. Membutuhkan izin: `user:update`"
           },
-          "response": []
+          "response": [
+            {
+              "name": "200 OK (Success)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/roles/permissions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "roles",
+                    "permissions"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"user:read\",\n      \"module\": \"user\",\n      \"action\": \"read\",\n      \"description\": \"View users\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"item:create\",\n      \"module\": \"item\",\n      \"action\": \"create\",\n      \"description\": \"Create items\"\n    }\n  ]\n}"
+            }
+          ]
         },
         {
           "name": "Assign Permissions to Role",
@@ -3436,7 +3507,59 @@
             },
             "description": "Menyimpan hasil checklist permissions untuk role tertentu. Membutuhkan izin: `user:update`"
           },
-          "response": []
+          "response": [
+            {
+              "name": "200 OK (Success)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"permissionIds\": [\n    1,\n    2,\n    3,\n    4,\n    5\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/roles/:id/assign-permissions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "roles",
+                    ":id",
+                    "assign-permissions"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": \"Permissions assigned successfully\"\n}"
+            }
+          ]
         }
       ]
     }
