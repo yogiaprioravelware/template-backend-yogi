@@ -15,7 +15,7 @@ const registerUser = async (userData) => {
     throw err;
   }
 
-  const { name, email, password } = userData;
+  const { name, email, password, role_id } = userData;
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
@@ -27,15 +27,26 @@ const registerUser = async (userData) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Find default operator role
-  const operatorRole = await Role.findOne({ where: { name: "operator" } });
+  // Tentukan role_id final
+  let finalRoleId = role_id;
+  let finalRoleName = "operator";
+
+  if (!finalRoleId) {
+    const defaultRole = await Role.findOne({ where: { name: "operator" } });
+    finalRoleId = defaultRole ? defaultRole.id : null;
+  } else {
+    const selectedRole = await Role.findByPk(finalRoleId);
+    if (selectedRole) {
+      finalRoleName = selectedRole.name;
+    }
+  }
 
   const newUser = await User.create({ 
     name, 
     email, 
     password: hashedPassword, 
-    role: "operator",
-    role_id: operatorRole ? operatorRole.id : null
+    role: finalRoleName,
+    role_id: finalRoleId
   });
   logger.info(`User ${email} registered successfully`);
   return newUser;
