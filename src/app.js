@@ -12,6 +12,7 @@ const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
 const app = express();
+app.disable("x-powered-by");
 
 app.use(cors({
   origin: true, // Allow all origins for the testing phase
