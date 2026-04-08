@@ -6,8 +6,26 @@ const logger = require("../utils/logger");
 
 const getRoles = async (req, res) => {
   try {
-    const roles = await Role.findAll();
-    return res.status(200).json(response.success(roles));
+    const Permission = require("../models/Permission"); // Lazy-loading because RolePermission defines associations
+    const roles = await Role.findAll({
+      include: [
+        {
+          model: Permission,
+          attributes: ["name"],
+          through: { attributes: [] }, // Exclude join table data
+        },
+      ],
+    });
+
+    // Flatten permissions for frontend ease of use
+    const rolesWithFlatPerms = roles.map((role) => {
+      const roleJSON = role.toJSON();
+      roleJSON.permissions = roleJSON.Permissions.map((p) => p.name);
+      delete roleJSON.Permissions;
+      return roleJSON;
+    });
+
+    return res.status(200).json(response.success(rolesWithFlatPerms));
   } catch (error) {
     logger.error(`Error in getRoles controller: ${error.message}`);
     return res.status(500).json(response.error("Internal Server Error"));

@@ -230,7 +230,7 @@ function renderPermissionMatrix(role) {
     groupDiv.innerHTML = `<h4>${module}</h4>`;
     
     perms.forEach(p => {
-      const isChecked = activePerms.includes(p.action);
+      const isChecked = activePerms.includes(p.name);
       
       const item = document.createElement('label');
       item.className = 'checkbox-item';
