@@ -98,13 +98,11 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       inbound.status = "DONE";
       await inbound.save();
       logger.info(`Inbound ${inboundId} status updated to DONE`);
-    } else {
+    } else if (inbound.status === "PENDING") {
       // Set to PROCES if any item is partially received
-      if (inbound.status === "PENDING") {
-        inbound.status = "PROCES";
-        await inbound.save();
-        logger.info(`Inbound ${inboundId} status updated to PROCES`);
-      }
+      inbound.status = "PROCES";
+      await inbound.save();
+      logger.info(`Inbound ${inboundId} status updated to PROCES`);
     }
 
     // Count completed items

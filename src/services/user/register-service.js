@@ -31,14 +31,14 @@ const registerUser = async (userData) => {
   let finalRoleId = role_id;
   let finalRoleName = "operator";
 
-  if (!finalRoleId) {
-    const defaultRole = await Role.findOne({ where: { name: "operator" } });
-    finalRoleId = defaultRole ? defaultRole.id : null;
-  } else {
+  if (finalRoleId) {
     const selectedRole = await Role.findByPk(finalRoleId);
     if (selectedRole) {
       finalRoleName = selectedRole.name;
     }
+  } else {
+    const defaultRole = await Role.findOne({ where: { name: "operator" } });
+    finalRoleId = defaultRole ? defaultRole.id : null;
   }
 
   const newUser = await User.create({ 

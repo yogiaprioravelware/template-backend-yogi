@@ -82,7 +82,7 @@ loginForm.addEventListener('submit', async (e) => {
 logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.reload();
+  globalThis.location.reload();
 });
 
 // UI UPDATER
@@ -253,7 +253,7 @@ async function handleSavePermissions() {
   if (!roleId) return;
 
   const checkedInputs = permissionMatrix.querySelectorAll('input[type="checkbox"]:checked');
-  const permissionIds = Array.from(checkedInputs).map(i => parseInt(i.value));
+  const permissionIds = Array.from(checkedInputs).map(i => Number.parseInt(i.value));
 
   saveStatus.textContent = '';
   saveStatus.className = '';
@@ -279,6 +279,7 @@ async function handleSavePermissions() {
     await fetchRoles(); 
     
   } catch (err) {
+    console.error('Update Permissions Error:', err);
     saveStatus.textContent = '❌ Update Failed';
     saveStatus.className = 'error';
   } finally {

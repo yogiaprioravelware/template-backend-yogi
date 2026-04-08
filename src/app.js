@@ -7,7 +7,7 @@ const inboundRouter = require("./routers/inbound");
 const outboundRouter = require("./routers/outbound");
 const roleRouter = require("./routers/role");
 const locationRouter = require("./routers/location");
-const path = require("path");
+const path = require("node:path");
 const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
