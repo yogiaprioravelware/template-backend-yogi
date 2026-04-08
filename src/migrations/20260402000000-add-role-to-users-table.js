@@ -1,13 +1,16 @@
-exports.up = (pgm) => {
-  pgm.addColumn("users", {
-    role: {
-      type: "varchar(50)",
-      notNull: true,
-      default: "operator",
-    },
-  });
-};
+'use strict';
 
-exports.down = (pgm) => {
-  pgm.dropColumn("users", "role");
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.addColumn('users', 'role', {
+      type: Sequelize.STRING(50),
+      allowNull: false,
+      defaultValue: 'operator'
+    });
+  },
+
+  async down(queryInterface, Sequelize) {
+    await queryInterface.removeColumn('users', 'role');
+  }
 };

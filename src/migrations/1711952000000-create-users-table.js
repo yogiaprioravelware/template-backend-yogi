@@ -1,18 +1,37 @@
+'use strict';
 
-exports.up = (pgm) => {
-  pgm.createTable("users", {
-    id: "id",
-    name: { type: "varchar(255)", notNull: true },
-    email: { type: "varchar(255)", notNull: true, unique: true },
-    password: { type: "varchar(255)", notNull: true },
-    created_at: {
-      type: "timestamp",
-      notNull: true,
-      default: pgm.func("current_timestamp"),
-    },
-  });
-};
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('users', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      email: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+        unique: true
+      },
+      password: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+  },
 
-exports.down = (pgm) => {
-  pgm.dropTable("users");
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('users');
+  }
 };

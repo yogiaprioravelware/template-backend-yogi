@@ -7,12 +7,19 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    dialect: "postgres",
+    dialect: process.env.DB_DIALECT || "postgres",
+    port: process.env.DB_PORT || (process.env.DB_DIALECT === "mssql" ? 1433 : 5432),
     logging: false, 
     define: {
       timestamps: false, 
       underscored: true,
     },
+    dialectOptions: process.env.DB_DIALECT === "mssql" ? {
+      options: {
+        encrypt: false, // Set to true if using Azure
+        trustServerCertificate: true,
+      }
+    } : {},
   }
 );
 

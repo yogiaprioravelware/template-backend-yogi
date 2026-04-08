@@ -1,105 +1,165 @@
-/* eslint-disable camelcase */
+'use strict';
 
-exports.shorthands = undefined;
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      // 1. Create roles table
+      await queryInterface.createTable('roles', {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: Sequelize.INTEGER
+        },
+        name: {
+          type: Sequelize.STRING(50),
+          allowNull: false,
+          unique: true
+        },
+        description: {
+          type: Sequelize.TEXT
+        },
+        created_at: {
+          allowNull: false,
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        }
+      }, { transaction });
 
-exports.up = (pgm) => {
-  // Create roles table
-  pgm.createTable("roles", {
-    id: "id", // shorthand for serial primary key
-    name: { type: "varchar(50)", notNull: true, unique: true },
-    description: { type: "text" },
-    created_at: {
-      type: "timestamp",
-      notNull: true,
-      default: pgm.func("current_timestamp"),
-    },
-  });
+      // 2. Create permissions table
+      await queryInterface.createTable('permissions', {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: Sequelize.INTEGER
+        },
+        name: {
+          type: Sequelize.STRING(100),
+          allowNull: false,
+          unique: true
+        },
+        module: {
+          type: Sequelize.STRING(50),
+          allowNull: false
+        },
+        action: {
+          type: Sequelize.STRING(50),
+          allowNull: false
+        },
+        description: {
+          type: Sequelize.TEXT
+        }
+      }, { transaction });
 
-  // Create permissions table
-  pgm.createTable("permissions", {
-    id: "id",
-    name: { type: "varchar(100)", notNull: true, unique: true }, // e.g. 'item:create'
-    module: { type: "varchar(50)", notNull: true }, // e.g. 'item'
-    action: { type: "varchar(50)", notNull: true }, // e.g. 'create'
-    description: { type: "text" },
-  });
+      // 3. Create role_permissions table
+      await queryInterface.createTable('role_permissions', {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: Sequelize.INTEGER
+        },
+        role_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'roles',
+            key: 'id'
+          },
+          onDelete: 'CASCADE'
+        },
+        permission_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'permissions',
+            key: 'id'
+          },
+          onDelete: 'CASCADE'
+        }
+      }, { transaction });
 
-  // Create role_permissions table
-  pgm.createTable("role_permissions", {
-    id: "id",
-    role_id: {
-      type: "integer",
-      notNull: true,
-      references: '"roles"',
-      onDelete: "cascade",
-    },
-    permission_id: {
-      type: "integer",
-      notNull: true,
-      references: '"permissions"',
-      onDelete: "cascade",
-    },
-  });
+      // 4. Add role_id to users
+      await queryInterface.addColumn('users', 'role_id', {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'roles',
+          key: 'id'
+        },
+        onDelete: 'SET NULL'
+      }, { transaction });
 
-  // Add role_id to users
-  pgm.addColumn("users", {
-    role_id: {
-      type: "integer",
-      references: '"roles"',
-      onDelete: "set null",
-    },
-  });
+      // 5. Insert initial roles
+      await queryInterface.bulkInsert('roles', [
+        { name: 'admin', description: 'Administrator with full access' },
+        { name: 'operator', description: 'Warehouse operator with restricted access' }
+      ], { transaction });
 
-  // Insert initial roles
-  pgm.sql("INSERT INTO roles (name, description) VALUES ('admin', 'Administrator with full access')");
-  pgm.sql("INSERT INTO roles (name, description) VALUES ('operator', 'Warehouse operator with restricted access')");
+      // 6. Insert initial permissions
+      const initialPermissions = [
+        // item
+        { name: 'item:create', module: 'item', action: 'create' },
+        { name: 'item:read', module: 'item', action: 'read' },
+        { name: 'item:update', module: 'item', action: 'update' },
+        { name: 'item:delete', module: 'item', action: 'delete' },
+        // user
+        { name: 'user:create', module: 'user', action: 'create' },
+        { name: 'user:read', module: 'user', action: 'read' },
+        { name: 'user:update', module: 'user', action: 'update' },
+        { name: 'user:delete', module: 'user', action: 'delete' },
+        // location
+        { name: 'location:create', module: 'location', action: 'create' },
+        { name: 'location:read', module: 'location', action: 'read' },
+        { name: 'location:update', module: 'location', action: 'update' },
+        { name: 'location:delete', module: 'location', action: 'delete' },
+        // inbound
+        { name: 'inbound:create', module: 'inbound', action: 'create' },
+        { name: 'inbound:read', module: 'inbound', action: 'read' },
+        { name: 'inbound:update', module: 'inbound', action: 'update' },
+        { name: 'inbound:delete', module: 'inbound', action: 'delete' },
+        // outbound
+        { name: 'outbound:create', module: 'outbound', action: 'create' },
+        { name: 'outbound:read', module: 'outbound', action: 'read' },
+        { name: 'outbound:update', module: 'outbound', action: 'update' },
+        { name: 'outbound:delete', module: 'outbound', action: 'delete' }
+      ];
+      await queryInterface.bulkInsert('permissions', initialPermissions, { transaction });
 
-  // Insert initial permissions for 'item' module
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('item:create', 'item', 'create')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('item:read', 'item', 'read')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('item:update', 'item', 'update')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('item:delete', 'item', 'delete')");
+      // 7. Assign permissions to admin (All)
+      await queryInterface.sequelize.query(`
+        INSERT INTO role_permissions (role_id, permission_id)
+        SELECT r.id, p.id FROM roles r, permissions p 
+        WHERE r.name = 'admin'
+      `, { transaction });
 
-  // Insert initial permissions for 'user' module
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('user:create', 'user', 'create')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('user:read', 'user', 'read')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('user:update', 'user', 'update')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('user:delete', 'user', 'delete')");
+      // 8. Assign permissions to operator (Read only)
+      await queryInterface.sequelize.query(`
+        INSERT INTO role_permissions (role_id, permission_id)
+        SELECT r.id, p.id FROM roles r, permissions p 
+        WHERE r.name = 'operator' AND p.action = 'read'
+      `, { transaction });
 
-  // Insert initial permissions for 'location' module
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('location:create', 'location', 'create')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('location:read', 'location', 'read')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('location:update', 'location', 'update')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('location:delete', 'location', 'delete')");
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
+  },
 
-  // Insert initial permissions for 'inbound' module
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('inbound:create', 'inbound', 'create')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('inbound:read', 'inbound', 'read')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('inbound:update', 'inbound', 'update')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('inbound:delete', 'inbound', 'delete')");
-
-  // Insert initial permissions for 'outbound' module
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('outbound:create', 'outbound', 'create')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('outbound:read', 'outbound', 'read')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('outbound:update', 'outbound', 'update')");
-  pgm.sql("INSERT INTO permissions (name, module, action) VALUES ('outbound:delete', 'outbound', 'delete')");
-
-  // Assign all permissions to admin
-  pgm.sql(`
-    INSERT INTO role_permissions (role_id, permission_id)
-    SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'admin'
-  `);
-
-  // Assign only 'read' permissions to operator (default)
-  pgm.sql(`
-    INSERT INTO role_permissions (role_id, permission_id)
-    SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'operator' AND p.action = 'read'
-  `);
-};
-
-exports.down = (pgm) => {
-  pgm.dropColumn("users", "role_id");
-  pgm.dropTable("role_permissions");
-  pgm.dropTable("permissions");
-  pgm.dropTable("roles");
+  async down(queryInterface, Sequelize) {
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      await queryInterface.removeColumn('users', 'role_id', { transaction });
+      await queryInterface.dropTable('role_permissions', { transaction });
+      await queryInterface.dropTable('permissions', { transaction });
+      await queryInterface.dropTable('roles', { transaction });
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
+  }
 };
