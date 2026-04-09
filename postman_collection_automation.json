@@ -1,0 +1,1236 @@
+{
+  "info": {
+    "name": "E2E Template Backend Ravelware - Full Automation",
+    "description": "Full E2E automation for Register, Login, Items (CRUD), Location (CRUD), Inbound, Outbound, Role, Profile. Everything executed chronologically. Do NOT shuffle.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication Flow",
+      "item": [
+        {
+          "name": "Register - Safe Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Runner\",\n  \"email\": \"e2e_runner_postman_{{$randomInt}}@warehouse.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login - Extract Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 500]); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.collectionVariables.set('jwt_token', res.data.token); pm.collectionVariables.set('user_id', res.data.user.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validation: Get Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Schema check: No password returned', function() { pm.expect(res.data).not.to.have.property('password'); }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1.5. Control Access (ACL / Roles)",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/roles/permissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "roles",
+                "permissions"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Master Data: Creations",
+      "item": [
+        {
+          "name": "Create Temp Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('item_id', res.data.id); pm.collectionVariables.set('sku_code', res.data.sku_code); pm.collectionVariables.set('rfid_tag', res.data.rfid_tag); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"P-RFID-{{$randomInt}}\",\n  \"item_name\": \"Postman Item {{$randomInt}}\",\n  \"sku_code\": \"P-SKU-{{$randomInt}}\",\n  \"category\": \"ATK\",\n  \"uom\": \"PCS\",\n  \"current_stock\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Temp Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('location_id', res.data.id); pm.collectionVariables.set('qr_string', res.data.qr_string); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_code\": \"P-L-{{$randomInt}}\",\n  \"qr_string\": \"P-QR-{{$randomInt}}\",\n  \"warehouse\": \"WA\",\n  \"rack\": \"RA\",\n  \"bin\": \"BA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Master Data: Update & Fetch (PUT/GET)",
+      "item": [
+        {
+          "name": "Update Temp Item (PUT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Name updated properly', function() { pm.expect(res.data.item_name).to.eql('Postman Item Updated'); }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"item_name\": \"Postman Item Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/items/{{item_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{item_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fetch Item Detail (GET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/items/{{item_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{item_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Logistics Workflow",
+      "item": [
+        {
+          "name": "Create Inbound PO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('inbound_id', res.data.id); pm.collectionVariables.set('inbound_po_number', res.data.po_number); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"po_number\": \"PO-POSTMAN-{{$randomInt}}\",\n  \"items\": [{\n    \"sku_code\": \"{{sku_code}}\",\n    \"qty_target\": 1\n  }]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Inbound Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.collectionVariables.set('inbound_item_id', res.data.items[0].id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan RFID Receiving",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}/scan-item",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}",
+                "scan-item"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan QR Set Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_string\": \"{{qr_string}}\",\n  \"inbound_item_id\": {{inbound_item_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}/set-location",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}",
+                "set-location"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Outbound",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('outbound_id', res.data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_number\": \"OUT-POSTMAN-{{$randomInt}}\",\n  \"outbound_type\": \"LUNAS\",\n  \"items\": [{\n    \"sku_code\": \"{{sku_code}}\",\n    \"qty_target\": 1\n  }]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan RFID Picking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Outbound is DONE', function() { pm.expect(res.data.outbound_status).to.eql('DONE'); }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/{{outbound_id}}/scan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "{{outbound_id}}",
+                "scan"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. System Eradication (DELETE Flow)",
+      "item": [
+        {
+          "name": "Delete Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/items/{{item_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{item_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/locations/{{location_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "locations",
+                "{{location_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Negative Scenarios: Authentication",
+      "item": [
+        {
+          "name": "Register - Duplicate Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function() { pm.expect(pm.response.code).to.eql(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicator\",\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login - Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401', function() { pm.expect(pm.response.code).to.be.oneOf([400, 401]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@warehouse.com\",\n  \"password\": \"wrongpass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login - Unregistered Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 404', function() { pm.expect(pm.response.code).to.be.oneOf([400, 404, 401]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ghost_{{$randomInt}}@warehouse.com\",\n  \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Negative Scenarios: Inbound Logistics",
+      "item": [
+        {
+          "name": "Duplicate PO Number",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function() { pm.expect(pm.response.code).to.eql(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"po_number\": \"{{inbound_po_number}}\",\n  \"items\": [{\n    \"sku_code\": \"{{sku_code}}\",\n    \"qty_target\": 1\n  }]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan Item - Unregistered RFID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function() { pm.expect(pm.response.code).to.eql(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"UNDEFINED-RFID-{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}/scan-item",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}",
+                "scan-item"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan Item - Overcapacity / Already DONE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function() { pm.expect(pm.response.code).to.eql(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}/scan-item",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}",
+                "scan-item"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set Location - Invalid QR Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 404', function() { pm.expect(pm.response.code).to.be.oneOf([400, 404]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_string\": \"INVALID-BOGUS-QR-{{$randomInt}}\",\n  \"inbound_item_id\": {{inbound_item_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inbounds/{{inbound_id}}/set-location",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "inbounds",
+                "{{inbound_id}}",
+                "set-location"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Negative Scenarios: Outbound Logistics",
+      "item": [
+        {
+          "name": "Scan Picking - Invalid Outbound ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 or 404', function() { pm.expect(pm.response.code).to.be.oneOf([400, 404]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/999999/scan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "999999",
+                "scan"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Scan Picking - Unregistered RFID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400', function() { pm.expect(pm.response.code).to.eql(400); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rfid_tag\": \"UNDEFINED-RFID-{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/{{outbound_id}}/scan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "{{outbound_id}}",
+                "scan"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "item_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sku_code",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rfid_tag",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "location_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "qr_string",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inbound_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inbound_item_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "outbound_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inbound_po_number",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

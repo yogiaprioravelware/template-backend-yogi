@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test": "jest --testPathIgnorePatterns=tests/e2e",
+    "test:coverage": "jest --coverage --testPathIgnorePatterns=tests/e2e",
+    "test:e2e": "set NODE_ENV=test&& jest --config jest.e2e.config.js --runInBand",
+    "test:postman": "npx newman run postman_collection_automation.json",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "migrate:up": "sequelize-cli db:migrate",

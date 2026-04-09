@@ -19,6 +19,7 @@ const scanItemSchema = Joi.object({
 
 const setLocationSchema = Joi.object({
   qr_string: Joi.string().required(),
+  inbound_item_id: Joi.number().integer().required(),
 });
 
 module.exports = {

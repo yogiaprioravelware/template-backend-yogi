@@ -25,7 +25,7 @@ describe('Validation: inbound-validation', () => {
 
   describe('setLocationSchema', () => {
     it('should validate qr_string', () => {
-      const { error } = setLocationSchema.validate({ qr_string: 'QR123' });
+      const { error } = setLocationSchema.validate({ qr_string: 'QR123', inbound_item_id: 1 });
       expect(error).toBeUndefined();
     });
   });
