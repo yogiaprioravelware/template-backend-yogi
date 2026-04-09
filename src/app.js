@@ -7,7 +7,6 @@ const inboundRouter = require("./routers/inbound");
 const outboundRouter = require("./routers/outbound");
 const roleRouter = require("./routers/role");
 const locationRouter = require("./routers/location");
-const path = require("node:path");
 const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
@@ -22,10 +21,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(requestLogger);
-
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, "../frontend")));
-app.use("/src", express.static(path.join(__dirname, "../frontend/src")));
 
 // routes
 app.use("/api/users", userRouter);
