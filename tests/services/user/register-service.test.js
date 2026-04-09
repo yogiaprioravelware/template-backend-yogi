@@ -49,8 +49,6 @@ describe('Service: register-service', () => {
 
   it('should register user with default role if role_id not provided', async () => {
     User.findOne.mockResolvedValue(null); // No existing email
-    User.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce({ id: 1, name: 'operator' }); // For Role.findOne
-    
     Role.findOne = jest.fn().mockResolvedValue({ id: 1, name: 'operator' });
     bcrypt.hash.mockResolvedValue('hashed_pw');
     User.create.mockResolvedValue({ id: 1, role: 'operator' });
@@ -62,6 +60,37 @@ describe('Service: register-service', () => {
     expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
       role: 'operator',
       role_id: 1
+    }));
+  });
+
+  it('should fallback if explicit role_id is not found', async () => {
+    User.findOne.mockResolvedValue(null);
+    Role.findByPk.mockResolvedValue(null); // Role not found
+    bcrypt.hash.mockResolvedValue('hashed_pw');
+    User.create.mockResolvedValue({ id: 1, role: 'operator', role_id: 999 });
+
+    const validData = { name: 'Test', email: 'test@test.com', password: 'password123', role_id: 999 };
+    await registerUser(validData);
+    
+    // role_id remains 999, but name defaults to 'operator' because not found
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      role: 'operator',
+      role_id: 999
+    }));
+  });
+
+  it('should set role_id to null if default role is not found', async () => {
+    User.findOne.mockResolvedValue(null); // No existing email
+    Role.findOne.mockResolvedValue(null); // Default role not found
+    bcrypt.hash.mockResolvedValue('hashed_pw');
+    User.create.mockResolvedValue({ id: 1 });
+
+    const validData = { name: 'Test', email: 'test@test.com', password: 'password123' };
+    await registerUser(validData);
+
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      role: 'operator',
+      role_id: null
     }));
   });
 });

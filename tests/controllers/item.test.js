@@ -53,4 +53,30 @@ describe('Controller: item', () => {
     await itemController.deleteItem(req, res, next);
     expect(res.json).toHaveBeenCalled();
   });
+  it('getItems should catch error', async () => {
+    itemService.getItems.mockRejectedValue(new Error('error'));
+    await itemController.getItems(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('getItemById should catch error', async () => {
+    req.params.id = 1;
+    itemService.getItemById.mockRejectedValue(new Error('error'));
+    await itemController.getItemById(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('updateItem should catch error', async () => {
+    req.params.id = 1;
+    itemService.updateItem.mockRejectedValue(new Error('error'));
+    await itemController.updateItem(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('deleteItem should catch error', async () => {
+    req.params.id = 1;
+    itemService.deleteItem.mockRejectedValue(new Error('error'));
+    await itemController.deleteItem(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
 });

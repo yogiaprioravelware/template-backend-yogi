@@ -51,4 +51,25 @@ describe('Service: assign-role-permissions-service', () => {
     await expect(assignRolePermissions(1, [1])).rejects.toThrow('DB Error');
     expect(mockTransaction.rollback).toHaveBeenCalled();
   });
+
+  it('should skip inserting new permissions if permissionIds is empty', async () => {
+    Role.findByPk.mockResolvedValue({ id: 1, name: 'admin' });
+    RolePermission.destroy.mockResolvedValue(true);
+
+    const result = await assignRolePermissions(1, []);
+
+    expect(RolePermission.bulkCreate).not.toHaveBeenCalled();
+    expect(result).toEqual({ success: true, roleId: 1, count: 0 });
+  });
+
+  it('should skip inserting new permissions if permissionIds is undefined', async () => {
+    Role.findByPk.mockResolvedValue({ id: 1, name: 'admin' });
+    RolePermission.destroy.mockResolvedValue(true);
+
+    const result = await assignRolePermissions(1); // not passing permissionIds
+
+    expect(RolePermission.bulkCreate).not.toHaveBeenCalled();
+    // Default is undefined, so length is not evaluated
+    expect(result.success).toBe(true);
+  });
 });

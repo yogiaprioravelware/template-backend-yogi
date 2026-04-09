@@ -44,4 +44,15 @@ describe('Service: update-item-service', () => {
     expect(mockItem.update).toHaveBeenCalledWith({ current_stock: 50 });
     expect(result).toBe(mockItem);
   });
+
+  it('should update item successfully when changing rfid and sku to available ones', async () => {
+    const mockItem = { id: 1, rfid_tag: 'tag1', sku_code: 'sku1', update: jest.fn().mockResolvedValue(true) };
+    Item.findByPk.mockResolvedValue(mockItem);
+    Item.findOne.mockResolvedValue(null); // No existing rfid/sku
+
+    const result = await updateItem(1, { rfid_tag: 'tag2', sku_code: 'sku2' });
+
+    expect(Item.findOne).toHaveBeenCalledTimes(2); // checked both
+    expect(mockItem.update).toHaveBeenCalledWith({ rfid_tag: 'tag2', sku_code: 'sku2' });
+  });
 });

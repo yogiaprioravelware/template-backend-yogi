@@ -25,4 +25,14 @@ describe('Utils: response', () => {
     const result = response.errorResponse(404, 'Not Found', { detail: 'Missing ID' });
     expect(result).toEqual({ success: false, statusCode: 404, message: 'Not Found', detail: 'Missing ID' });
   });
+
+  it('should use default message for successResponse', () => {
+    const result = response.successResponse({ id: 1 });
+    expect(result.message).toBe('Success');
+  });
+
+  it('should use default details for errorResponse', () => {
+    const result = response.errorResponse(500, 'Server fail');
+    expect(result).toEqual({ success: false, statusCode: 500, message: 'Server fail' });
+  });
 });

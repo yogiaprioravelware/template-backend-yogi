@@ -35,7 +35,7 @@ const assignRolePermissions = async (roleId, permissionIds) => {
 
     await transaction.commit();
     logger.info(`Successfully updated permissions for role ${role.name}`);
-    return { success: true, roleId, count: permissionIds.length };
+    return { success: true, roleId, count: permissionIds ? permissionIds.length : 0 };
   } catch (error) {
     await transaction.rollback();
     logger.error(`Error assigning permissions: ${error.message}`);

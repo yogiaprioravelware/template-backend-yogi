@@ -37,4 +37,15 @@ describe('Service: get-user-permissions-service', () => {
     const result = await getUserPermissions({ role_id: 2 });
     expect(result).toEqual([]);
   });
+
+  it('should return empty array if role is not found in DB', async () => {
+    Role.findByPk.mockResolvedValue(null);
+    const result = await getUserPermissions({ role_id: 2 });
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array if user object is completely null or missing', async () => {
+    const result = await getUserPermissions(null);
+    expect(result).toEqual([]);
+  });
 });

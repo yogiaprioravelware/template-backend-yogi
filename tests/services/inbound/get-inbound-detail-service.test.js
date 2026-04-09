@@ -35,4 +35,19 @@ describe('Service: get-inbound-detail-service', () => {
       id: 10, sku_code: 'SKU1', qty_target: 5, item_name: 'Test', category: 'C1', uom: 'PCS'
     });
   });
+  it('should return inbound details with items mapping even if item detail is missing', async () => {
+    Inbound.findByPk.mockResolvedValue({ dataValues: { id: 1, po_number: 'PO1' } });
+    InboundItem.findAll.mockResolvedValue([
+      { dataValues: { id: 10, sku_code: 'SKU_NONEXISTENT', qty_target: 5 } }
+    ]);
+    Item.findOne.mockResolvedValue(null);
+
+    const result = await getInboundDetail(1);
+
+    expect(result.id).toBe(1);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toEqual({
+      id: 10, sku_code: 'SKU_NONEXISTENT', qty_target: 5, item_name: '', category: '', uom: ''
+    });
+  });
 });

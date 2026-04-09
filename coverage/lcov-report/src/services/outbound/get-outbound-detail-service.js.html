@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.42% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.42% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -115,29 +115,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -147,7 +147,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -162,27 +162,27 @@ const logger = require("../../utils/logger");
 const getOutboundDetail = async (outboundId) =&gt; {
   logger.info(`Fetching details for outbound ID: ${outboundId}`);
   const outbound = await Outbound.findByPk(outboundId);
-  <span class="missing-if-branch" title="else path not taken" >E</span>if (!outbound) {
+  if (!outbound) {
     logger.warn(`Outbound with ID: ${outboundId} not found`);
     const err = new Error("Outbound not found");
     err.status = 400;
     throw err;
   }
 &nbsp;
-  const outboundItems = <span class="cstat-no" title="statement not covered" >await OutboundItem.findAll({</span>
+  const outboundItems = await OutboundItem.findAll({
     where: { outbound_id: outboundId },
     attributes: ["id", "sku_code", "qty_target", "qty_delivered"],
   });
-<span class="cstat-no" title="statement not covered" >  logger.info(`Found ${outboundItems.length} items for outbound ID: ${outboundId}`);</span>
+  logger.info(`Found ${outboundItems.length} items for outbound ID: ${outboundId}`);
 &nbsp;
   // Tambahkan informasi item dari tabel items
-  const itemsWithDetails = <span class="cstat-no" title="statement not covered" >await Promise.all(</span>
-    outboundItems.map(<span class="fstat-no" title="function not covered" >as</span>ync (item) =&gt; {
-      const itemDetail = <span class="cstat-no" title="statement not covered" >await Item.findOne({</span>
+  const itemsWithDetails = await Promise.all(
+    outboundItems.map(async (item) =&gt; {
+      const itemDetail = await Item.findOne({
         where: { sku_code: item.sku_code },
         attributes: ["item_name", "category", "uom", "current_stock"],
       });
-<span class="cstat-no" title="statement not covered" >      return {</span>
+      return {
         ...item.dataValues,
         item_name: itemDetail?.item_name || "",
         category: itemDetail?.category || "",
@@ -192,7 +192,7 @@ const getOutboundDetail = async (outboundId) =&gt; {
     })
   );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return {</span>
+  return {
     ...outbound.dataValues,
     items: itemsWithDetails,
   };
@@ -205,7 +205,7 @@ module.exports = getOutboundDetail;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-09T04:57:55.635Z
+                at 2026-04-09T06:44:20.966Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
