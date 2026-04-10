@@ -111,4 +111,16 @@ describe('Controller: item', () => {
     await itemController.getItemHistory(req, res, next);
     expect(next).toHaveBeenCalled();
   });
+
+  it('getReconciliation should return success', async () => {
+    itemService.getReconciliationReport.mockResolvedValue([]);
+    await itemController.getReconciliation(req, res, next);
+    expect(res.json).toHaveBeenCalled();
+  });
+
+  it('getReconciliation should catch error', async () => {
+    itemService.getReconciliationReport.mockRejectedValue(new Error('error'));
+    await itemController.getReconciliation(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
 });

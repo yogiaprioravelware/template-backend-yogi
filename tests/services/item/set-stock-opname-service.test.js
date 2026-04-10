@@ -64,14 +64,19 @@ describe('Service: set-stock-opname-service', () => {
   });
 
   it('should handle zero deviation correctly', async () => {
-    Item.findByPk.mockResolvedValue({ id: 1, current_stock: 10 });
+    const mockItem = { id: 1, current_stock: 10, save: jest.fn() };
+    Item.findByPk.mockResolvedValue(mockItem);
     Location.findByPk.mockResolvedValue({ id: 2 });
-    ItemLocation.findOne.mockResolvedValue({ stock: 10 });
+    const mockItemLoc = { stock: 10, save: jest.fn() };
+    ItemLocation.findOne.mockResolvedValue(mockItemLoc);
 
     const result = await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1');
     expect(result.deviation).toBe(0);
     expect(mockTransaction.commit).toHaveBeenCalled();
-    expect(InventoryMovement.create).not.toHaveBeenCalled();
+    expect(InventoryMovement.create).toHaveBeenCalledWith(expect.objectContaining({
+      qty_change: 0,
+      type: 'STOCK_OPNAME'
+    }), expect.anything());
   });
 
   it('should adjust stock correctly with a positive deviation', async () => {

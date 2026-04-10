@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1775804549662" clover="3.2.0">
-  <project timestamp="1775804549662" name="All files">
-    <metrics statements="1124" coveredstatements="1124" conditionals="271" coveredconditionals="271" methods="81" coveredmethods="81" elements="1476" coveredelements="1476" complexity="0" loc="1124" ncloc="1124" packages="10" files="63" classes="63"/>
+<coverage generated="1775807949648" clover="3.2.0">
+  <project timestamp="1775807949649" name="All files">
+    <metrics statements="1142" coveredstatements="1142" conditionals="271" coveredconditionals="271" methods="83" coveredmethods="83" elements="1496" coveredelements="1496" complexity="0" loc="1142" ncloc="1142" packages="10" files="64" classes="64"/>
     <package name="controllers">
-      <metrics statements="266" coveredstatements="266" conditionals="62" coveredconditionals="62" methods="33" coveredmethods="33"/>
+      <metrics statements="272" coveredstatements="272" conditionals="62" coveredconditionals="62" methods="34" coveredmethods="34"/>
       <file name="inbound.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\inbound.js">
         <metrics statements="47" coveredstatements="47" conditionals="10" coveredconditionals="10" methods="5" coveredmethods="5"/>
         <line num="1" count="1" type="stmt"/>
@@ -55,7 +55,7 @@
         <line num="102" count="1" type="stmt"/>
       </file>
       <file name="item.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\item.js">
-        <metrics statements="47" coveredstatements="47" conditionals="2" coveredconditionals="2" methods="7" coveredmethods="7"/>
+        <metrics statements="53" coveredstatements="53" conditionals="2" coveredconditionals="2" methods="8" coveredmethods="8"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -102,7 +102,13 @@
         <line num="76" count="2" type="stmt"/>
         <line num="77" count="1" type="stmt"/>
         <line num="79" count="1" type="stmt"/>
-        <line num="83" count="1" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="85" count="2" type="stmt"/>
+        <line num="86" count="2" type="stmt"/>
+        <line num="87" count="2" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
       </file>
       <file name="location.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\location.js">
         <metrics statements="65" coveredstatements="65" conditionals="48" coveredconditionals="48" methods="5" coveredmethods="5"/>
@@ -650,7 +656,7 @@
       </file>
     </package>
     <package name="services.item">
-      <metrics statements="166" coveredstatements="166" conditionals="40" coveredconditionals="40" methods="7" coveredmethods="7"/>
+      <metrics statements="178" coveredstatements="178" conditionals="40" coveredconditionals="40" methods="8" coveredmethods="8"/>
       <file name="delete-item-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\item\delete-item-service.js">
         <metrics statements="14" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
         <line num="1" count="2" type="stmt"/>
@@ -714,8 +720,22 @@
         <line num="29" count="1" type="stmt"/>
         <line num="32" count="2" type="stmt"/>
       </file>
+      <file name="get-reconciliation-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\item\get-reconciliation-service.js">
+        <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+      </file>
       <file name="index.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\item\index.js">
-        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -723,7 +743,8 @@
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
       </file>
       <file name="register-item-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\item\register-item-service.js">
         <metrics statements="28" coveredstatements="28" conditionals="6" coveredconditionals="6" methods="1" coveredmethods="1"/>
@@ -1293,7 +1314,7 @@
       <file name="response.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\utils\response.js">
         <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="4" methods="4" coveredmethods="4"/>
         <line num="2" count="8" type="stmt"/>
-        <line num="3" count="9" type="stmt"/>
+        <line num="3" count="10" type="stmt"/>
         <line num="9" count="8" type="stmt"/>
         <line num="10" count="17" type="cond" truecount="2" falsecount="0"/>
         <line num="11" count="17" type="stmt"/>

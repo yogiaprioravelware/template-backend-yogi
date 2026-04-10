@@ -80,6 +80,17 @@ const getItemHistory = async (req, res, next) => {
   }
 };
 
+// Mengambil laporan rekonsiliasi stok
+const getReconciliation = async (req, res, next) => {
+  logger.info("Fetching stock reconciliation report");
+  try {
+    const result = await itemService.getReconciliationReport();
+    res.json(response.success(result));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   registerItem,
   getItems,
@@ -88,4 +99,5 @@ module.exports = {
   deleteItem,
   setStockOpname,
   getItemHistory,
+  getReconciliation,
 };

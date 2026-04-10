@@ -761,6 +761,45 @@
               ]
             }
           }
+        },
+        {
+          "name": "Get Reconciliation Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Should return an array', function() { pm.expect(Array.isArray(res.data)).to.be.true; }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/items/reconciliation",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "reconciliation"
+              ]
+            }
+          }
         }
       ]
     },

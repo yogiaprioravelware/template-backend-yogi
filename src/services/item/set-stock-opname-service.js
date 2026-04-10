@@ -46,12 +46,6 @@ const setStockOpname = async (payload, userId) => {
 
     const qtyChange = actual_qty - currentStock;
 
-    if (qtyChange === 0) {
-      logger.info('Stock Opname resulted in 0 deviation. No movement recorded.');
-      await transaction.commit();
-      return { message: "No deviation. Stock is accurate.", deviation: 0 };
-    }
-
     // Update item location stock
     itemLocation.stock = actual_qty;
     await itemLocation.save({ transaction });
