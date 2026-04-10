@@ -14,12 +14,16 @@ const setStockOpname = async (payload, userId) => {
   try {
     const item = await Item.findByPk(item_id, { transaction });
     if (!item) {
-      throw { status: 404, message: "Item not found" };
+      const error = new Error("Item not found");
+      error.status = 404;
+      throw error;
     }
 
     const location = await Location.findByPk(location_id, { transaction });
     if (!location) {
-      throw { status: 404, message: "Location not found" };
+      const error = new Error("Location not found");
+      error.status = 404;
+      throw error;
     }
 
     // Find the item location stock mapping

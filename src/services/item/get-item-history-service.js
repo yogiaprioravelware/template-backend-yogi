@@ -8,7 +8,9 @@ const getItemHistory = async (itemId) => {
   
   const item = await Item.findByPk(itemId);
   if (!item) {
-    throw { status: 404, message: "Item not found" };
+    const error = new Error("Item not found");
+    error.status = 404;
+    throw error;
   }
 
   const movements = await InventoryMovement.findAll({

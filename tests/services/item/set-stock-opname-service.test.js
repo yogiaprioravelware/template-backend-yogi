@@ -51,7 +51,7 @@ describe('Service: set-stock-opname-service', () => {
   it('should throw error if item not found', async () => {
     Item.findByPk.mockResolvedValue(null);
     await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1'))
-      .rejects.toEqual({ status: 404, message: "Item not found" });
+      .rejects.toThrow("Item not found");
     expect(mockTransaction.rollback).toHaveBeenCalled();
   });
 
@@ -59,7 +59,7 @@ describe('Service: set-stock-opname-service', () => {
     Item.findByPk.mockResolvedValue({ id: 1 });
     Location.findByPk.mockResolvedValue(null);
     await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1'))
-      .rejects.toEqual({ status: 404, message: "Location not found" });
+      .rejects.toThrow("Location not found");
     expect(mockTransaction.rollback).toHaveBeenCalled();
   });
 

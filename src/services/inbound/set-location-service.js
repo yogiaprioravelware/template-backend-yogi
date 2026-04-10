@@ -89,15 +89,15 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
         where: { item_id: item.id, location_id: location.id }
       });
 
-      if (!itemLoc) {
+      if (itemLoc) {
+        itemLoc.stock += 1;
+        await itemLoc.save();
+      } else {
         itemLoc = await ItemLocation.create({
           item_id: item.id,
           location_id: location.id,
           stock: 1
         });
-      } else {
-        itemLoc.stock += 1;
-        await itemLoc.save();
       }
       logger.info(`Item location stock updated to ${itemLoc.stock} for item ${item.id} at location ${location.id}`);
 

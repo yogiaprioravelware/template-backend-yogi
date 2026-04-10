@@ -28,7 +28,7 @@ describe('Service: get-item-history-service', () => {
 
   it('should throw error if item not found', async () => {
     Item.findByPk.mockResolvedValue(null);
-    await expect(getItemHistory(1)).rejects.toEqual({ status: 404, message: "Item not found" });
+    await expect(getItemHistory(1)).rejects.toThrow("Item not found");
   });
 
   it('should return movements successfully', async () => {
