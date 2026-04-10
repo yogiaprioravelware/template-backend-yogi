@@ -27,7 +27,7 @@ describe('Service: Reconciliation Coverage Test', () => {
 
     expect(result).toEqual(mockData);
     expect(sequelize.query).toHaveBeenCalledWith(
-      "SELECT * FROM vw_stock_reconciliation",
+      expect.stringContaining("item_id, sku_code, item_name"),
       { type: 'SELECT' }
     );
   });

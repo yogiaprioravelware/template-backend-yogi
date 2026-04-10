@@ -12,7 +12,12 @@ const getReconciliationReport = async () => {
     // We query the view using raw query for maximum performance and direct access
     // to the aggregated fields.
     const results = await sequelize.query(
-      "SELECT * FROM vw_stock_reconciliation",
+      `SELECT 
+        item_id, sku_code, item_name, 
+        location_id, location_code, warehouse, rack, bin, 
+        system_stock, last_physical_qty, last_variance, 
+        last_audit_date, last_operator 
+      FROM vw_stock_reconciliation`,
       {
         type: sequelize.QueryTypes.SELECT,
       }
