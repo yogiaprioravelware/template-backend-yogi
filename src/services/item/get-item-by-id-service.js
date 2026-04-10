@@ -1,4 +1,5 @@
 const Item = require("../../models/Item");
+const Location = require("../../models/Location");
 const logger = require("../../utils/logger");
 
 // Service untuk mengambil item berdasarkan ID
@@ -15,6 +16,12 @@ const getItemById = async (id) => {
       "current_stock",
       "created_at",
       "updated_at",
+    ],
+    include: [
+      {
+        model: Location,
+        as: "locations",
+      },
     ],
   });
   if (!item) {

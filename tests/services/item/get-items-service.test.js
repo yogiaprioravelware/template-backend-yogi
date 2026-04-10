@@ -16,6 +16,8 @@ describe('Service: get-items-service', () => {
     const result = await getItems();
 
     expect(result).toEqual(mockItems);
-    expect(Item.findAll).toHaveBeenCalled();
+    expect(Item.findAll).toHaveBeenCalledWith(expect.objectContaining({
+      include: expect.any(Array)
+    }));
   });
 });

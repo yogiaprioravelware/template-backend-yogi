@@ -3,6 +3,7 @@ const Location = require("../../models/Location");
 const Inbound = require("../../models/Inbound");
 const InboundItem = require("../../models/InboundItem");
 const InboundReceivingLog = require("../../models/InboundReceivingLog");
+const InventoryMovement = require("../../models/InventoryMovement");
 const { errorResponse } = require("../../utils/response");
 const logger = require("../../utils/logger");
 
@@ -82,6 +83,35 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       item.current_stock += 1;
       await item.save();
       logger.info(`Item stock for SKU ${item.sku_code} updated to ${item.current_stock}`);
+      
+      const ItemLocation = require("../../models/ItemLocation");
+      let itemLoc = await ItemLocation.findOne({
+        where: { item_id: item.id, location_id: location.id }
+      });
+
+      if (!itemLoc) {
+        itemLoc = await ItemLocation.create({
+          item_id: item.id,
+          location_id: location.id,
+          stock: 1
+        });
+      } else {
+        itemLoc.stock += 1;
+        await itemLoc.save();
+      }
+      logger.info(`Item location stock updated to ${itemLoc.stock} for item ${item.id} at location ${location.id}`);
+
+      // Log movement to Inventory Movement ledger
+      await InventoryMovement.create({
+        item_id: item.id,
+        location_id: location.id,
+        type: "INBOUND",
+        qty_change: 1, // Always +1 in inbound receiving per scan
+        balance_after: itemLoc.stock,
+        reference_id: inbound.po_number,
+        operator_name: "SYSTEM", // Will enhance with user_id context later
+      });
+      logger.info(`Inventory Movement logged for INBOUND ${inbound.po_number}`);
     }
 
     // Check if all inbound_items are complete

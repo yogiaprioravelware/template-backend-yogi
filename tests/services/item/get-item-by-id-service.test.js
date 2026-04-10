@@ -21,5 +21,8 @@ describe('Service: get-item-by-id-service', () => {
     const result = await getItemById(1);
 
     expect(result).toEqual(mockItem);
+    expect(Item.findByPk).toHaveBeenCalledWith(1, expect.objectContaining({
+      include: expect.any(Array)
+    }));
   });
 });

@@ -1,6 +1,8 @@
 const Outbound = require("../../models/Outbound");
 const OutboundItem = require("../../models/OutboundItem");
 const Item = require("../../models/Item");
+const ItemLocation = require("../../models/ItemLocation");
+const InventoryMovement = require("../../models/InventoryMovement");
 const { scanRfidSchema } = require("../../validations/outbound-validation");
 const logger = require("../../utils/logger");
 
@@ -72,10 +74,41 @@ const scanRfidPicking = async (outboundId, rfidData) => {
   await outboundItem.save();
   logger.info(`Updated qty_delivered for SKU ${outboundItem.sku_code} to ${outboundItem.qty_delivered}`);
 
-  // Update current_stock di items (kurangi untuk semua tipe: LUNAS, PINJAM, RETURN)
+  // Cari letak location spesifik tempat item ini dikurangi
+  // Kita harus memprioritaskan inventory mana yang dikurangi, misalkan ambil satu record itemLocation untuk item_id
+  const itemLoc = await ItemLocation.findOne({
+    where: { item_id: scannedItem.id },
+    order: [['stock', 'DESC']] // Ambil lokasi dengan stok terbanyak untuk picking default kali ini (karena picking via RFID tak menentukan lokasi di request api saat ini)
+  });
+
+  let balanceAfterLoc = 0;
+  let usedLocationId = null;
+
+  if (itemLoc) {
+    if (itemLoc.stock > 0) {
+      itemLoc.stock -= 1;
+      balanceAfterLoc = itemLoc.stock;
+      usedLocationId = itemLoc.location_id;
+      await itemLoc.save();
+    }
+  }
+
   scannedItem.current_stock -= 1;
   await scannedItem.save();
-  logger.info(`Decremented stock for SKU ${scannedItem.sku_code}. New stock: ${scannedItem.current_stock}`);
+  logger.info(`Decremented stock for SKU ${scannedItem.sku_code}. New total stock: ${scannedItem.current_stock}`);
+
+  if (usedLocationId) {
+    await InventoryMovement.create({
+      item_id: scannedItem.id,
+      location_id: usedLocationId,
+      type: "OUTBOUND",
+      qty_change: -1,
+      balance_after: balanceAfterLoc,
+      reference_id: outbound.order_number,
+      operator_name: "SYSTEM",
+    });
+    logger.info(`Inventory Movement logged for OUTBOUND ${outbound.order_number} at location ${usedLocationId}`);
+  }
 
   // Check semua outbound items sudah complete atau belum
   const allOutboundItems = await OutboundItem.findAll({

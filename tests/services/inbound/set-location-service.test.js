@@ -6,8 +6,36 @@ const InboundReceivingLog = require('../../../src/models/InboundReceivingLog');
 const Item = require('../../../src/models/Item');
 const InboundItem = require('../../../src/models/InboundItem');
 
-jest.mock('../../../src/models/Item');
-jest.mock('../../../src/models/Location');
+jest.mock('../../../src/models/Item', () => {
+  const SequelizeModel = class {};
+  SequelizeModel.findOne = jest.fn();
+  SequelizeModel.findByPk = jest.fn();
+  SequelizeModel.findAll = jest.fn();
+  SequelizeModel.create = jest.fn();
+  SequelizeModel.update = jest.fn();
+  SequelizeModel.destroy = jest.fn();
+  SequelizeModel.hasMany = jest.fn();
+  SequelizeModel.belongsToMany = jest.fn();
+  return SequelizeModel;
+});
+jest.mock('../../../src/models/ItemLocation', () => {
+  const SequelizeModel = class {};
+  SequelizeModel.findOne = jest.fn();
+  SequelizeModel.create = jest.fn();
+  return SequelizeModel;
+});
+jest.mock('../../../src/models/Location', () => {
+  const SequelizeModel = class {};
+  SequelizeModel.findOne = jest.fn();
+  return SequelizeModel;
+});
+jest.mock('../../../src/models/InventoryMovement', () => {
+  const SequelizeModel = class {};
+  SequelizeModel.create = jest.fn();
+  SequelizeModel.belongsTo = jest.fn();
+  return SequelizeModel;
+});
+
 jest.mock('../../../src/models/Inbound');
 jest.mock('../../../src/models/InboundItem');
 jest.mock('../../../src/models/InboundReceivingLog');
@@ -64,7 +92,13 @@ describe('Service: set-location-service', () => {
     InboundItem.findOne.mockResolvedValue(mockInboundItem);
     InboundReceivingLog.create.mockResolvedValue({});
     
-    Item.findOne.mockResolvedValue({ sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    Item.findOne.mockResolvedValue({ id: 100, sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    
+    const ItemLocation = require('../../../src/models/ItemLocation');
+    ItemLocation.findOne.mockResolvedValue({ stock: 5, save: jest.fn() });
+    
+    const InventoryMovement = require('../../../src/models/InventoryMovement');
+    InventoryMovement.create.mockResolvedValue({});
     
     // Simulate all items to see if it becomes PROCES (not all complete)
     InboundItem.findAll.mockResolvedValue([
@@ -85,7 +119,14 @@ describe('Service: set-location-service', () => {
     InboundItem.findOne.mockResolvedValue(mockInboundItem);
     InboundReceivingLog.create.mockResolvedValue({});
     
-    Item.findOne.mockResolvedValue({ sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    Item.findOne.mockResolvedValue({ id: 100, sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    
+    const ItemLocation = require('../../../src/models/ItemLocation');
+    ItemLocation.findOne.mockResolvedValue(null);
+    ItemLocation.create.mockResolvedValue({ stock: 1, save: jest.fn() });
+    
+    const InventoryMovement = require('../../../src/models/InventoryMovement');
+    InventoryMovement.create.mockResolvedValue({});
     
     // Simulate all items to see if it becomes DONE
     InboundItem.findAll.mockResolvedValue([

@@ -14,12 +14,18 @@ const getInbounds = async () => {
   // Tambah info jumlah items per inbound
   const result = await Promise.all(
     inbounds.map(async (inbound) => {
-      const itemCount = await InboundItem.count({
-        where: { inbound_id: inbound.id },
-      });
+      const [itemCount, totalTarget, totalReceived] = await Promise.all([
+        InboundItem.count({ where: { inbound_id: inbound.id } }),
+        InboundItem.sum('qty_target', { where: { inbound_id: inbound.id } }),
+        InboundItem.sum('qty_received', { where: { inbound_id: inbound.id } })
+      ]);
+      
       return {
         ...inbound.dataValues,
         item_count: itemCount,
+        total_qty_target: totalTarget || 0,
+        total_qty_received: totalReceived || 0,
+        progress_percentage: totalTarget > 0 ? Math.round((totalReceived / totalTarget) * 100) : 0
       };
     })
   );

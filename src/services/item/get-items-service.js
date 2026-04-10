@@ -1,4 +1,5 @@
 const Item = require("../../models/Item");
+const Location = require("../../models/Location");
 const logger = require("../../utils/logger");
 
 // Service untuk mengambil semua item
@@ -15,6 +16,12 @@ const getItems = async () => {
       "current_stock",
       "created_at",
       "updated_at",
+    ],
+    include: [
+      {
+        model: Location,
+        as: "locations",
+      },
     ],
     order: [["created_at", "DESC"]],
   });

@@ -79,4 +79,36 @@ describe('Controller: item', () => {
     await itemController.deleteItem(req, res, next);
     expect(next).toHaveBeenCalled();
   });
+
+  it('setStockOpname should return success', async () => {
+    req.user = { username: 'testuser' };
+    itemService.setStockOpname.mockResolvedValue({});
+    await itemController.setStockOpname(req, res, next);
+    expect(res.json).toHaveBeenCalled();
+  });
+
+  it('setStockOpname should work without user', async () => {
+    req.user = undefined;
+    itemService.setStockOpname.mockResolvedValue({});
+    await itemController.setStockOpname(req, res, next);
+    expect(res.json).toHaveBeenCalled();
+  });
+
+  it('setStockOpname should catch error', async () => {
+    itemService.setStockOpname.mockRejectedValue(new Error('error'));
+    await itemController.setStockOpname(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+
+  it('getItemHistory should return success', async () => {
+    itemService.getItemHistory.mockResolvedValue([]);
+    await itemController.getItemHistory(req, res, next);
+    expect(res.json).toHaveBeenCalled();
+  });
+
+  it('getItemHistory should catch error', async () => {
+    itemService.getItemHistory.mockRejectedValue(new Error('error'));
+    await itemController.getItemHistory(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
 });

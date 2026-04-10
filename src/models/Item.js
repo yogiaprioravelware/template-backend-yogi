@@ -46,10 +46,37 @@ const Item = sequelize.define(
       defaultValue: DataTypes.NOW,
     },
   },
+
   {
     tableName: "items",
     timestamps: false,
   }
 );
+
+const Location = require("./Location");
+const ItemLocation = require("./ItemLocation");
+const InventoryMovement = require("./InventoryMovement");
+
+Item.belongsToMany(Location, {
+  through: ItemLocation,
+  foreignKey: "item_id",
+  otherKey: "location_id",
+  as: "locations",
+});
+
+Item.hasMany(InventoryMovement, {
+  foreignKey: "item_id",
+  as: "movements",
+});
+
+InventoryMovement.belongsTo(Item, {
+  foreignKey: "item_id",
+  as: "item",
+});
+
+InventoryMovement.belongsTo(Location, {
+  foreignKey: "location_id",
+  as: "location",
+});
 
 module.exports = Item;

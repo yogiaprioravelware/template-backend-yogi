@@ -3,6 +3,8 @@ const getItems = require("./get-items-service");
 const getItemById = require("./get-item-by-id-service");
 const updateItem = require("./update-item-service");
 const deleteItem = require("./delete-item-service");
+const setStockOpname = require("./set-stock-opname-service");
+const getItemHistory = require("./get-item-history-service");
 
 module.exports = {
   registerItem,
@@ -10,4 +12,6 @@ module.exports = {
   getItemById,
   updateItem,
   deleteItem,
+  setStockOpname,
+  getItemHistory,
 };

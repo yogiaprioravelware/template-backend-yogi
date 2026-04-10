@@ -18,11 +18,17 @@ describe('Service: get-inbounds-service', () => {
     ]);
     // PO1 has 5 items, PO2 has 0
     InboundItem.count.mockResolvedValueOnce(5).mockResolvedValueOnce(0);
+    InboundItem.sum.mockResolvedValueOnce(10).mockResolvedValueOnce(2) // PO1: target 10, received 2
+                  .mockResolvedValueOnce(0).mockResolvedValueOnce(0); // PO2: target 0, received 0
 
     const result = await getInbounds();
 
     expect(result).toHaveLength(2);
     expect(result[0].item_count).toBe(5);
+    expect(result[0].total_qty_target).toBe(10);
+    expect(result[0].total_qty_received).toBe(2);
+    expect(result[0].progress_percentage).toBe(20);
     expect(result[1].item_count).toBe(0);
+    expect(result[1].progress_percentage).toBe(0);
   });
 });

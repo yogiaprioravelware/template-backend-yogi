@@ -13,12 +13,18 @@ const getOutbounds = async () => {
   // Tambah info jumlah items per outbound
   const result = await Promise.all(
     outbounds.map(async (outbound) => {
-      const itemCount = await OutboundItem.count({
-        where: { outbound_id: outbound.id },
-      });
+      const [itemCount, totalTarget, totalDelivered] = await Promise.all([
+        OutboundItem.count({ where: { outbound_id: outbound.id } }),
+        OutboundItem.sum('qty_target', { where: { outbound_id: outbound.id } }),
+        OutboundItem.sum('qty_delivered', { where: { outbound_id: outbound.id } })
+      ]);
+
       return {
         ...outbound.dataValues,
         item_count: itemCount,
+        total_qty_target: totalTarget || 0,
+        total_qty_delivered: totalDelivered || 0,
+        progress_percentage: totalTarget > 0 ? Math.round((totalDelivered / totalTarget) * 100) : 0
       };
     })
   );

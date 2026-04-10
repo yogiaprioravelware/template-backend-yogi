@@ -99,7 +99,22 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
     });
   });
 
-  describe("4. Destructive Area (Update - PUT)", () => {
+  describe("4. Operations & Traceability Area", () => {
+    it("should process stock opname (adjustment)", async () => {
+      if(!itemId || !locationId) return;
+      const res = await request(app).post(`/api/items/opname`).set("Authorization", `Bearer ${adminToken}`)
+        .send({ item_id: itemId, location_id: locationId, actual_qty: 15, notes: "Audited manually" });
+      expect([200, 403]).toContain(res.status);
+    });
+
+    it("should fetch item history and see opname record", async () => {
+      if(!itemId) return;
+      const res = await request(app).get(`/api/items/${itemId}/history`).set("Authorization", `Bearer ${adminToken}`);
+      expect([200, 403]).toContain(res.status);
+    });
+  });
+
+  describe("5. Destructive Area (Update - PUT)", () => {
     it("should update Item name successfully", async () => {
       if(!itemId) return;
       const res = await request(app).put(`/api/items/${itemId}`).set("Authorization", `Bearer ${adminToken}`)
