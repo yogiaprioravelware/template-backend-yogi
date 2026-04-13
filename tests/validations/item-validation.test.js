@@ -9,7 +9,8 @@ describe('Validation: item-validation', () => {
         sku_code: 'SKU123',
         category: 'Electronics',
         uom: 'PCS',
-        current_stock: 10
+        current_stock: 10,
+        location_id: 1
       };
       const { error } = registerItemSchema.validate(data);
       expect(error).toBeUndefined();

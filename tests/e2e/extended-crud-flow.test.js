@@ -62,7 +62,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
   describe("2. Setup Mock Item & Location", () => {
     it("should create item for test", async () => {
       const res = await request(app).post("/api/items").set("Authorization", `Bearer ${adminToken}`)
-        .send({ rfid_tag: rfid, item_name: "Original Name", sku_code: sku, category: "TEST", uom: "PCS", current_stock: 0 });
+        .send({ rfid_tag: rfid, item_name: "Original Name", sku_code: sku, category: "TEST", uom: "PCS", current_stock: 0, location_id: 1 });
       expect([201, 400, 403]).toContain(res.status);
       if(res.body && res.body.data) itemId = res.body.data.id;
     });

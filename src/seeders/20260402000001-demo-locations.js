@@ -2,6 +2,17 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert("locations", [
       {
+        location_code: "RECEIVING-01",
+        qr_string: "QR-RECEIVING-DOCK-01",
+        warehouse: "Main Warehouse",
+        rack: "Receiving",
+        bin: "Dock 1",
+        location_name: "Area Penerimaan (Receiving Area)",
+        status: "ACTIVE",
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
         location_code: "LOC-001",
         qr_string: "QR-GDG-A-RAK-1-BIN-1",
         warehouse: "Gudang A",

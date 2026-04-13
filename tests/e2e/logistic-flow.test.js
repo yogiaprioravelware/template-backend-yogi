@@ -25,7 +25,7 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
     await request(app)
       .post("/api/items")
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ rfid_tag: testRfid, item_name: "Logistic Item", sku_code: testSku, category: "TEST", uom: "PCS", current_stock: 0 });
+      .send({ rfid_tag: testRfid, item_name: "Logistic Item", sku_code: testSku, category: "TEST", uom: "PCS", current_stock: 0, location_id: 1 });
 
     await request(app)
       .post("/api/locations")

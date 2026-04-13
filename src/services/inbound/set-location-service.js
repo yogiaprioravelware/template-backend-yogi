@@ -83,7 +83,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       item.current_stock += 1;
       await item.save();
       logger.info(`Item stock for SKU ${item.sku_code} updated to ${item.current_stock}`);
-      
+
       const ItemLocation = require("../../models/ItemLocation");
       let itemLoc = await ItemLocation.findOne({
         where: { item_id: item.id, location_id: location.id }

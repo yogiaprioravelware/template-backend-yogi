@@ -235,7 +235,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rfid_tag\": \"P-RFID-{{$randomInt}}\",\n  \"item_name\": \"Postman Item {{$randomInt}}\",\n  \"sku_code\": \"P-SKU-{{$randomInt}}\",\n  \"category\": \"ATK\",\n  \"uom\": \"PCS\",\n  \"current_stock\": 0\n}",
+              "raw": "{\n  \"rfid_tag\": \"P-RFID-{{$randomInt}}\",\n  \"item_name\": \"Postman Item {{$randomInt}}\",\n  \"sku_code\": \"P-SKU-{{$randomInt}}\",\n  \"category\": \"ATK\",\n  \"uom\": \"PCS\",\n  \"current_stock\": 0,\n  \"location_id\": null\n}",
               "options": {
                 "raw": {
                   "language": "json"

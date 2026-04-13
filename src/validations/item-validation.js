@@ -7,6 +7,7 @@ const registerItemSchema = Joi.object({
   category: Joi.string().required(),
   uom: Joi.string().valid("PCS", "BOX", "SET").required(),
   current_stock: Joi.number().integer().min(0).required(),
+  location_id: Joi.number().integer().allow(null).optional(), // If null, system will try to use Receiving Area
 });
 
 const updateItemSchema = Joi.object({

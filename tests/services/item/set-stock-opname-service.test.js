@@ -23,6 +23,7 @@ jest.mock('../../../src/models/ItemLocation', () => {
   const SequelizeModel = class {};
   SequelizeModel.findOne = jest.fn();
   SequelizeModel.create = jest.fn();
+  SequelizeModel.sum = jest.fn();
   return SequelizeModel;
 });
 jest.mock('../../../src/models/InventoryMovement', () => {
@@ -69,6 +70,7 @@ describe('Service: set-stock-opname-service', () => {
     Location.findByPk.mockResolvedValue({ id: 2 });
     const mockItemLoc = { stock: 10, save: jest.fn() };
     ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+    ItemLocation.sum.mockResolvedValue(10);
 
     const result = await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1');
     expect(result.deviation).toBe(0);
@@ -86,6 +88,7 @@ describe('Service: set-stock-opname-service', () => {
     Item.findByPk.mockResolvedValue(mockItem);
     Location.findByPk.mockResolvedValue({ id: 2 });
     ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+    ItemLocation.sum.mockResolvedValue(15);
     InventoryMovement.create.mockResolvedValue({});
 
     const result = await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 15, notes: 'Found 5 more' }, 'user1');
@@ -112,6 +115,7 @@ describe('Service: set-stock-opname-service', () => {
     Location.findByPk.mockResolvedValue({ id: 2 });
     ItemLocation.findOne.mockResolvedValue(null);
     ItemLocation.create.mockResolvedValue(mockCreatedItemLoc);
+    ItemLocation.sum.mockResolvedValue(8);
     InventoryMovement.create.mockResolvedValue({});
 
     const result = await setStockOpname({ item_id: 1, location_id: 2, actual_qty: -2 }, null); // user null

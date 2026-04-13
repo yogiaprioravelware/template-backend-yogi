@@ -36,6 +36,7 @@ describe("E2E Master Data Flow (Item & Location)", () => {
           category: "Logistics",
           uom: "PCS",
           current_stock: 0,
+          location_id: 1,
         });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);

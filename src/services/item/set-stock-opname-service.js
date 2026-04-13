@@ -50,8 +50,13 @@ const setStockOpname = async (payload, userId) => {
     itemLocation.stock = actual_qty;
     await itemLocation.save({ transaction });
 
-    // Update global item stock (difference)
-    item.current_stock = item.current_stock + qtyChange;
+    // Update global item stock (Always Recalculate from all locations to avoid desync)
+    const totalStock = await ItemLocation.sum('stock', { 
+      where: { item_id },
+      transaction 
+    });
+    
+    item.current_stock = totalStock;
     await item.save({ transaction });
 
     // Create Inventory Movement Log
