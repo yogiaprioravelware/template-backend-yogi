@@ -17,7 +17,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
     throw err;
   }
 
-  const { rfid_tag } = rfidData;
+  const { rfid_tag, location_qr } = rfidData;
 
   // Check outbound ada atau tidak
   const outbound = await Outbound.findByPk(outboundId);
@@ -32,6 +32,16 @@ const scanRfidPicking = async (outboundId, rfidData) => {
   if (outbound.status === "DONE") {
     logger.warn(`Picking failed: Outbound ${outboundId} is already DONE`);
     const err = new Error("Outbound sudah DONE, tidak bisa picking barang lagi");
+    err.status = 400;
+    throw err;
+  }
+
+  // Cari lokasi berdasarkan QR
+  const location = require("../../models/Location");
+  const loc = await location.findOne({ where: { qr_string: location_qr } });
+  if (!loc || loc.status !== "ACTIVE") {
+    logger.warn(`Picking failed: Location with QR ${location_qr} not found or inactive`);
+    const err = new Error("Lokasi tidak ditemukan atau tidak aktif");
     err.status = 400;
     throw err;
   }
@@ -69,46 +79,47 @@ const scanRfidPicking = async (outboundId, rfidData) => {
     throw err;
   }
 
+  // Cari letak location spesifik tempat item ini dikurangi
+  const itemLoc = await ItemLocation.findOne({
+    where: { item_id: scannedItem.id, location_id: loc.id }
+  });
+
+  if (!itemLoc || itemLoc.stock <= 0) {
+    logger.warn(`Item ${scannedItem.sku_code} stock is empty in location ${loc.location_code}`);
+    const err = new Error(`Stok di lokasi ${loc.location_code} kosong atau tidak ada untuk barang ini`);
+    err.status = 400;
+    throw err;
+  }
+
   // Update qty_delivered di outbound_items
   outboundItem.qty_delivered += 1;
   await outboundItem.save();
   logger.info(`Updated qty_delivered for SKU ${outboundItem.sku_code} to ${outboundItem.qty_delivered}`);
 
-  // Cari letak location spesifik tempat item ini dikurangi
-  // Kita harus memprioritaskan inventory mana yang dikurangi, misalkan ambil satu record itemLocation untuk item_id
-  const itemLoc = await ItemLocation.findOne({
-    where: { item_id: scannedItem.id },
-    order: [['stock', 'DESC']] // Ambil lokasi dengan stok terbanyak untuk picking default kali ini (karena picking via RFID tak menentukan lokasi di request api saat ini)
-  });
-
-  let balanceAfterLoc = 0;
-  let usedLocationId = null;
-
-  if (itemLoc) {
-    if (itemLoc.stock > 0) {
-      itemLoc.stock -= 1;
-      balanceAfterLoc = itemLoc.stock;
-      usedLocationId = itemLoc.location_id;
-      await itemLoc.save();
-    }
+  itemLoc.stock -= 1;
+  const balanceAfterLoc = itemLoc.stock;
+  
+  if (itemLoc.stock === 0) {
+    await itemLoc.destroy();
+    logger.info(`Location ${loc.location_code} emptied during picking and record removed for SKU ${scannedItem.sku_code}`);
+  } else {
+    await itemLoc.save();
   }
 
   scannedItem.current_stock -= 1;
   await scannedItem.save();
   logger.info(`Decremented stock for SKU ${scannedItem.sku_code}. New total stock: ${scannedItem.current_stock}`);
 
-  if (usedLocationId) {
-    await InventoryMovement.create({
-      item_id: scannedItem.id,
-      location_id: usedLocationId,
-      type: "OUTBOUND",
-      qty_change: -1,
-      balance_after: balanceAfterLoc,
-      reference_id: outbound.order_number,
-      operator_name: "SYSTEM",
-    });
-    logger.info(`Inventory Movement logged for OUTBOUND ${outbound.order_number} at location ${usedLocationId}`);
-  }
+  await InventoryMovement.create({
+    item_id: scannedItem.id,
+    location_id: loc.id,
+    type: "OUTBOUND",
+    qty_change: -1,
+    balance_after: balanceAfterLoc,
+    reference_id: outbound.order_number,
+    operator_name: "SYSTEM",
+  });
+  logger.info(`Inventory Movement logged for OUTBOUND ${outbound.order_number} at location ${loc.id}`);
 
   // Check semua outbound items sudah complete atau belum
   const allOutboundItems = await OutboundItem.findAll({

@@ -19,8 +19,8 @@ describe('Validation: outbound-validation', () => {
   });
 
   describe('scanRfidSchema', () => {
-    it('should validate rfid_tag', () => {
-      const { error } = scanRfidSchema.validate({ rfid_tag: 'TAG123' });
+    it('should validate rfid_tag and location_qr', () => {
+      const { error } = scanRfidSchema.validate({ rfid_tag: 'TAG123', location_qr: 'QR123' });
       expect(error).toBeUndefined();
     });
   });

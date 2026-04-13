@@ -16,6 +16,7 @@ const createOutboundSchema = Joi.object({
 
 const scanRfidSchema = Joi.object({
   rfid_tag: Joi.string().required(),
+  location_qr: Joi.string().required(), // Now mandatory for location-aware picking
 });
 
 module.exports = {
