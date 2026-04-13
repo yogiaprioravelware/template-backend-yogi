@@ -2,7 +2,7 @@ const itemService = require("../services/item");
 const response = require("../utils/response");
 const logger = require("../utils/logger");
 
-// Registrasi item baru dengan scan RFID
+
 const registerItem = async (req, res, next) => {
   logger.info("Registering a new item");
   try {
@@ -13,7 +13,7 @@ const registerItem = async (req, res, next) => {
   }
 };
 
-// Mengambil semua item
+
 const getItems = async (req, res, next) => {
   logger.info("Fetching all items");
   try {
@@ -24,7 +24,7 @@ const getItems = async (req, res, next) => {
   }
 };
 
-// Mengambil item berdasarkan ID
+
 const getItemById = async (req, res, next) => {
   logger.info(`Fetching item with id: ${req.params.id}`);
   try {
@@ -35,7 +35,7 @@ const getItemById = async (req, res, next) => {
   }
 };
 
-// Memperbarui data item
+
 const updateItem = async (req, res, next) => {
   logger.info(`Updating item with id: ${req.params.id}`);
   try {
@@ -46,7 +46,7 @@ const updateItem = async (req, res, next) => {
   }
 };
 
-// Menghapus item
+
 const deleteItem = async (req, res, next) => {
   logger.info(`Deleting item with id: ${req.params.id}`);
   try {
@@ -57,7 +57,7 @@ const deleteItem = async (req, res, next) => {
   }
 };
 
-// Melakukan Stock Opname
+
 const setStockOpname = async (req, res, next) => {
   logger.info("Performing Stock Opname");
   try {
@@ -69,7 +69,7 @@ const setStockOpname = async (req, res, next) => {
   }
 };
 
-// Mengambil histori pergerakan item
+
 const getItemHistory = async (req, res, next) => {
   logger.info(`Fetching history for item id: ${req.params.id}`);
   try {
@@ -80,7 +80,7 @@ const getItemHistory = async (req, res, next) => {
   }
 };
 
-// Mengambil laporan rekonsiliasi stok
+
 const getReconciliation = async (req, res, next) => {
   logger.info("Fetching stock reconciliation report");
   try {

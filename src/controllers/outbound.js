@@ -2,7 +2,7 @@ const outboundService = require("../services/outbound");
 const response = require("../utils/response");
 const logger = require("../utils/logger");
 
-// Membuat order outbound baru
+
 const createOutbound = async (req, res, next) => {
   logger.info("Creating a new outbound order");
   try {
@@ -13,7 +13,7 @@ const createOutbound = async (req, res, next) => {
   }
 };
 
-// Mengambil semua outbound
+
 const getOutbounds = async (req, res, next) => {
   logger.info("Fetching all outbounds");
   try {
@@ -24,7 +24,7 @@ const getOutbounds = async (req, res, next) => {
   }
 };
 
-// Mengambil detail outbound dengan items
+
 const getOutboundDetail = async (req, res, next) => {
   logger.info(`Fetching outbound detail for id: ${req.params.id}`);
   try {
@@ -35,7 +35,7 @@ const getOutboundDetail = async (req, res, next) => {
   }
 };
 
-// Scan RFID dan process picking
+
 const scanRfidPicking = async (req, res, next) => {
   logger.info(`Scanning RFID for picking in outbound: ${req.params.outboundId}`);
   try {

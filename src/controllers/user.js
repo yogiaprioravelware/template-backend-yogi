@@ -3,7 +3,7 @@ const userService = require("../services/user");
 const response = require("../utils/response");
 const logger = require("../utils/logger");
 
-// Registrasi pengguna baru
+
 const registerUser = async (req, res, next) => {
   logger.info("Registering a new user");
   try {
@@ -14,7 +14,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// Login pengguna
+
 const loginUser = async (req, res, next) => {
   logger.info("User login attempt");
   try {
@@ -25,7 +25,7 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// Mengambil semua data pengguna
+
 const getUsers = async (req, res, next) => {
   logger.info("Fetching all users");
   try {
@@ -36,7 +36,7 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-// Mengambil data pengguna berdasarkan ID
+
 const getUserById = async (req, res, next) => {
   logger.info(`Fetching user with id: ${req.params.id}`);
   try {
@@ -47,7 +47,7 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-// Memperbarui data pengguna
+
 const updateUser = async (req, res, next) => {
   logger.info(`Updating user with id: ${req.params.id}`);
   try {
@@ -58,7 +58,7 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// Menghapus pengguna
+
 const deleteUser = async (req, res, next) => {
   logger.info(`Deleting user with id: ${req.params.id}`);
   try {
@@ -69,7 +69,7 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-// Mengubah role pengguna
+
 const assignRole = async (req, res, next) => {
   logger.info(`Assigning role to user with id: ${req.params.id}`);
   try {

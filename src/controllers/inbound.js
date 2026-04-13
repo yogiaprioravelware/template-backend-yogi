@@ -6,7 +6,7 @@ const {
   setLocationSchema,
 } = require("../validations/inbound-validation");
 
-// Membuat PO inbound baru
+
 const createInbound = async (req, res, next) => {
   logger.info("Creating a new inbound PO");
   try {
@@ -17,7 +17,7 @@ const createInbound = async (req, res, next) => {
   }
 };
 
-// Mengambil semua inbound
+
 const getInbounds = async (req, res, next) => {
   logger.info("Fetching all inbounds");
   try {
@@ -28,7 +28,7 @@ const getInbounds = async (req, res, next) => {
   }
 };
 
-// Mengambil detail inbound dengan items
+
 const getInboundDetail = async (req, res, next) => {
   logger.info(`Fetching inbound detail for id: ${req.params.id}`);
   try {
@@ -39,7 +39,7 @@ const getInboundDetail = async (req, res, next) => {
   }
 };
 
-// Stage 1: Scan RFID untuk identifikasi item
+
 const scanItem = async (req, res, next) => {
   logger.info(`Scanning item for inbound: ${req.params.inboundId}`);
   try {
@@ -65,7 +65,7 @@ const scanItem = async (req, res, next) => {
   }
 };
 
-// Stage 2: Scan QR code untuk set lokasi penerimaan
+
 const setLocation = async (req, res, next) => {
   logger.info(`Setting location for inbound: ${req.params.inboundId}`);
   try {

@@ -4,7 +4,7 @@ const Item = require("../../models/Item");
 const { createInboundSchema } = require("../../validations/inbound-validation");
 const logger = require("../../utils/logger");
 
-// Service untuk membuat PO inbound baru
+
 const createInbound = async (inboundData) => {
   logger.info("Attempting to create a new inbound PO");
   const { error } = createInboundSchema.validate(inboundData);
@@ -17,7 +17,7 @@ const createInbound = async (inboundData) => {
 
   const { po_number, items } = inboundData;
 
-  // Check PO number sudah ada atau tidak
+
   const existingPo = await Inbound.findOne({ where: { po_number } });
   if (existingPo) {
     logger.warn(`Creation failed: PO number ${po_number} already exists`);

@@ -6,7 +6,7 @@ const {
   updateLocationSchema,
 } = require("../validations/location-validation");
 
-// Create location
+
 const createLocation = async (req, res, next) => {
   logger.info("Attempting to create a new location");
   try {
@@ -20,10 +20,9 @@ const createLocation = async (req, res, next) => {
       );
     }
 
-    const { location_code, qr_string, warehouse, rack, bin, location_name } =
+     const { location_code, qr_string, warehouse, rack, bin, location_name } =
       value;
 
-    // Check if location_code already exists
     const existingByCode = await Location.findOne({
       where: { location_code },
     });
@@ -36,7 +35,6 @@ const createLocation = async (req, res, next) => {
       );
     }
 
-    // Check if qr_string already exists
     const existingByQr = await Location.findOne({
       where: { qr_string },
     });
@@ -81,7 +79,7 @@ const createLocation = async (req, res, next) => {
   }
 };
 
-// Get all locations
+
 const getLocations = async (req, res, next) => {
   logger.info("Fetching all locations");
   try {
@@ -111,7 +109,7 @@ const getLocations = async (req, res, next) => {
   }
 };
 
-// Get location by ID
+
 const getLocationById = async (req, res, next) => {
   logger.info(`Fetching location with ID: ${req.params.id}`);
   try {
@@ -145,7 +143,7 @@ const getLocationById = async (req, res, next) => {
   }
 };
 
-// Update location
+
 const updateLocation = async (req, res, next) => {
   logger.info(`Attempting to update location with ID: ${req.params.id}`);
   try {
@@ -171,7 +169,6 @@ const updateLocation = async (req, res, next) => {
 
     const { location_code, qr_string, warehouse, rack, bin, location_name, status } = value;
 
-    // Check uniqueness if updating location_code
     if (location_code && location_code !== location.location_code) {
       const existing = await Location.findOne({
         where: { location_code },
@@ -185,7 +182,6 @@ const updateLocation = async (req, res, next) => {
       }
     }
 
-    // Check uniqueness if updating qr_string
     if (qr_string && qr_string !== location.qr_string) {
       const existing = await Location.findOne({
         where: { qr_string },
@@ -231,7 +227,7 @@ const updateLocation = async (req, res, next) => {
   }
 };
 
-// Delete location
+
 const deleteLocation = async (req, res, next) => {
   logger.info(`Attempting to delete location with ID: ${req.params.id}`);
   try {

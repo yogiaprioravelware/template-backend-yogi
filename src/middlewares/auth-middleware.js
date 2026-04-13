@@ -20,7 +20,6 @@ const authMiddleware = (req, res, next) => {
     };
     next();
   } catch (error) {
-    console.error("JWT Verification Error:", error.message);
     return res.status(401).json(response.error("Authentication invalid"));
   }
 };

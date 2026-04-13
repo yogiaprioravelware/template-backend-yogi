@@ -2,13 +2,11 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Ambil ID inbounds secara dinamis
     const [inboundRows] = await queryInterface.sequelize.query(
       `SELECT id, po_number from ${queryInterface.queryGenerator.quoteTable("inbounds")};`
     );
 
     if (inboundRows.length > 0) {
-      // Mapping PO Number ke ID untuk mempermudah seed
       const poMap = {};
       inboundRows.forEach(row => {
         poMap[row.po_number || row.PO_NUMBER] = row.id || row.ID;

@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Ambil ID dari items dan locations yang sudah ada karena bersifat dinamis
     const items = await queryInterface.sequelize.query(
       `SELECT id from ${queryInterface.queryGenerator.quoteTable("items")};`
     );
@@ -16,28 +15,28 @@ module.exports = {
     if (itemRows.length > 0 && locRows.length > 0) {
       return queryInterface.bulkInsert("item_locations", [
         {
-          item_id: itemRows[0].id, // Laptop
-          location_id: locRows[0].id, // Loc 1
+          item_id: itemRows[0].id, 
+          location_id: locRows[0].id, 
           stock: 30,
         },
         {
-          item_id: itemRows[0].id, // Laptop
-          location_id: locRows[1].id, // Loc 2
+          item_id: itemRows[0].id, 
+          location_id: locRows[1].id, 
           stock: 20,
         },
         {
-          item_id: itemRows[1].id, // Mouse
-          location_id: locRows[2].id, // Loc 3
+          item_id: itemRows[1].id, 
+          location_id: locRows[2].id, 
           stock: 150,
         },
         {
-          item_id: itemRows[2].id, // Keyboard
-          location_id: locRows[0].id, // Loc 1
+          item_id: itemRows[2].id, 
+          location_id: locRows[0].id, 
           stock: 40,
         },
         {
-          item_id: itemRows[2].id, // Keyboard
-          location_id: locRows[3].id, // Loc 4
+          item_id: itemRows[2].id, 
+          location_id: locRows[3].id, 
           stock: 40,
         },
       ]);
