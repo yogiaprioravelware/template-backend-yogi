@@ -11,7 +11,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
 
   const uniqueSuffix = Math.floor(Math.random() * 10000);
   const sku = `EXT-SKU-${uniqueSuffix}`;
-  const rfid = `EXT-RFID-${uniqueSuffix}`;
+  const rfid = `30${uniqueSuffix.toString().padStart(22, 'd')}`;
   const locCode = `EXT-LOC-${uniqueSuffix}`;
 
   beforeAll(async () => {

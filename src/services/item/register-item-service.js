@@ -4,10 +4,18 @@ const ItemLocation = require("../../models/ItemLocation");
 const sequelize = require("../../utils/database");
 const { registerItemSchema } = require("../../validations/item-validation");
 const logger = require("../../utils/logger");
+const { isValidEPC } = require("../../utils/rfid-validator");
 
 // Service untuk registrasi item baru
 const registerItem = async (itemData) => {
   logger.info("Attempting to register a new item with location support");
+  
+  if (!isValidEPC(itemData.rfid_tag)) {
+    const err = new Error("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
+    err.status = 400;
+    throw err;
+  }
+
   const { error } = registerItemSchema.validate(itemData);
   if (error) {
     logger.warn(`Validation error during item registration: ${error.details[0].message}`);

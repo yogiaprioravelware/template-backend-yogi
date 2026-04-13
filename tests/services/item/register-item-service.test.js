@@ -43,14 +43,14 @@ describe('Service: register-item-service', () => {
   });
 
   it('should throw error if rfid is already registered', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
+    const validData = { rfid_tag: '30342509181408C000000001', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
     Item.findOne.mockResolvedValueOnce({ id: 1 }); // RFID exists
 
     await expect(registerItem(validData)).rejects.toThrow('RFID tag already registered');
   });
 
   it('should throw error if sku is already registered', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
+    const validData = { rfid_tag: '30342509181408C000000001', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
     Item.findOne.mockResolvedValueOnce(null); // RFID clean
     Item.findOne.mockResolvedValueOnce({ id: 2 }); // SKU exists
 
@@ -58,7 +58,7 @@ describe('Service: register-item-service', () => {
   });
 
   it('should register item successfully', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
+    const validData = { rfid_tag: '30342509181408C000000001', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: 1 };
     Item.findOne.mockResolvedValue(null);
     Item.create.mockResolvedValue({ id: 1, dataValues: { id: 1, ...validData } });
     ItemLocation.create.mockResolvedValue({});

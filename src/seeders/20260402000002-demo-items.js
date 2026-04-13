@@ -2,7 +2,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert("items", [
       {
-        rfid_tag: "p",
+        rfid_tag: "30342509181408C000000001",
         item_name: "Laptop Dell Inspiron 15",
         sku_code: "SKU-LAPTOP-001",
         category: "Electronics",
@@ -12,7 +12,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-002",
+        rfid_tag: "30342509181408C000000002",
         item_name: "Mouse Logitech Wireless",
         sku_code: "SKU-MOUSE-001",
         category: "Accessories",
@@ -22,7 +22,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-003",
+        rfid_tag: "30342509181408C000000003",
         item_name: "Keyboard Mechanical RGB",
         sku_code: "SKU-KEYBOARD-001",
         category: "Accessories",
@@ -32,7 +32,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-004",
+        rfid_tag: "30342509181408C000000004",
         item_name: "Monitor LG 24 Inch",
         sku_code: "SKU-MONITOR-001",
         category: "Electronics",
@@ -42,7 +42,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-005",
+        rfid_tag: "30342509181408C000000005",
         item_name: "USB-C Cable 2M",
         sku_code: "SKU-CABLE-001",
         category: "Cables",
@@ -52,7 +52,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-006",
+        rfid_tag: "30342509181408C000000006",
         item_name: "Headphone Sony WH-1000XM4",
         sku_code: "SKU-HEADPHONE-001",
         category: "Audio",
@@ -62,7 +62,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-007",
+        rfid_tag: "30342509181408C000000007",
         item_name: "Power Bank 20000mAh",
         sku_code: "SKU-POWERBANK-001",
         category: "Accessories",
@@ -72,7 +72,7 @@ module.exports = {
         updated_at: new Date(),
       },
       {
-        rfid_tag: "RFID-008",
+        rfid_tag: "30342509181408C000000008",
         item_name: "Smartphone Stand Aluminium",
         sku_code: "SKU-STAND-001",
         category: "Accessories",

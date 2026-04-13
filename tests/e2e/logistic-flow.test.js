@@ -10,7 +10,7 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
   let outboundId = null;
   
   const testSku = `LOG-SKU-${Math.floor(Math.random() * 1000)}`;
-  const testRfid = `LOG-RFID-${Math.floor(Math.random() * 1000)}`;
+  const testRfid = `30${Math.floor(Math.random() * 1e16).toString(16).padStart(22, 'a')}`;
   const qrString = `LOG-QR-${Math.floor(Math.random() * 1000)}`;
 
   beforeAll(async () => {

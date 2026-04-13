@@ -5,7 +5,7 @@ const Item = require("../../src/models/Item");
 describe("E2E Master Data Flow (Item & Location)", () => {
   let adminToken = "";
   const randomSku = `SKU-${Math.floor(Math.random() * 1000)}`;
-  const randomRfid = `RFID-${Math.floor(Math.random() * 1000)}`;
+  const randomRfid = `30${Math.floor(Math.random() * 1e16).toString(16).padStart(22, 'c')}`;
 
   beforeAll(async () => {
     // Login menggunakan Admin E2E yang diseed pada setup.js
