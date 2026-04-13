@@ -12,8 +12,8 @@ Dokumentasi lengkap untuk RFID-based warehouse management system dengan user aut
 
 # 📌 TABLE OF CONTENTS
 
-1. [User Management](#user-management) (7 endpoints)
-2. [Item Management](#item-management) (5 endpoints)
+1. [User Management](#user-management) (6 endpoints)
+2. [Item Management](#item-management) (8 endpoints)
 3. [Inbound (Two-Stage Receiving)](#inbound-two-stage-receiving) (5 endpoints)
 4. [Outbound (Order Dispatch)](#outbound-order-dispatch) (4 endpoints)
 5. [Location Management](#location-management) (5 endpoints)
@@ -233,11 +233,11 @@ Authorization: Bearer <token>
 
 ---
 
-## 7. Assign Role to User
+## 7. Change User Role
 
-**Endpoint**: `PUT /api/users/:id/assign-role`
+**Endpoint**: `PUT /api/users/:id/role`
 
-Mengubah role user (admin/operator).
+Mengubah role user (admin/operator) atau mengaitkan dengan Role ID tertentu.
 
 ### Headers
 ```
@@ -247,7 +247,7 @@ Authorization: Bearer <token>
 ### Request Body
 ```json
 {
-  "role": "admin"
+  "role_id": 1
 }
 ```
 
@@ -257,8 +257,8 @@ Authorization: Bearer <token>
   "success": true,
   "data": {
     "id": 1,
-    "role": "admin",
-    "message": "Role updated successfully"
+    "role_id": 1,
+    "message": "Role assigned successfully"
   }
 }
 ```
@@ -423,6 +423,89 @@ Authorization: Bearer <token>
 {
   "success": true,
   "data": "Item deleted successfully"
+}
+```
+
+---
+
+## 6. Perform Stock Opname
+
+**Endpoint**: `POST /api/items/opname`
+
+Melakukan penyesuaian stok fisik secara manual atau melalui audit berkala. Membutuhkan izin `item:update`.
+
+### Request Body
+```json
+{
+  "rfid_tag": "RFID-001",
+  "location_qr": "QR-GDG-A-RAK-1",
+  "actual_qty": 45,
+  "reference": "STK-OPN-APR26"
+}
+```
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": {
+    "item_id": 1,
+    "old_qty": 50,
+    "new_qty": 45,
+    "adjustment": -5,
+    "message": "Stock Opname completed successfully"
+  }
+}
+```
+
+---
+
+## 7. Get Item Movement History
+
+**Endpoint**: `GET /api/items/:id/history`
+
+Mendapatkan riwayat audit trail pergerakan stok untuk satu item tertentu (dari tabel `inventory_movements`).
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 101,
+      "type": "INBOUND",
+      "qty_change": 20,
+      "balance_after": 20,
+      "location_name": "Gudang A - Rak 1 - Bin 1",
+      "operator": "admin",
+      "created_at": "2026-04-10T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## 8. Get Stock Reconciliation Report
+
+**Endpoint**: `GET /api/items/reconciliation`
+
+Mendapatkan laporan perbandingan stok global sistem vs detail stok per lokasi menggunakan `reconciliation_view`.
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "item_id": 1,
+      "sku_code": "SKU-001",
+      "system_stock": 100,
+      "location_total_stock": 100,
+      "discrepancy": 0,
+      "status": "MATCH"
+    }
+  ]
 }
 ```
 
@@ -1005,18 +1088,12 @@ Authorization: Bearer <token>
 
 ---
 
-# 🔐 ROLE & PERMISSION MANAGEMENT
+# 🔑 ROLE & PERMISSION MANAGEMENT
 
 ## 1. Get All Roles
 
 **Endpoint**: `GET /api/roles`
 
-Mendapatkan daftar semua role yang tersedia untuk dropdown/pemilihan di frontend.
-
-### Headers
-```
-Authorization: Bearer <token>
-```
 
 ### Response Success (200 OK)
 ```json
@@ -1143,6 +1220,6 @@ Token expires after 24 hours.
 
 ---
 
-**Last Updated**: April 2, 2026  
+**Last Updated**: April 13, 2026  
 **API Version**: v1.0  
-**Status**: ✅ Production Ready
+**Status**: ✅ Synced with ACL & Inventory Movement tracking

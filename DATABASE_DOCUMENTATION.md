@@ -12,7 +12,7 @@ Dokumen ini menjelaskan struktur database lengkap, aturan penamaan, dan prosedur
 
 ---
 
-## Skema Tabel (6 Total)
+## Skema Tabel (13 Total)
 
 ### 1. Tabel `users`
 Menyimpan informasi pengguna aplikasi dengan role-based access.
@@ -159,6 +159,93 @@ Audit trail untuk tracking penerimaan barang ke lokasi tertentu (two-stage recei
 
 ---
 
+### 9. Tabel `roles` ⭐ NEW
+Master data peran pengguna untuk sistem ACL.
+
+| Nama Kolom   | Tipe Data      | Nullable | Default             | Unique | Keterangan |
+| :---         | :---           | :---     | :---                | :---   | :--- |
+| `id`         | `SERIAL`       | NO       | -                   | YES    | Primary Key |
+| `name`       | `VARCHAR(50)`  | NO       | -                   | YES    | Nama role (admin, operator, dll) |
+| `description`| `TEXT`         | YES      | -                   | NO     | Penjelasan peran |
+| `created_at` | `TIMESTAMP`    | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu dibuat |
+
+**Migrations**: `20260407104802-create-acl-tables.js`
+
+---
+
+### 10. Tabel `permissions` ⭐ NEW
+Daftar izin akses spesifik per modul dan aksi.
+
+| Nama Kolom   | Tipe Data      | Nullable | Default | Unique | Keterangan |
+| :---         | :---           | :---     | :---    | :---   | :--- |
+| `id`         | `SERIAL`       | NO       | -       | YES    | Primary Key |
+| `name`       | `VARCHAR(100)` | NO       | -       | YES    | identifier (e.g. item:create) |
+| `module`     | `VARCHAR(50)`  | NO       | -       | NO     | Nama modul (item, user, dll) |
+| `action`     | `VARCHAR(50)`  | NO       | -       | NO     | Aksi (create, read, dll) |
+| `description`| `TEXT`         | YES      | -       | NO     | Penjelasan izin |
+
+**Migrations**: `20260407104802-create-acl-tables.js`
+
+---
+
+### 11. Tabel `role_permissions` ⭐ NEW
+Tabel penghubung Many-to-Many antara Role dan Permission.
+
+| Nama Kolom     | Tipe Data | Nullable | Default | Keterangan |
+| :---           | :---      | :---     | :---    | :--- |
+| `id`           | `SERIAL`  | NO       | -       | Primary Key |
+| `role_id`      | `INTEGER` | NO       | -       | FK → roles.id |
+| `permission_id`| `INTEGER` | NO       | -       | FK → permissions.id |
+
+**Foreign Keys**: `role_id` (CASCADE), `permission_id` (CASCADE)  
+**Migrations**: `20260407104802-create-acl-tables.js`
+
+---
+
+### 12. Tabel `item_locations` ⭐ NEW
+Penyimpanan stok item secara spesifik per lokasi (Bin/Rak).
+
+| Nama Kolom    | Tipe Data | Nullable | Default | Keterangan |
+| :---          | :---      | :---     | :---    | :--- |
+| `id`          | `SERIAL`  | NO       | -       | Primary Key |
+| `item_id`     | `INTEGER` | NO       | -       | FK → items.id |
+| `location_id` | `INTEGER` | NO       | -       | FK → locations.id |
+| `stock`       | `INTEGER` | NO       | `0`     | Jumlah stok di lokasi ini |
+| `created_at`  | `TIMESTAMP` | NO     | `NOW()` | Waktu created |
+| `updated_at`  | `TIMESTAMP` | NO     | `NOW()` | Waktu updated |
+
+**Constraints**: UNIQUE (`item_id`, `location_id`)  
+**Migrations**: `20260410101500-create-item-locations-table.js`
+
+---
+
+### 13. Tabel `inventory_movements` ⭐ NEW
+Laporan/ledger pergerakan stok sebagai audit trail lengkap.
+
+| Nama Kolom     | Tipe Data      | Nullable | Default | Keterangan |
+| :---           | :---           | :---     | :---    | :--- |
+| `id`           | `SERIAL`       | NO       | -       | Primary Key |
+| `item_id`      | `INTEGER`      | NO       | -       | FK → items.id |
+| `location_id`  | `INTEGER`      | NO       | -       | FK → locations.id |
+| `type`         | `VARCHAR(50)`  | NO       | -       | INBOUND, OUTBOUND, OPNAME, dll |
+| `qty_change`   | `INTEGER`      | NO       | -       | Perubahan jumlah (+/-) |
+| `balance_after`| `INTEGER`      | NO       | -       | Stok akhir setelah pergerakan |
+| `reference_id` | `VARCHAR(100)` | YES      | -       | PO Number / Order Number |
+| `operator_name`| `VARCHAR(255)` | YES      | -       | Nama yang melakukan aksi |
+| `created_at`   | `TIMESTAMP`    | NO       | `NOW()` | Waktu transaksi |
+
+**Migrations**: `20260410101502-create-inventory-movements-table.js`
+
+---
+
+### 14. View `reconciliation_view` ⭐ VIEW
+Digunakan untuk membandingkan stok sistem (global) vs stok fisik per lokasi.
+
+**Logic**: Query menggabungkan data `items` dengan aggregasi dari `item_locations` untuk melihat selisih stok.
+**Migrations**: `20260410101600-create-reconciliation-view.js`
+
+---
+
 ## Manajemen Database & Migrasi
 
 ### 1. File Migrasi (Execution Order)
@@ -212,28 +299,30 @@ npm run migrate:undo:all
 ## Relationship Diagram
 
 ```
+roles (1) ────────── (n) role_permissions (n) ────────── (1) permissions
+  │
+  └─ (1) ────────── (n) users (via role_id)
+
 users (1) ──────────── (n) inbounds
                             │
                             ├─ (1) ──────── (n) inbound_items
                             │                   │
                             │                   └─ (FK) items.sku_code
-                            │                   └─ (n) ──── (1) locations (via inbound_receiving_log)
+                            │                   └─ (n) ──── (1) locations (via receiving_log)
                             │
                             └─ inbound_receiving_log (audit trail)
 
-users (1) ──────────── (n) outbounds
-                            │
-                            └─ (1) ──────── (n) outbound_items
-                                            │
-                                            └─ (FK) items.sku_code
+items (1) ──────────── (n) item_locations (1) ────────── (1) locations
+  │                          │
+  └─ (1) ──────────── (n) inventory_movements (audit trail)
+                             │
+                             └─ (FK) locations.id
 
-items (1) ──────────── (n) inbound_items (aggregate stock)
-items (1) ──────────── (n) outbound_items (aggregate stock)
-
-locations (1) ──────────── (n) inbound_receiving_log
+items (1) ──────────── (n) inbound_items 
+items (1) ──────────── (n) outbound_items 
 ```
 
 ---
 
-**Last Updated**: April 2, 2026  
-**Status**: ✅ Complete with two-stage receiving & location hierarchy
+**Last Updated**: April 13, 2026  
+**Status**: ✅ Synced with ACL & Inventory Movement tracking
