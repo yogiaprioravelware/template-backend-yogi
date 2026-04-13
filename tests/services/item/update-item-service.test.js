@@ -9,9 +9,12 @@ describe('Service: update-item-service', () => {
     jest.clearAllMocks();
   });
 
-  it('should throw error if validation fails', async () => {
-    const invalidData = { uom: 'KILO' };
-    await expect(updateItem(1, invalidData)).rejects.toThrow();
+  it('should throw error if rfid format is not EPC', async () => {
+    await expect(updateItem(1, { rfid_tag: 'INVALID' })).rejects.toThrow(/Invalid RFID format/);
+  });
+
+  it('should throw error if Joi validation fails (e.g. uom invalid)', async () => {
+    await expect(updateItem(1, { rfid_tag: '30342509181408C000000101', uom: 'INVALID' })).rejects.toThrow();
   });
 
   it('should throw error if item not found', async () => {

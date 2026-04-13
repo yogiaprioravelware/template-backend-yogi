@@ -18,7 +18,7 @@ describe('Controller: user', () => {
         jest.clearAllMocks();
     });
 
-    ['registerUser', 'loginUser', 'getUsers', 'getUserById', 'updateUser', 'deleteUser', 'assignRole'].forEach(method => {
+    ['registerUser', 'loginUser', 'getUsers', 'getUserById', 'updateUser', 'deleteUser', 'assignRole', 'refreshToken'].forEach(method => {
         it(`${method} success`, async () => {
             userService[method] = jest.fn().mockResolvedValue({});
             await userController[method](req, res, next);

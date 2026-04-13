@@ -37,8 +37,13 @@ describe('Service: register-item-service', () => {
     jest.clearAllMocks();
   });
 
-  it('should throw error if validation fails', async () => {
-    const invalidData = { rfid_tag: '30342509181408C000000101' }; // Valid EPC but missing other fields
+  it('should throw error if rfid format is not EPC (starts with 30 and 24 hex)', async () => {
+    const invalidData = { rfid_tag: 'FF342509181408C000000101', item_name: 'Test', sku_code: 'SKU', category: 'C', uom: 'PCS', current_stock: 0 };
+    await expect(registerItem(invalidData)).rejects.toThrow(/Invalid RFID format/);
+  });
+
+  it('should throw error if Joi validation fails (e.g. item_name too short)', async () => {
+    const invalidData = { rfid_tag: '30342509181408C000000101', item_name: 'A', sku_code: 'SKU', category: 'C', uom: 'PCS', current_stock: 0 };
     await expect(registerItem(invalidData)).rejects.toThrow();
   });
 

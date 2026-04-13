@@ -23,5 +23,9 @@ describe('Validation: outbound-validation', () => {
       const { error } = scanRfidSchema.validate({ rfid_tag: '30342509181408C000000101', location_qr: 'QR123' });
       expect(error).toBeUndefined();
     });
+    it('should fail if rfid_tag is not EPC format', () => {
+      const { error } = scanRfidSchema.validate({ rfid_tag: 'INVALID', location_qr: 'QR123' });
+      expect(error).toBeDefined();
+    });
   });
 });

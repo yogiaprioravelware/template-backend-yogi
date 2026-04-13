@@ -76,4 +76,25 @@ describe('Service: loginUser', () => {
     expect(bcrypt.compare).toHaveBeenCalledWith(validData.password, fakeUser.password);
     expect(jwt.sign).toHaveBeenCalledTimes(2);
   });
+
+  it('should use default expiry if env variables are missing (branch coverage)', async () => {
+    const originalAccessExpiry = process.env.JWT_ACCESS_EXPIRY;
+    const originalRefreshExpiry = process.env.JWT_REFRESH_EXPIRY;
+    delete process.env.JWT_ACCESS_EXPIRY;
+    delete process.env.JWT_REFRESH_EXPIRY;
+
+    const fakeUser = { id: 1, email: 'test@test.com', password: 'hashedpassword' };
+    User.findOne.mockResolvedValue(fakeUser);
+    bcrypt.compare.mockResolvedValue(true);
+    getUserPermissions.mockResolvedValue([]);
+
+    await loginUser({ email: 'test@test.com', password: 'password123' });
+
+    // Verify fallback is used (implicitly covered by successful sign call with missing env)
+    expect(jwt.sign).toHaveBeenCalled();
+
+    // Restore env
+    process.env.JWT_ACCESS_EXPIRY = originalAccessExpiry;
+    process.env.JWT_REFRESH_EXPIRY = originalRefreshExpiry;
+  });
 });

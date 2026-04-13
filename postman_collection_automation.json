@@ -1,4 +1,4 @@
-{
+﻿{
   "info": {
     "name": "E2E Template Backend Ravelware - Full Automation",
     "description": "Full E2E automation for Register, Login, Items (CRUD), Location (CRUD), Inbound, Outbound, Role, Profile. Everything executed chronologically. Do NOT shuffle.",
@@ -313,7 +313,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });",
                   "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Name updated properly', function() { pm.expect(res.data.item_name).to.eql('Postman Item Updated'); }); }"
                 ],
                 "type": "text/javascript"
@@ -361,7 +361,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -451,7 +451,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });",
                   "if(pm.response.code === 200) { const res = pm.response.json(); pm.collectionVariables.set('inbound_item_id', res.data.items[0].id); }"
                 ],
                 "type": "text/javascript"
@@ -490,7 +490,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -538,7 +538,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -633,7 +633,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });",
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });",
                   "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Outbound is DONE', function() { pm.expect(res.data.outbound_status).to.eql('DONE'); }); }"
                 ],
                 "type": "text/javascript"
@@ -813,7 +813,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -851,7 +851,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 404, 500, 400]); });"
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -931,7 +931,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 401', function() { pm.expect(pm.response.code).to.be.oneOf([400, 401]); });"
+                  "pm.test('Status is 401', function() { pm.expect(pm.response.code).to.be.oneOf(401); });"
                 ],
                 "type": "text/javascript"
               }
@@ -968,7 +968,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status is 404', function() { pm.expect(pm.response.code).to.be.oneOf([400, 404, 401]); });"
+                  "pm.test('Status is 404', function() { pm.expect(pm.response.code).to.be.oneOf(401); });"
                 ],
                 "type": "text/javascript"
               }
@@ -1076,7 +1076,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rfid_tag\": \"UNDEFINED-RFID-{{$randomInt}}\"\n}",
+              "raw": "{\n  \"rfid_tag\": \"30342509181408CFFFFFF{{$randomInt}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1273,7 +1273,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rfid_tag\": \"UNDEFINED-RFID-{{$randomInt}}\"\n}",
+              "raw": "{\n  \"rfid_tag\": \"30342509181408CFFFFFF{{$randomInt}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

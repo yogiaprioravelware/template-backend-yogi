@@ -31,6 +31,7 @@ const refreshToken = async (token) => {
 
     return { accessToken };
   } catch (error) {
+    if (error.status) throw error;
     logger.error(`Refresh Token Error: ${error.message}`);
     const err = new Error("Invalid refresh token");
     err.status = 401;

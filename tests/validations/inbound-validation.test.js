@@ -21,6 +21,10 @@ describe('Validation: inbound-validation', () => {
       const { error } = scanItemSchema.validate({ rfid_tag: '30342509181408C000000101' });
       expect(error).toBeUndefined();
     });
+    it('should fail if rfid_tag is not EPC format', () => {
+      const { error } = scanItemSchema.validate({ rfid_tag: 'INVALID' });
+      expect(error).toBeDefined();
+    });
   });
 
   describe('setLocationSchema', () => {
