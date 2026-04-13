@@ -28,10 +28,9 @@ describe('Service: create-inbound-service', () => {
   it('should throw error if a SKU is not found', async () => {
     const validData = { po_number: 'PO1', items: [{ sku_code: 'A', qty_target: 10 }] };
     Inbound.findOne.mockResolvedValueOnce(null);
-    Inbound.create.mockResolvedValue({ id: 2 });
-    Item.findOne.mockResolvedValueOnce(null); // SKU not found
+    Item.findAll.mockResolvedValueOnce([]); // No SKUs found
 
-    await expect(createInbound(validData)).rejects.toThrow('SKU code A not found in items');
+    await expect(createInbound(validData)).rejects.toThrow('The following SKU codes were not found: A');
   });
 
   it('should create inbound header and detail successfully', async () => {
@@ -39,18 +38,18 @@ describe('Service: create-inbound-service', () => {
     Inbound.findOne.mockResolvedValueOnce(null);
     const mockInbound = { id: 2 };
     Inbound.create.mockResolvedValue(mockInbound);
-    Item.findOne.mockResolvedValue({ id: 1 }); // SKU exists
-    InboundItem.create.mockResolvedValue(true);
+    Item.findAll.mockResolvedValue([{ sku_code: 'A' }]); // SKU exists
+    InboundItem.bulkCreate.mockResolvedValue(true);
 
     const result = await createInbound(validData);
 
     expect(Inbound.create).toHaveBeenCalledWith({ po_number: 'PO1', status: 'PENDING' });
-    expect(InboundItem.create).toHaveBeenCalledWith({
+    expect(InboundItem.bulkCreate).toHaveBeenCalledWith([{
       inbound_id: 2,
       sku_code: 'A',
       qty_target: 10,
       qty_received: 0
-    });
+    }]);
     expect(result).toEqual(mockInbound);
   });
 });

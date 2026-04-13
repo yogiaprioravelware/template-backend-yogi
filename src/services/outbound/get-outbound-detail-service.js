@@ -1,9 +1,9 @@
+const { Op } = require("sequelize");
 const Outbound = require("../../models/Outbound");
 const OutboundItem = require("../../models/OutboundItem");
 const Item = require("../../models/Item");
 const logger = require("../../utils/logger");
 
-// Service untuk mengambil detail outbound dengan items-nya
 const getOutboundDetail = async (outboundId) => {
   logger.info(`Fetching details for outbound ID: ${outboundId}`);
   const outbound = await Outbound.findByPk(outboundId);
@@ -17,26 +17,33 @@ const getOutboundDetail = async (outboundId) => {
   const outboundItems = await OutboundItem.findAll({
     where: { outbound_id: outboundId },
     attributes: ["id", "sku_code", "qty_target", "qty_delivered"],
+    raw: true
   });
-  logger.info(`Found ${outboundItems.length} items for outbound ID: ${outboundId}`);
 
-  // Tambahkan informasi item dari tabel items
-  const itemsWithDetails = await Promise.all(
-    outboundItems.map(async (item) => {
-      const itemDetail = await Item.findOne({
-        where: { sku_code: item.sku_code },
-        attributes: ["item_name", "category", "uom", "current_stock"],
-      });
-      return {
-        ...item.dataValues,
-        item_name: itemDetail?.item_name || "",
-        category: itemDetail?.category || "",
-        uom: itemDetail?.uom || "",
-        current_stock: itemDetail?.current_stock || 0,
-      };
-    })
-  );
+  const skuCodes = outboundItems.map(item => item.sku_code);
+  const itemsMetadata = await Item.findAll({
+    where: { sku_code: { [Op.in]: skuCodes } },
+    attributes: ["sku_code", "item_name", "category", "uom", "current_stock"],
+    raw: true
+  });
 
+  const metadataMap = itemsMetadata.reduce((acc, current) => {
+    acc[current.sku_code] = current;
+    return acc;
+  }, {});
+
+  const itemsWithDetails = outboundItems.map(item => {
+    const meta = metadataMap[item.sku_code];
+    return {
+      ...item,
+      item_name: meta?.item_name || "",
+      category: meta?.category || "",
+      uom: meta?.uom || "",
+      current_stock: meta?.current_stock || 0,
+    };
+  });
+
+  logger.info(`Found ${itemsWithDetails.length} items for outbound ID: ${outboundId}`);
   return {
     ...outbound.dataValues,
     items: itemsWithDetails,

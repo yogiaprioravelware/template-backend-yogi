@@ -73,20 +73,20 @@ describe('Service: scan-rfid-picking-service', () => {
 
   it('should throw error if outbound is DONE', async () => {
     Outbound.findByPk.mockResolvedValue({ status: 'DONE' });
-    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('Outbound sudah DONE, tidak bisa picking barang lagi');
+    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('Outbound is already DONE, cannot pick more items');
   });
 
   it('should throw error if location not found or inactive', async () => {
     Outbound.findByPk.mockResolvedValue({ status: 'PENDING' });
     Location.findOne.mockResolvedValue(null);
-    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('Lokasi tidak ditemukan atau tidak aktif');
+    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('Location not found or inactive');
   });
 
   it('should throw error if RFID not found', async () => {
     Outbound.findByPk.mockResolvedValue({ status: 'PENDING' });
     Location.findOne.mockResolvedValue({ status: 'ACTIVE', id: 2 });
     Item.findOne.mockResolvedValue(null);
-    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('RFID tag tidak ditemukan di sistem');
+    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('RFID tag not found in system');
   });
 
   it('should throw error if SKU not in outbound', async () => {
@@ -94,7 +94,7 @@ describe('Service: scan-rfid-picking-service', () => {
     Location.findOne.mockResolvedValue({ status: 'ACTIVE', id: 2 });
     Item.findOne.mockResolvedValue({ sku_code: 'A' });
     OutboundItem.findOne.mockResolvedValue(null);
-    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('SKU A tidak ada di order ini');
+    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' })).rejects.toThrow('SKU A is not in this order');
   });
 
   it('should process picking successfully and update item stock', async () => {
@@ -133,7 +133,7 @@ describe('Service: scan-rfid-picking-service', () => {
     Item.findOne.mockResolvedValue({ sku_code: 'A' });
     OutboundItem.findOne.mockResolvedValue({ qty_delivered: 5, qty_target: 5 });
     await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' }))
-      .rejects.toThrow('SKU A sudah mencapai target (5)');
+      .rejects.toThrow('SKU A already reached target (5)');
   });
 
   it('should set status to PROCES if partially complete', async () => {
@@ -190,13 +190,13 @@ describe('Service: scan-rfid-picking-service', () => {
     const mockItemLoc = { stock: 0, location_id: 2, save: jest.fn() };
     
     Outbound.findByPk.mockResolvedValue(mockOutbound);
-    Location.findOne.mockResolvedValue({ id: 2, status: 'ACTIVE' });
+    Location.findOne.mockResolvedValue({ id: 2, location_code: 'LOC-2', status: 'ACTIVE' });
     Item.findOne.mockResolvedValue(mockItem);
     ItemLocation.findOne.mockResolvedValue(mockItemLoc);
     OutboundItem.findOne.mockResolvedValue(mockOutboundItem);
 
     await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' }))
-      .rejects.toThrow('Stok di lokasi');
+      .rejects.toThrow('Stock in location LOC-2 is empty for this item');
   });
 
   it('should throw error if no itemLoc is found', async () => {
@@ -205,13 +205,13 @@ describe('Service: scan-rfid-picking-service', () => {
     const mockOutboundItem = { sku_code: 'A', qty_delivered: 0, qty_target: 1, save: jest.fn() };
     
     Outbound.findByPk.mockResolvedValue(mockOutbound);
-    Location.findOne.mockResolvedValue({ id: 2, status: 'ACTIVE' });
+    Location.findOne.mockResolvedValue({ id: 2, location_code: 'LOC-2', status: 'ACTIVE' });
     Item.findOne.mockResolvedValue(mockItem);
     ItemLocation.findOne.mockResolvedValue(null);
     OutboundItem.findOne.mockResolvedValue(mockOutboundItem);
 
     await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' }))
-      .rejects.toThrow('Stok di lokasi');
+      .rejects.toThrow('Stock in location LOC-2 is empty for this item');
   });
 
   it('should process picking successfully and save (not destroy) itemLoc if stock > 0', async () => {

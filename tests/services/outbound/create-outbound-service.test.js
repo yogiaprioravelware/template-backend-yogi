@@ -28,23 +28,22 @@ describe('Service: create-outbound-service', () => {
   it('should throw error if SKU not found', async () => {
     const validData = { order_number: 'ORD1', outbound_type: 'LUNAS', items: [{ sku_code: 'A', qty_target: 10 }] };
     Outbound.findOne.mockResolvedValueOnce(null);
-    Outbound.create.mockResolvedValue({ id: 2 });
-    Item.findOne.mockResolvedValueOnce(null); 
+    Item.findAll.mockResolvedValueOnce([]); // No SKUs found
 
-    await expect(createOutbound(validData)).rejects.toThrow('SKU code A not found in items');
+    await expect(createOutbound(validData)).rejects.toThrow('The following SKU codes were not found: A');
   });
 
   it('should create outbound successfully', async () => {
     const validData = { order_number: 'ORD1', outbound_type: 'LUNAS', items: [{ sku_code: 'A', qty_target: 10 }] };
     Outbound.findOne.mockResolvedValueOnce(null);
     Outbound.create.mockResolvedValue({ id: 2 });
-    Item.findOne.mockResolvedValue({ id: 1 });
-    OutboundItem.create.mockResolvedValue(true);
+    Item.findAll.mockResolvedValue([{ sku_code: 'A' }]); // SKU exists
+    OutboundItem.bulkCreate.mockResolvedValue(true);
 
     const result = await createOutbound(validData);
 
     expect(Outbound.create).toHaveBeenCalled();
-    expect(OutboundItem.create).toHaveBeenCalled();
+    expect(OutboundItem.bulkCreate).toHaveBeenCalled();
     expect(result.id).toBe(2);
   });
 });

@@ -6,7 +6,6 @@ const { registerItemSchema } = require("../../validations/item-validation");
 const logger = require("../../utils/logger");
 const { isValidEPC } = require("../../utils/rfid-validator");
 
-// Service untuk registrasi item baru
 const registerItem = async (itemData) => {
   logger.info("Attempting to register a new item with location support");
   
@@ -29,7 +28,6 @@ const registerItem = async (itemData) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // 1. Check RFID tag sudah ada atau tidak
     const existingRfid = await Item.findOne({ where: { rfid_tag }, transaction });
     if (existingRfid) {
       const err = new Error("RFID tag already registered");
@@ -37,7 +35,6 @@ const registerItem = async (itemData) => {
       throw err;
     }
 
-    // 2. Check SKU code sudah ada atau tidak
     const existingSku = await Item.findOne({ where: { sku_code }, transaction });
     if (existingSku) {
       const err = new Error("SKU code already registered");
@@ -45,14 +42,11 @@ const registerItem = async (itemData) => {
       throw err;
     }
 
-    // 3. Create Item
     const item = await Item.create(itemData, { transaction });
 
-    // 4. Handle Location Assignment (Standard WMS)
     if (current_stock > 0) {
       let targetLocationId = location_id;
 
-      // Jika lokasi tidak diisi, cari lokasi "RECEIVING-01"
       if (!targetLocationId) {
         const receivingArea = await Location.findOne({ 
           where: { location_code: 'RECEIVING-01' },
@@ -63,7 +57,6 @@ const registerItem = async (itemData) => {
           targetLocationId = receivingArea.id;
           logger.info(`Assigning item ${sku_code} to default Receiving Area`);
         } else {
-          // Jika bahkan Receiving Area tidak ada (biasanya di seeder), fallback
           logger.warn("Receiving Area not found, stock remains headless (not recommended)");
         }
       }

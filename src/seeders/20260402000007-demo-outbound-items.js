@@ -2,13 +2,13 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Ambil ID outbounds secara dinamis
+    // Fetch outbound IDs dynamically
     const [outboundRows] = await queryInterface.sequelize.query(
       `SELECT id, order_number from ${queryInterface.queryGenerator.quoteTable("outbounds")};`
     );
 
     if (outboundRows.length > 0) {
-      // Mapping Order Number ke ID
+      // Mapping Order Number to ID
       const orderMap = {};
       outboundRows.forEach(row => {
         orderMap[row.order_number || row.ORDER_NUMBER] = row.id || row.ID;

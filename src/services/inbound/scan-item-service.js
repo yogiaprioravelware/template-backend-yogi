@@ -7,35 +7,26 @@ const logger = require("../../utils/logger");
 const scanItem = async (inboundId, rfidTag) => {
   logger.info(`Scanning item with RFID tag: ${rfidTag} for inbound: ${inboundId}`);
   try {
-    // Find inbound and check if it's not DONE
     const inbound = await Inbound.findByPk(inboundId);
     if (!inbound) {
       logger.warn(`Scan failed: Inbound with id ${inboundId} not found`);
-      return errorResponse(400, "Inbound not found", {
-        message: "PO tidak ditemukan",
-      });
+      return errorResponse(400, "Inbound PO not found");
     }
 
     if (inbound.status === "DONE") {
       logger.warn(`Scan failed: Inbound ${inboundId} is already completed`);
-      return errorResponse(400, "Inbound already completed", {
-        message: "PO sudah selesai, tidak bisa scan lagi",
-      });
+      return errorResponse(400, "Inbound PO is already completed");
     }
 
-    // Find item by rfid_tag
     const item = await Item.findOne({
       where: { rfid_tag: rfidTag },
     });
 
     if (!item) {
       logger.warn(`Scan failed: Item with RFID tag ${rfidTag} not found`);
-      return errorResponse(400, "Item not found", {
-        message: "Item dengan RFID tag tidak ditemukan",
-      });
+      return errorResponse(400, "RFID tag not found in system");
     }
 
-    // Find inbound_item with matching sku_code in this inbound
     const inboundItem = await InboundItem.findOne({
       where: {
         inbound_id: inboundId,
@@ -45,17 +36,12 @@ const scanItem = async (inboundId, rfidTag) => {
 
     if (!inboundItem) {
       logger.warn(`Scan failed: Item with SKU ${item.sku_code} not in PO ${inboundId}`);
-      return errorResponse(400, "Item not in this PO", {
-        message: `SKU ${item.sku_code} tidak ada dalam PO ini`,
-      });
+      return errorResponse(400, `SKU ${item.sku_code} is not in this PO`);
     }
 
-    // Check if qty_received already equals qty_target
     if (inboundItem.qty_received >= inboundItem.qty_target) {
       logger.warn(`Scan failed: Quantity for SKU ${item.sku_code} in PO ${inboundId} already completed`);
-      return errorResponse(400, "Item quantity already completed", {
-        message: `Jumlah penerimaan untuk SKU ${item.sku_code} sudah mencapai target`,
-      });
+      return errorResponse(400, "Item target quantity already completed");
     }
 
     // Return pending location response

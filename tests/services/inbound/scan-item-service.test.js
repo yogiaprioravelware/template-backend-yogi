@@ -17,7 +17,7 @@ describe('Service: scan-item-service', () => {
     Inbound.findByPk.mockResolvedValue(null);
     const result = await scanItem(1, 'RFID1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('PO tidak ditemukan');
+    expect(result.message).toBe('Inbound PO not found');
   });
 
   it('should return error if inbound is DONE', async () => {
@@ -31,7 +31,7 @@ describe('Service: scan-item-service', () => {
     Item.findOne.mockResolvedValue(null);
     const result = await scanItem(1, 'RFID1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Item dengan RFID tag tidak ditemukan');
+    expect(result.message).toBe('RFID tag not found in system');
   });
 
   it('should return error if inbound_item not found for SKU', async () => {
@@ -41,7 +41,7 @@ describe('Service: scan-item-service', () => {
     
     const result = await scanItem(1, 'RFID1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('SKU SKU1 tidak ada dalam PO ini');
+    expect(result.message).toBe('SKU SKU1 is not in this PO');
   });
   it('should return error if qty_received already meets target', async () => {
     Inbound.findByPk.mockResolvedValue({ status: 'PENDING' });
@@ -50,7 +50,7 @@ describe('Service: scan-item-service', () => {
     
     const result = await scanItem(1, 'RFID1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Jumlah penerimaan untuk SKU SKU1 sudah mencapai target');
+    expect(result.message).toBe('Item target quantity already completed');
   });
 
   it('should return success and pending location', async () => {

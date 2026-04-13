@@ -2,7 +2,6 @@ const User = require("../../models/User");
 const { assignRoleSchema } = require("../../validations/user-validation");
 const logger = require("../../utils/logger");
 
-// Service untuk mengubah role pengguna
 const assignRole = async (id, roleData) => {
   logger.info(`Attempting to assign role to user with id: ${id}`);
   const { error } = assignRoleSchema.validate(roleData);

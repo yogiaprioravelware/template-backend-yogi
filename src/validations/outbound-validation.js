@@ -22,7 +22,7 @@ const scanRfidSchema = Joi.object({
     }
     return value;
   }),
-  location_qr: Joi.string().required(), // Now mandatory for location-aware picking
+  location_qr: Joi.string().required(),
 });
 
 module.exports = {

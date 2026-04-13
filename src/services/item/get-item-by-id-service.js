@@ -2,7 +2,6 @@ const Item = require("../../models/Item");
 const Location = require("../../models/Location");
 const logger = require("../../utils/logger");
 
-// Service untuk mengambil item berdasarkan ID
 const getItemById = async (id) => {
   logger.info(`Fetching item with id: ${id}`);
   const item = await Item.findByPk(id, {

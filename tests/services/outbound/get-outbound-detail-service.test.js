@@ -17,15 +17,30 @@ describe('Service: get-outbound-detail-service', () => {
   it('should retrieve detail and fallback missing item detail', async () => {
     Outbound.findByPk.mockResolvedValue({ dataValues: { id: 1 } });
     const mockOutboundItems = [
-      { dataValues: { id: 10, sku_code: 'MISSING' } }
+      { id: 10, sku_code: 'MISSING' }
     ];
     OutboundItem.findAll.mockResolvedValue(mockOutboundItems);
-    Item.findOne.mockResolvedValue(null);
+    Item.findAll.mockResolvedValue([]);
 
     const result = await getOutboundDetail(1);
     expect(result.id).toBe(1);
     expect(result.items).toHaveLength(1);
     expect(result.items[0].item_name).toBe('');
     expect(result.items[0].current_stock).toBe(0);
+  });
+
+  it('should retrieve detail and map item metadata successfully', async () => {
+    Outbound.findByPk.mockResolvedValue({ dataValues: { id: 1 } });
+    OutboundItem.findAll.mockResolvedValue([
+      { id: 10, sku_code: 'SKU1' }
+    ]);
+    Item.findAll.mockResolvedValue([
+      { sku_code: 'SKU1', item_name: 'Test Product', category: 'C1', uom: 'PCS', current_stock: 100 }
+    ]);
+
+    const result = await getOutboundDetail(1);
+    expect(result.id).toBe(1);
+    expect(result.items[0].item_name).toBe('Test Product');
+    expect(result.items[0].current_stock).toBe(100);
   });
 });

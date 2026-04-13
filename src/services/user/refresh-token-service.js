@@ -11,9 +11,6 @@ const refreshToken = async (token) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
     
-    // In a real enterprise app, we might check if this refreshToken is in a whitelist/DB
-    // to allow revocation. For now, we trust the signature.
-    
     const User = require("../../models/User");
     const user = await User.findByPk(payload.id);
     

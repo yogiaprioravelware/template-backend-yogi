@@ -1,7 +1,6 @@
 const User = require("../../models/User");
 const logger = require("../../utils/logger");
 
-// Service untuk mengambil pengguna berdasarkan ID
 const getUserById = async (id) => {
   logger.info(`Fetching user with id: ${id}`);
   const user = await User.findByPk(id, {

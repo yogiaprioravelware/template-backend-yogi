@@ -145,21 +145,13 @@
 <a name='L80'></a><a href='#L80'>80</a>
 <a name='L81'></a><a href='#L81'>81</a>
 <a name='L82'></a><a href='#L82'>82</a>
-<a name='L83'></a><a href='#L83'>83</a>
-<a name='L84'></a><a href='#L84'>84</a>
-<a name='L85'></a><a href='#L85'>85</a>
-<a name='L86'></a><a href='#L86'>86</a>
-<a name='L87'></a><a href='#L87'>87</a>
-<a name='L88'></a><a href='#L88'>88</a>
-<a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">8x</span>
@@ -183,7 +175,6 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -191,21 +182,17 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -216,7 +203,6 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,7 +235,6 @@ const { registerItemSchema } = require("../../validations/item-validation");
 const logger = require("../../utils/logger");
 const { isValidEPC } = require("../../utils/rfid-validator");
 &nbsp;
-// Service untuk registrasi item baru
 const registerItem = async (itemData) =&gt; {
   logger.info("Attempting to register a new item with location support");
   
@@ -272,7 +257,6 @@ const registerItem = async (itemData) =&gt; {
   const transaction = await sequelize.transaction();
 &nbsp;
   try {
-    // 1. Check RFID tag sudah ada atau tidak
     const existingRfid = await Item.findOne({ where: { rfid_tag }, transaction });
     if (existingRfid) {
       const err = new Error("RFID tag already registered");
@@ -280,7 +264,6 @@ const registerItem = async (itemData) =&gt; {
       throw err;
     }
 &nbsp;
-    // 2. Check SKU code sudah ada atau tidak
     const existingSku = await Item.findOne({ where: { sku_code }, transaction });
     if (existingSku) {
       const err = new Error("SKU code already registered");
@@ -288,14 +271,11 @@ const registerItem = async (itemData) =&gt; {
       throw err;
     }
 &nbsp;
-    // 3. Create Item
     const item = await Item.create(itemData, { transaction });
 &nbsp;
-    // 4. Handle Location Assignment (Standard WMS)
     if (current_stock &gt; 0) {
       let targetLocationId = location_id;
 &nbsp;
-      // Jika lokasi tidak diisi, cari lokasi "RECEIVING-01"
       if (!targetLocationId) {
         const receivingArea = await Location.findOne({ 
           where: { location_code: 'RECEIVING-01' },
@@ -306,7 +286,6 @@ const registerItem = async (itemData) =&gt; {
           targetLocationId = receivingArea.id;
           logger.info(`Assigning item ${sku_code} to default Receiving Area`);
         } else {
-          // Jika bahkan Receiving Area tidak ada (biasanya di seeder), fallback
           logger.warn("Receiving Area not found, stock remains headless (not recommended)");
         }
       }
@@ -337,7 +316,7 @@ module.exports = registerItem;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T08:03:36.869Z
+                at 2026-04-13T08:47:42.126Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -4,7 +4,6 @@ const User = require("../../models/User");
 const { loginSchema } = require("../../validations/user-validation");
 const logger = require("../../utils/logger");
 
-// Service untuk login pengguna
 const loginUser = async (userData) => {
   logger.info(`Login attempt for user: ${userData.email}`);
   const { error } = loginSchema.validate(userData);
@@ -36,7 +35,6 @@ const loginUser = async (userData) => {
   const getUserPermissions = require("../role/get-user-permissions-service");
   const permissions = await getUserPermissions(user);
 
-  // Generate Dual Tokens
   const accessToken = jwt.sign(
     { id: user.id, username: user.username, role: user.role, role_id: user.role_id },
     process.env.JWT_SECRET,

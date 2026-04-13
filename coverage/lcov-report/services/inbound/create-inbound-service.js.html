@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">97.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>34/34</span>
+                <span class='fraction'>39/40</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/34</span>
+                <span class='fraction'>36/36</span>
             </div>
         
             
@@ -128,6 +128,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -142,7 +143,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -153,28 +153,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -183,7 +175,16 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const Inbound = require("../../models/Inbound");
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Op } = require("sequelize");
+const Inbound = require("../../models/Inbound");
 const InboundItem = require("../../models/InboundItem");
 const Item = require("../../models/Item");
 const { createInboundSchema } = require("../../validations/inbound-validation");
@@ -202,7 +203,6 @@ const createInbound = async (inboundData) =&gt; {
 &nbsp;
   const { po_number, items } = inboundData;
 &nbsp;
-&nbsp;
   const existingPo = await Inbound.findOne({ where: { po_number } });
   if (existingPo) {
     logger.warn(`Creation failed: PO number ${po_number} already exists`);
@@ -211,33 +211,33 @@ const createInbound = async (inboundData) =&gt; {
     throw err;
   }
 &nbsp;
-  // Create inbound header
+  // Validate all SKUs exist using bulk query (Standard Enterprise - avoids Brute Force)
+  const skuCodes = items.map(item =&gt; item.sku_code);
+  const existingItems = await Item.findAll({
+    where: { sku_code: { [Op.in]: skuCodes } }
+  });
+&nbsp;
+  if (existingItems.length !== skuCodes.length) {
+    const foundSkus = existingItems.map(<span class="fstat-no" title="function not covered" >i </span>=&gt; <span class="cstat-no" title="statement not covered" >i.sku_code)</span>;
+    const missingSkus = skuCodes.filter(sku =&gt; !foundSkus.includes(sku));
+    logger.warn(`Creation failed: SKU codes not found: ${missingSkus.join(", ")}`);
+    const err = new Error(`The following SKU codes were not found: ${missingSkus.join(", ")}`);
+    err.status = 400;
+    throw err;
+  }
+&nbsp;
   const inbound = await Inbound.create({
     po_number,
     status: "PENDING",
   });
   logger.info(`Inbound header created for PO number: ${po_number}`);
 &nbsp;
-  // Validate all SKU codes exist in items table
-  for (const item of items) {
-    const existingItem = await Item.findOne({ where: { sku_code: item.sku_code } });
-    if (!existingItem) {
-      logger.warn(`Creation failed: SKU code ${item.sku_code} not found in items`);
-      const err = new Error(`SKU code ${item.sku_code} not found in items`);
-      err.status = 400;
-      throw err;
-    }
-  }
-&nbsp;
-  // Create inbound items (detail)
-  for (const item of items) {
-    await InboundItem.create({
-      inbound_id: inbound.id,
-      sku_code: item.sku_code,
-      qty_target: item.qty_target,
-      qty_received: 0,
-    });
-  }
+  await InboundItem.bulkCreate(items.map(item =&gt; ({
+    inbound_id: inbound.id,
+    sku_code: item.sku_code,
+    qty_target: item.qty_target,
+    qty_received: 0,
+  })));
   logger.info(`Inbound items created for PO number: ${po_number}`);
 &nbsp;
   return inbound;
@@ -250,7 +250,7 @@ module.exports = { createInbound };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T08:03:36.869Z
+                at 2026-04-13T08:47:42.126Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

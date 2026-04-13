@@ -2,7 +2,6 @@ const User = require("../../models/User");
 const { updateUserSchema } = require("../../validations/user-validation");
 const logger = require("../../utils/logger");
 
-// Service untuk memperbarui data pengguna
 const updateUser = async (id, userData) => {
   logger.info(`Attempting to update user with id: ${id}`);
   const { error } = updateUserSchema.validate(userData);

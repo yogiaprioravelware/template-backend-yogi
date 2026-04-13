@@ -72,14 +72,14 @@ describe('Service: set-location-service', () => {
     Location.findOne.mockResolvedValue(null);
     const result = await setLocation(1, 1, 'QR1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Lokasi dengan QR code tidak ditemukan');
+    expect(result.message).toBe('Location QR code not found');
   });
 
   it('should return error if location is inactive', async () => {
     Location.findOne.mockResolvedValue({ status: 'INACTIVE' });
     const result = await setLocation(1, 1, 'QR1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Lokasi tidak aktif untuk penerimaan');
+    expect(result.message).toBe('Location is inactive for receiving');
   });
 
   it('should return error if inbound not found', async () => {
@@ -94,7 +94,7 @@ describe('Service: set-location-service', () => {
     InboundItem.findOne.mockResolvedValue(null);
     const result = await setLocation(1, 1, 'QR1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Item dalam PO tidak ditemukan');
+    expect(result.message).toBe('Item not found in this PO');
   });
 
   it('should return error if item quantity already completed', async () => {
@@ -103,7 +103,7 @@ describe('Service: set-location-service', () => {
     InboundItem.findOne.mockResolvedValue({ qty_received: 5, qty_target: 5 });
     const result = await setLocation(1, 1, 'QR1');
     expect(result.success).toBe(false);
-    expect(result.message).toBe('Jumlah penerimaan untuk SKU sudah mencapai target');
+    expect(result.message).toBe('Item target quantity already completed');
   });
 
   it('should successfully set location and update to PROCES (partial complete)', async () => {

@@ -26,7 +26,6 @@ const setStockOpname = async (payload, userId) => {
       throw error;
     }
 
-    // Find the item location stock mapping
     let itemLocation = await ItemLocation.findOne({
       where: { item_id, location_id },
       transaction,
@@ -36,7 +35,6 @@ const setStockOpname = async (payload, userId) => {
     if (itemLocation) {
       currentStock = itemLocation.stock;
     } else {
-      // If none exists but we are declaring stock via opname, we create it.
       itemLocation = await ItemLocation.create({
         item_id,
         location_id,
@@ -46,11 +44,9 @@ const setStockOpname = async (payload, userId) => {
 
     const qtyChange = actual_qty - currentStock;
 
-    // Update item location stock
     itemLocation.stock = actual_qty;
     await itemLocation.save({ transaction });
 
-    // Update global item stock (Always Recalculate from all locations to avoid desync)
     const totalStock = await ItemLocation.sum('stock', { 
       where: { item_id },
       transaction 
@@ -59,7 +55,6 @@ const setStockOpname = async (payload, userId) => {
     item.current_stock = totalStock;
     await item.save({ transaction });
 
-    // Create Inventory Movement Log
     const refNo = notes ? `OPNAME - ${notes}` : `OPNAME-${Date.now()}`;
     await InventoryMovement.create({
       item_id,
@@ -68,7 +63,7 @@ const setStockOpname = async (payload, userId) => {
       qty_change: qtyChange,
       balance_after: actual_qty,
       reference_id: refNo,
-      operator_name: userId || "SYSTEM", // Usually mapped by auth
+      operator_name: userId || "SYSTEM",
     }, { transaction });
 
     await transaction.commit();

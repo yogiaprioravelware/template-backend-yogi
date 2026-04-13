@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Inbound = require("../../models/Inbound");
 const InboundItem = require("../../models/InboundItem");
 const Item = require("../../models/Item");
@@ -17,7 +18,6 @@ const createInbound = async (inboundData) => {
 
   const { po_number, items } = inboundData;
 
-
   const existingPo = await Inbound.findOne({ where: { po_number } });
   if (existingPo) {
     logger.warn(`Creation failed: PO number ${po_number} already exists`);
@@ -26,33 +26,33 @@ const createInbound = async (inboundData) => {
     throw err;
   }
 
-  // Create inbound header
+  // Validate all SKUs exist using bulk query (Standard Enterprise - avoids Brute Force)
+  const skuCodes = items.map(item => item.sku_code);
+  const existingItems = await Item.findAll({
+    where: { sku_code: { [Op.in]: skuCodes } }
+  });
+
+  if (existingItems.length !== skuCodes.length) {
+    const foundSkus = existingItems.map(i => i.sku_code);
+    const missingSkus = skuCodes.filter(sku => !foundSkus.includes(sku));
+    logger.warn(`Creation failed: SKU codes not found: ${missingSkus.join(", ")}`);
+    const err = new Error(`The following SKU codes were not found: ${missingSkus.join(", ")}`);
+    err.status = 400;
+    throw err;
+  }
+
   const inbound = await Inbound.create({
     po_number,
     status: "PENDING",
   });
   logger.info(`Inbound header created for PO number: ${po_number}`);
 
-  // Validate all SKU codes exist in items table
-  for (const item of items) {
-    const existingItem = await Item.findOne({ where: { sku_code: item.sku_code } });
-    if (!existingItem) {
-      logger.warn(`Creation failed: SKU code ${item.sku_code} not found in items`);
-      const err = new Error(`SKU code ${item.sku_code} not found in items`);
-      err.status = 400;
-      throw err;
-    }
-  }
-
-  // Create inbound items (detail)
-  for (const item of items) {
-    await InboundItem.create({
-      inbound_id: inbound.id,
-      sku_code: item.sku_code,
-      qty_target: item.qty_target,
-      qty_received: 0,
-    });
-  }
+  await InboundItem.bulkCreate(items.map(item => ({
+    inbound_id: inbound.id,
+    sku_code: item.sku_code,
+    qty_target: item.qty_target,
+    qty_received: 0,
+  })));
   logger.info(`Inbound items created for PO number: ${po_number}`);
 
   return inbound;

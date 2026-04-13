@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Ambil ID inbound_items dan locations secara dinamis
+    // Fetch inbound_items and locations dynamically
     const [itemRows] = await queryInterface.sequelize.query(
       `SELECT id, inbound_id, sku_code from ${queryInterface.queryGenerator.quoteTable("inbound_items")};`
     );
@@ -11,7 +11,7 @@ module.exports = {
     );
 
     if (itemRows.length > 0 && locRows.length > 0) {
-      // Helper function untuk mencari ID berdasarkan SKU/Code
+      // Helper function to find ID by SKU/Code
       const findItemId = (sku) => {
           const row = itemRows.find(r => (r.sku_code || r.SKU_CODE) === sku);
           return row ? (row.id || row.ID) : null;

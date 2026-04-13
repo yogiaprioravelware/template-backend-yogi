@@ -2,7 +2,6 @@ const Item = require("../../models/Item");
 const Location = require("../../models/Location");
 const logger = require("../../utils/logger");
 
-// Service untuk mengambil semua item
 const getItems = async () => {
   logger.info("Fetching all items from the database");
   const items = await Item.findAll({

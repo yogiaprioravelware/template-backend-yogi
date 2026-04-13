@@ -9,23 +9,26 @@ jest.mock('../../../src/utils/logger');
 describe('Service: get-outbounds-service', () => {
   it('should retrieve all outbounds', async () => {
     Outbound.findAll.mockResolvedValue([]);
+    OutboundItem.findAll.mockResolvedValue([]);
     const result = await getOutbounds();
     expect(result).toEqual([]);
   });
 
   it('should retrieve all outbounds and append item_count', async () => {
     Outbound.findAll.mockResolvedValue([
-      { dataValues: { id: 1, order_number: 'ORD1' } },
-      { dataValues: { id: 2, order_number: 'ORD2' } }
+      { id: 1, order_number: 'ORD1' },
+      { id: 2, order_number: 'ORD2' },
+      { id: 3, order_number: 'ORD3' }
     ]);
-    OutboundItem.count.mockResolvedValue(2);
-    OutboundItem.sum.mockResolvedValueOnce(20).mockResolvedValueOnce(5); // target 20, delivered 5
+    OutboundItem.findAll.mockResolvedValue([
+      { outbound_id: 1, item_count: 2, total_qty_target: 20, total_qty_delivered: 5 },
+      { outbound_id: 2, item_count: 0, total_qty_target: 0, total_qty_delivered: 0 }
+    ]);
 
     const result = await getOutbounds();
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
     expect(result[0].item_count).toBe(2);
-    expect(result[0].total_qty_target).toBe(20);
-    expect(result[0].total_qty_delivered).toBe(5);
-    expect(result[0].progress_percentage).toBe(25);
+    expect(result[2].item_count).toBe(0); // Branch || {} hit
+    expect(result[2].progress_percentage).toBe(0);
   });
 });

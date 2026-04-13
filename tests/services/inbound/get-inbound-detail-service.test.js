@@ -15,17 +15,17 @@ describe('Service: get-inbound-detail-service', () => {
 
   it('should throw error if inbound not found', async () => {
     Inbound.findByPk.mockResolvedValue(null);
-    await expect(getInboundDetail(999)).rejects.toThrow('Inbound not found');
+    await expect(getInboundDetail(999)).rejects.toThrow('Inbound PO not found');
   });
 
   it('should return inbound details with items mapping', async () => {
     Inbound.findByPk.mockResolvedValue({ dataValues: { id: 1, po_number: 'PO1' } });
     InboundItem.findAll.mockResolvedValue([
-      { dataValues: { id: 10, sku_code: 'SKU1', qty_target: 5 } }
+      { id: 10, sku_code: 'SKU1', qty_target: 5 }
     ]);
-    Item.findOne.mockResolvedValue({
-      item_name: 'Test', category: 'C1', uom: 'PCS'
-    });
+    Item.findAll.mockResolvedValue([{
+      sku_code: 'SKU1', item_name: 'Test', category: 'C1', uom: 'PCS'
+    }]);
 
     const result = await getInboundDetail(1);
 
@@ -38,9 +38,9 @@ describe('Service: get-inbound-detail-service', () => {
   it('should return inbound details with items mapping even if item detail is missing', async () => {
     Inbound.findByPk.mockResolvedValue({ dataValues: { id: 1, po_number: 'PO1' } });
     InboundItem.findAll.mockResolvedValue([
-      { dataValues: { id: 10, sku_code: 'SKU_NONEXISTENT', qty_target: 5 } }
+      { id: 10, sku_code: 'SKU_NONEXISTENT', qty_target: 5 }
     ]);
-    Item.findOne.mockResolvedValue(null);
+    Item.findAll.mockResolvedValue([]);
 
     const result = await getInboundDetail(1);
 

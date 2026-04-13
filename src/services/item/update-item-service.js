@@ -3,7 +3,6 @@ const { updateItemSchema } = require("../../validations/item-validation");
 const logger = require("../../utils/logger");
 const { isValidEPC } = require("../../utils/rfid-validator");
 
-// Service untuk memperbarui data item
 const updateItem = async (id, itemData) => {
   logger.info(`Attempting to update item with id: ${id}`);
   
@@ -28,7 +27,6 @@ const updateItem = async (id, itemData) => {
     throw err;
   }
 
-  // Check RFID tag jika diubah
   if (itemData.rfid_tag && itemData.rfid_tag !== item.rfid_tag) {
     const existingRfid = await Item.findOne({ where: { rfid_tag: itemData.rfid_tag } });
     if (existingRfid) {
@@ -39,7 +37,6 @@ const updateItem = async (id, itemData) => {
     }
   }
 
-  // Check SKU code jika diubah
   if (itemData.sku_code && itemData.sku_code !== item.sku_code) {
     const existingSku = await Item.findOne({ where: { sku_code: itemData.sku_code } });
     if (existingSku) {

@@ -1,7 +1,9 @@
 const Item = require("../../models/Item");
 const logger = require("../../utils/logger");
 
-// Service untuk menghapus item
+/**
+ * Service to delete an item based on ID
+ */
 const deleteItem = async (id) => {
   logger.info(`Attempting to delete item with id: ${id}`);
   const item = await Item.findByPk(id);

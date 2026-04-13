@@ -16,7 +16,6 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
   let transaction;
   try {
     transaction = await sequelize.transaction();
-    // Find location by qr_string
     const location = await Location.findOne({
       where: { qr_string: qrString },
       transaction,
@@ -25,27 +24,20 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     if (!location) {
       logger.warn(`Set location failed: Location with QR string ${qrString} not found`);
       await transaction.rollback();
-      return errorResponse(400, "Location not found", {
-        message: "Lokasi dengan QR code tidak ditemukan",
-      });
+      return errorResponse(400, "Location QR code not found");
     }
 
     if (location.status !== "ACTIVE") {
       logger.warn(`Set location failed: Location ${location.location_code} is inactive`);
       await transaction.rollback();
-      return errorResponse(400, "Location is inactive", {
-        message: "Lokasi tidak aktif untuk penerimaan",
-      });
+      return errorResponse(400, "Location is inactive for receiving");
     }
 
-    // Find inbound and inbound_item
     const inbound = await Inbound.findByPk(inboundId, { transaction });
     if (!inbound) {
       logger.warn(`Set location failed: Inbound with id ${inboundId} not found`);
       await transaction.rollback();
-      return errorResponse(400, "Inbound not found", {
-        message: "PO tidak ditemukan",
-      });
+      return errorResponse(400, "Inbound PO not found");
     }
 
     const inboundItem = await InboundItem.findOne({
@@ -59,26 +51,19 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     if (!inboundItem) {
       logger.warn(`Set location failed: Inbound item with id ${inboundItemId} not found in inbound ${inboundId}`);
       await transaction.rollback();
-      return errorResponse(400, "Inbound item not found", {
-        message: "Item dalam PO tidak ditemukan",
-      });
+      return errorResponse(400, "Item not found in this PO");
     }
 
-    // Check if qty_received already equals qty_target
     if (inboundItem.qty_received >= inboundItem.qty_target) {
       logger.warn(`Set location failed: Quantity for inbound item ${inboundItemId} already completed`);
       await transaction.rollback();
-      return errorResponse(400, "Item quantity already completed", {
-        message: `Jumlah penerimaan untuk SKU sudah mencapai target`,
-      });
+      return errorResponse(400, "Item target quantity already completed");
     }
 
-    // Update qty_received +1
     inboundItem.qty_received += 1;
     await inboundItem.save({ transaction });
     logger.info(`Inbound item ${inboundItemId} quantity updated to ${inboundItem.qty_received}`);
 
-    // Create InboundReceivingLog entry
     await InboundReceivingLog.create({
       inbound_item_id: inboundItem.id,
       location_id: location.id,
@@ -87,14 +72,12 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     }, { transaction });
     logger.info(`Inbound receiving log created for inbound item ${inboundItemId} at location ${location.id}`);
 
-    // Fetch the actual item record
     const item = await Item.findOne({
       where: { sku_code: inboundItem.sku_code },
       transaction,
     });
 
     if (item) {
-      // 1. Update/Create ItemLocation stock
       let itemLoc = await ItemLocation.findOne({
         where: { item_id: item.id, location_id: location.id },
         transaction,
@@ -112,11 +95,9 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       }
       logger.info(`Item location stock updated for item ${item.id} at location ${location.id}`);
 
-      // 2. SELF-HEALING: Recalculate global current_stock from all locations
       await reconcileItemStock(item.id, transaction);
       logger.info(`Item total stock reconciled for SKU ${item.sku_code}`);
 
-      // 3. Log movement to Inventory Movement ledger
       await InventoryMovement.create({
         item_id: item.id,
         location_id: location.id,
@@ -129,7 +110,6 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       logger.info(`Inventory Movement logged for INBOUND ${inbound.po_number}`);
     }
 
-    // Check if all inbound_items are complete
     const allInboundItems = await InboundItem.findAll({
       where: { inbound_id: inboundId },
       transaction,

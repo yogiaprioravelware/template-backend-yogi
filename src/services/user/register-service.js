@@ -4,7 +4,6 @@ const Role = require("../../models/Role");
 const { registerSchema } = require("../../validations/user-validation");
 const logger = require("../../utils/logger");
 
-// Service untuk registrasi pengguna
 const registerUser = async (userData) => {
   logger.info("Attempting to register a new user");
   const { error } = registerSchema.validate(userData);
@@ -27,7 +26,6 @@ const registerUser = async (userData) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Tentukan role_id final
   let finalRoleId = role_id;
   let finalRoleName = "operator";
 

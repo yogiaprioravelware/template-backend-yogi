@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const userRouter = require("./routers/user");
 const itemRouter = require("./routers/item");
 const inboundRouter = require("./routers/inbound");
@@ -13,15 +14,19 @@ const requestLogger = require("./middlewares/request-logger");
 
 const rateLimit = require("express-rate-limit");
 const app = express();
+
+// Security Hardening
+app.use(helmet());
 app.disable("x-powered-by");
 
-// CORS first
-app.use(cors({
-  origin: true, 
+// CORS config
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 // Rate limiter for security
 const limiter = rateLimit({
