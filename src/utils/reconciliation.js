@@ -26,10 +26,10 @@ const reconcileItemStock = async (itemId, transaction) => {
       item.current_stock = totalStock;
       await item.save({ transaction });
       
-      if (oldStock !== totalStock) {
-        logger.warn(`Stock drift detected for item ${item.sku_code}. Old global stock: ${oldStock}, New calculated stock: ${totalStock}. Data reconciled.`);
-      } else {
+      if (oldStock === totalStock) {
         logger.info(`Stock for item ${item.sku_code} is already in sync (${totalStock}).`);
+      } else {
+        logger.warn(`Stock drift detected for item ${item.sku_code}. Old global stock: ${oldStock}, New calculated stock: ${totalStock}. Data reconciled.`);
       }
     }
 

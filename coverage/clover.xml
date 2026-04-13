@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1776067015038" clover="3.2.0">
-  <project timestamp="1776067015038" name="All files">
-    <metrics statements="1325" coveredstatements="1325" conditionals="351" coveredconditionals="351" methods="92" coveredmethods="92" elements="1768" coveredelements="1768" complexity="0" loc="1325" ncloc="1325" packages="11" files="69" classes="69"/>
+<coverage generated="1776067417244" clover="3.2.0">
+  <project timestamp="1776067417245" name="All files">
+    <metrics statements="1325" coveredstatements="1325" conditionals="345" coveredconditionals="345" methods="92" coveredmethods="92" elements="1762" coveredelements="1762" complexity="0" loc="1325" ncloc="1325" packages="11" files="69" classes="69"/>
     <package name="controllers">
       <metrics statements="279" coveredstatements="279" conditionals="62" coveredconditionals="62" methods="35" coveredmethods="35"/>
       <file name="inbound.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\inbound.js">
@@ -673,9 +673,9 @@
       </file>
     </package>
     <package name="services.inventory">
-      <metrics statements="63" coveredstatements="63" conditionals="26" coveredconditionals="26" methods="1" coveredmethods="1"/>
+      <metrics statements="63" coveredstatements="63" conditionals="22" coveredconditionals="22" methods="1" coveredmethods="1"/>
       <file name="transfer-location-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\inventory\transfer-location-service.js">
-        <metrics statements="63" coveredstatements="63" conditionals="26" coveredconditionals="26" methods="1" coveredmethods="1"/>
+        <metrics statements="63" coveredstatements="63" conditionals="22" coveredconditionals="22" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -706,11 +706,11 @@
         <line num="37" count="1" type="stmt"/>
         <line num="41" count="6" type="stmt"/>
         <line num="42" count="6" type="stmt"/>
-        <line num="44" count="6" type="cond" truecount="4" falsecount="0"/>
+        <line num="44" count="6" type="cond" truecount="2" falsecount="0"/>
         <line num="45" count="1" type="stmt"/>
         <line num="46" count="1" type="stmt"/>
         <line num="47" count="1" type="stmt"/>
-        <line num="49" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="49" count="5" type="cond" truecount="2" falsecount="0"/>
         <line num="50" count="1" type="stmt"/>
         <line num="51" count="1" type="stmt"/>
         <line num="52" count="1" type="stmt"/>
@@ -974,7 +974,7 @@
       </file>
     </package>
     <package name="services.outbound">
-      <metrics statements="155" coveredstatements="155" conditionals="50" coveredconditionals="50" methods="7" coveredmethods="7"/>
+      <metrics statements="155" coveredstatements="155" conditionals="48" coveredconditionals="48" methods="7" coveredmethods="7"/>
       <file name="create-outbound-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\outbound\create-outbound-service.js">
         <metrics statements="34" coveredstatements="34" conditionals="6" coveredconditionals="6" methods="1" coveredmethods="1"/>
         <line num="1" count="2" type="stmt"/>
@@ -1058,7 +1058,7 @@
         <line num="6" count="1" type="stmt"/>
       </file>
       <file name="scan-rfid-picking-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\outbound\scan-rfid-picking-service.js">
-        <metrics statements="85" coveredstatements="85" conditionals="28" coveredconditionals="28" methods="2" coveredmethods="2"/>
+        <metrics statements="85" coveredstatements="85" conditionals="26" coveredconditionals="26" methods="2" coveredmethods="2"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
@@ -1092,7 +1092,7 @@
         <line num="41" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
         <line num="46" count="10" type="stmt"/>
-        <line num="50" count="10" type="cond" truecount="4" falsecount="0"/>
+        <line num="50" count="10" type="cond" truecount="2" falsecount="0"/>
         <line num="51" count="1" type="stmt"/>
         <line num="52" count="1" type="stmt"/>
         <line num="53" count="1" type="stmt"/>
@@ -1473,8 +1473,8 @@
         <line num="26" count="3" type="stmt"/>
         <line num="27" count="3" type="stmt"/>
         <line num="29" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="30" count="2" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
         <line num="36" count="4" type="stmt"/>
         <line num="38" count="1" type="stmt"/>
         <line num="39" count="1" type="stmt"/>

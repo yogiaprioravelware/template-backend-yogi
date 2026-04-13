@@ -47,7 +47,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
       where: { qr_string: location_qr },
       transaction 
     });
-    if (!loc || loc.status !== "ACTIVE") {
+    if (loc?.status !== "ACTIVE") {
       logger.warn(`Picking failed: Location with QR ${location_qr} not found or inactive`);
       const err = new Error("Lokasi tidak ditemukan atau tidak aktif");
       err.status = 400;

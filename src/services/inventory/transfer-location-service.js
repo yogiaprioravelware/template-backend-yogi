@@ -41,12 +41,12 @@ const transferLocation = async (payload) => {
     const fromLoc = await Location.findByPk(from_location_id, { transaction });
     const toLoc = await Location.findByPk(to_location_id, { transaction });
 
-    if (!fromLoc || fromLoc.status !== "ACTIVE") {
+    if (fromLoc?.status !== "ACTIVE") {
       const err = new Error("Source location not found or inactive");
       err.status = 400;
       throw err;
     }
-    if (!toLoc || toLoc.status !== "ACTIVE") {
+    if (toLoc?.status !== "ACTIVE") {
       const err = new Error("Destination location not found or inactive");
       err.status = 400;
       throw err;
@@ -58,8 +58,8 @@ const transferLocation = async (payload) => {
       transaction,
     });
 
-    if (!sourceItemLoc || sourceItemLoc.stock < qty) {
-      const err = new Error(`Insufficient stock in source location (${fromLoc.location_code}). Available: ${sourceItemLoc ? sourceItemLoc.stock : 0}, Requested: ${qty}`);
+    if ((sourceItemLoc?.stock || 0) < qty) {
+      const err = new Error(`Insufficient stock in source location (${fromLoc.location_code}). Available: ${sourceItemLoc?.stock || 0}, Requested: ${qty}`);
       err.status = 400;
       throw err;
     }
