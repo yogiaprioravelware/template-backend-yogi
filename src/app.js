@@ -28,10 +28,21 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Rate limiter for security
-const limiter = rateLimit({
+// Specialized limiter for rapid scanning (Inbound/Outbound)
+const scannerLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // 100 scans per minute per IP
+  message: {
+    success: false,
+    message: "Scanning frequency too high, please wait a moment"
+  },
+  skip: (req) => process.env.NODE_ENV === "test",
+});
+
+// Relaxed global limiter for warehouse operations
+const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  max: 1000, // 1000 requests per 15 minutes
   message: {
     success: false,
     message: "Too many requests from this IP, please try again after 15 minutes"
@@ -39,7 +50,11 @@ const limiter = rateLimit({
   skip: (req) => process.env.NODE_ENV === "test",
 });
 
-app.use(limiter);
+app.use(globalLimiter);
+
+// Specific routes that need higher throughput but still protected
+app.use("/api/inbounds/:id/scan-item", scannerLimiter);
+app.use("/api/outbounds/:id/scan", scannerLimiter);
 app.use(express.json());
 app.use(requestLogger);
 
