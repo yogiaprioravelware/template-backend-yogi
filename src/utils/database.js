@@ -20,6 +20,12 @@ const sequelize = new Sequelize(
         trustServerCertificate: true,
       }
     } : {},
+    pool: {
+      max: 10,
+      min: 2,
+      acquire: 30000,
+      idle: 10000
+    }
   }
 );
 

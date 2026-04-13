@@ -11,11 +11,24 @@ const inventoryRouter = require("./routers/inventory");
 const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
+const rateLimit = require("express-rate-limit");
 const app = express();
 app.disable("x-powered-by");
 
+// Rate limiter for security
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: {
+    success: false,
+    message: "Too many requests from this IP, please try again after 15 minutes"
+  },
+  skip: (req) => process.env.NODE_ENV === "test",
+});
+
+app.use(limiter);
 app.use(cors({
-  origin: true, // Allow all origins for the testing phase
+  origin: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true

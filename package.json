@@ -13,7 +13,8 @@
     "migrate:up": "sequelize-cli db:migrate",
     "migrate:down": "sequelize-cli db:migrate:undo",
     "seed:up": "sequelize-cli db:seed:all --seeders-path src/seeders",
-    "seed:down": "sequelize-cli db:seed:undo:all --seeders-path src/seeders"
+    "seed:down": "sequelize-cli db:seed:undo:all --seeders-path src/seeders",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
     "node-pg-migrate": "^8.0.4",
@@ -33,7 +35,9 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
     "jest": "^30.3.0",
+    "lint-staged": "^16.4.0",
     "nodemon": "^3.1.14",
     "sequelize-cli": "^6.6.5",
     "supertest": "^7.2.2"

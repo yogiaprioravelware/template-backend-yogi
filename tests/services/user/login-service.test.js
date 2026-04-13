@@ -60,21 +60,20 @@ describe('Service: loginUser', () => {
     const validData = { email: 'test@test.com', password: 'password123' };
     
     const result = await loginUser(validData);
-
-    expect(result).toEqual({
-      user: {
-        id: 1,
-        email: 'test@test.com',
-        username: 'testuser',
-        role: 'admin',
-        role_id: 1,
-        permissions: fakePermissions
-      },
-      token: 'fake_jwt_token'
+    
+    expect(result.user).toEqual({
+      id: 1,
+      email: 'test@test.com',
+      username: 'testuser',
+      role: 'admin',
+      role_id: 1,
+      permissions: fakePermissions
     });
+    expect(result).toHaveProperty('accessToken');
+    expect(result).toHaveProperty('refreshToken');
     
     expect(User.findOne).toHaveBeenCalledWith({ where: { email: validData.email } });
     expect(bcrypt.compare).toHaveBeenCalledWith(validData.password, fakeUser.password);
-    expect(jwt.sign).toHaveBeenCalled();
+    expect(jwt.sign).toHaveBeenCalledTimes(2);
   });
 });

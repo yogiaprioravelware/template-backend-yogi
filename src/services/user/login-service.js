@@ -33,26 +33,35 @@ const loginUser = async (userData) => {
     throw err;
   }
 
-  const token = jwt.sign(
-    { id: user.id, role: user.role, role_id: user.role_id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-
   const getUserPermissions = require("../role/get-user-permissions-service");
   const permissions = await getUserPermissions(user);
 
-  logger.info(`User ${email} logged in successfully`);
-  return { 
+  // Generate Dual Tokens
+  const accessToken = jwt.sign(
+    { id: user.id, username: user.username, role: user.role, role_id: user.role_id },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_ACCESS_EXPIRY || '15m' }
+  );
+
+  const refreshToken = jwt.sign(
+    { id: user.id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d' }
+  );
+
+  logger.info(`Successful login for user: ${email}`);
+
+  return {
     user: {
       id: user.id,
       email: user.email,
       username: user.username,
       role: user.role,
       role_id: user.role_id,
-      permissions
-    }, 
-    token 
+      permissions,
+    },
+    accessToken,
+    refreshToken
   };
 };
 

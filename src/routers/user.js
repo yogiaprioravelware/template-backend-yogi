@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post("/register", userController.registerUser);
 router.post("/login", userController.loginUser);
+router.post("/refresh", userController.refreshToken);
 
 router.get("/", authMiddleware, authorize(PERMISSIONS.USER_READ), userController.getUsers);
 router.get("/:id", authMiddleware, authorize(PERMISSIONS.USER_READ), userController.getUserById);

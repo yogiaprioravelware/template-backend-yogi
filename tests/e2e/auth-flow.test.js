@@ -53,14 +53,15 @@ describe("E2E User & Authentication Flow", () => {
       expect(res.status).toBe(401);
     });
 
-    it("should login successfully and return token", async () => {
+    it("should login successfully and return access and refresh tokens", async () => {
       const res = await request(app).post("/api/users/login").send({
         email: testEmail,
         password: "password123",
       });
       expect(res.status).toBe(200);
-      expect(res.body.data).toHaveProperty("token");
-      token = res.body.data.token;
+      expect(res.body.data).toHaveProperty("accessToken");
+      expect(res.body.data).toHaveProperty("refreshToken");
+      token = res.body.data.accessToken;
     });
   });
 

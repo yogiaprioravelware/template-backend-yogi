@@ -53,7 +53,7 @@
               "script": {
                 "exec": [
                   "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 500]); });",
-                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.collectionVariables.set('jwt_token', res.data.token); pm.collectionVariables.set('user_id', res.data.user.id); }"
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.collectionVariables.set('jwt_token', res.data.accessToken); pm.collectionVariables.set('refresh_token', res.data.refreshToken); pm.collectionVariables.set('user_id', res.data.user.id); }"
                 ],
                 "type": "text/javascript"
               }

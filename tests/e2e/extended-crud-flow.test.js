@@ -20,7 +20,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
       email: "admin@e2e.com",
       password: "password123",
     });
-    adminToken = loginRes.body.data.token;
+    adminToken = loginRes.body.data.accessToken;
     adminId = loginRes.body.data.user.id;
   });
 
@@ -51,7 +51,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
         email: `operator${uniqueSuffix}@e2e.com`,
         password: "password123",
       });
-      const opToken = loginRes.body.data.token;
+      const opToken = loginRes.body.data.accessToken;
 
       // Operator doesn't have USER_UPDATE permission required for this endpoint
       const res = await request(app).get("/api/roles/permissions").set("Authorization", `Bearer ${opToken}`);

@@ -19,7 +19,7 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
       email: "admin@e2e.com",
       password: "password123",
     });
-    adminToken = loginRes.body.data.token;
+    adminToken = loginRes.body.data.accessToken;
 
     // Prep Master Data (Item & Location)
     await request(app)
@@ -138,7 +138,7 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
       const res = await request(app)
         .post(`/api/outbounds/${outboundId}/scan`)
         .set("Authorization", `Bearer ${adminToken}`)
-        .send({ rfid_tag: testRfid });
+        .send({ rfid_tag: testRfid, location_qr: qrString });
       
       expect(res.status).toBe(200);
       expect(res.body.data.outbound_status).toBe("DONE");

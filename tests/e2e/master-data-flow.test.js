@@ -13,7 +13,7 @@ describe("E2E Master Data Flow (Item & Location)", () => {
       email: "admin@e2e.com",
       password: "password123",
     });
-    adminToken = loginRes.body.data.token;
+    adminToken = loginRes.body.data.accessToken;
   });
 
   describe("1. Item Management", () => {

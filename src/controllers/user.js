@@ -80,6 +80,17 @@ const assignRole = async (req, res, next) => {
   }
 };
 
+const refreshToken = async (req, res, next) => {
+  logger.info("Token refresh attempt");
+  try {
+    const { refreshToken: token } = req.body;
+    const result = await userService.refreshToken(token);
+    res.json(response.success(result));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -88,4 +99,5 @@ module.exports = {
   updateUser,
   deleteUser,
   assignRole,
+  refreshToken,
 };
