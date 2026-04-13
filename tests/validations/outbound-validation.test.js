@@ -20,7 +20,7 @@ describe('Validation: outbound-validation', () => {
 
   describe('scanRfidSchema', () => {
     it('should validate rfid_tag and location_qr', () => {
-      const { error } = scanRfidSchema.validate({ rfid_tag: 'TAG123', location_qr: 'QR123' });
+      const { error } = scanRfidSchema.validate({ rfid_tag: '30342509181408C000000101', location_qr: 'QR123' });
       expect(error).toBeUndefined();
     });
   });

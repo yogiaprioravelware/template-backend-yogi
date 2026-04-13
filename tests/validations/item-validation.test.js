@@ -4,7 +4,7 @@ describe('Validation: item-validation', () => {
   describe('registerItemSchema', () => {
     it('should validate correct data', () => {
       const data = {
-        rfid_tag: 'RFID123',
+        rfid_tag: '30342509181408C000000101',
         item_name: 'Test Item',
         sku_code: 'SKU123',
         category: 'Electronics',

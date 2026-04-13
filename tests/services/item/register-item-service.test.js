@@ -38,7 +38,7 @@ describe('Service: register-item-service', () => {
   });
 
   it('should throw error if validation fails', async () => {
-    const invalidData = { rfid_tag: '123' }; // missing other fields
+    const invalidData = { rfid_tag: '30342509181408C000000101' }; // Valid EPC but missing other fields
     await expect(registerItem(invalidData)).rejects.toThrow();
   });
 
@@ -76,7 +76,7 @@ describe('Service: register-item-service', () => {
   });
 
   it('should assign to default receiving area if location_id is not provided', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: null };
+    const validData = { rfid_tag: '30342509181408C000000101', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: null };
     Item.findOne.mockResolvedValue(null);
     Item.create.mockResolvedValue({ id: 1, dataValues: { id: 1, ...validData } });
     Location.findOne.mockResolvedValue({ id: 99 });
@@ -94,7 +94,7 @@ describe('Service: register-item-service', () => {
   });
 
   it('should register item but warn if default receiving area is also not found', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: null };
+    const validData = { rfid_tag: '30342509181408C000000101', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 10, location_id: null };
     Item.findOne.mockResolvedValue(null);
     Item.create.mockResolvedValue({ id: 1, dataValues: { id: 1, ...validData } });
     Location.findOne.mockResolvedValue(null);
@@ -107,7 +107,7 @@ describe('Service: register-item-service', () => {
   });
 
   it('should register item without assigning location if current_stock is 0', async () => {
-    const validData = { rfid_tag: '123', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 0, location_id: 1 };
+    const validData = { rfid_tag: '30342509181408C000000101', item_name: 'Item A', sku_code: 'SKU001', category: 'C', uom: 'PCS', current_stock: 0, location_id: 1 };
     Item.findOne.mockResolvedValue(null);
     Item.create.mockResolvedValue({ id: 1, dataValues: { id: 1, ...validData } });
 

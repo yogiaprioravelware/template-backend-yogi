@@ -1,10 +1,17 @@
 const Item = require("../../models/Item");
 const { updateItemSchema } = require("../../validations/item-validation");
 const logger = require("../../utils/logger");
+const { isValidEPC } = require("../../utils/rfid-validator");
 
 // Service untuk memperbarui data item
 const updateItem = async (id, itemData) => {
   logger.info(`Attempting to update item with id: ${id}`);
+  
+  if (itemData.rfid_tag && !isValidEPC(itemData.rfid_tag)) {
+    const err = new Error("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
+    err.status = 400;
+    throw err;
+  }
   const { error } = updateItemSchema.validate(itemData);
   if (error) {
     logger.warn(`Validation error during item update: ${error.details[0].message}`);

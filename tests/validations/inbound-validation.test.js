@@ -18,7 +18,7 @@ describe('Validation: inbound-validation', () => {
 
   describe('scanItemSchema', () => {
     it('should validate rfid_tag', () => {
-      const { error } = scanItemSchema.validate({ rfid_tag: 'TAG123' });
+      const { error } = scanItemSchema.validate({ rfid_tag: '30342509181408C000000101' });
       expect(error).toBeUndefined();
     });
   });

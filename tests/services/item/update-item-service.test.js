@@ -20,11 +20,11 @@ describe('Service: update-item-service', () => {
   });
 
   it('should throw error if new rfid is taken', async () => {
-    const mockItem = { id: 1, rfid_tag: 'oldRFID' };
+    const mockItem = { id: 1, rfid_tag: '30342509181408C000000001' };
     Item.findByPk.mockResolvedValue(mockItem);
     Item.findOne.mockResolvedValue({ id: 2 }); // Another item has this RFID
 
-    await expect(updateItem(1, { rfid_tag: 'newRFID' })).rejects.toThrow('RFID tag already in use');
+    await expect(updateItem(1, { rfid_tag: '30342509181408C000000002' })).rejects.toThrow('RFID tag already in use');
   });
 
   it('should throw error if new sku is taken', async () => {
@@ -36,7 +36,7 @@ describe('Service: update-item-service', () => {
   });
 
   it('should update item successfully', async () => {
-    const mockItem = { id: 1, rfid_tag: 'tag1', update: jest.fn().mockResolvedValue(true) };
+    const mockItem = { id: 1, rfid_tag: '30342509181408C000000001', update: jest.fn().mockResolvedValue(true) };
     Item.findByPk.mockResolvedValue(mockItem);
 
     const result = await updateItem(1, { current_stock: 50 });
@@ -46,13 +46,13 @@ describe('Service: update-item-service', () => {
   });
 
   it('should update item successfully when changing rfid and sku to available ones', async () => {
-    const mockItem = { id: 1, rfid_tag: 'tag1', sku_code: 'sku1', update: jest.fn().mockResolvedValue(true) };
+    const mockItem = { id: 1, rfid_tag: '30342509181408C000000001', sku_code: 'sku1', update: jest.fn().mockResolvedValue(true) };
     Item.findByPk.mockResolvedValue(mockItem);
     Item.findOne.mockResolvedValue(null); // No existing rfid/sku
 
-    const result = await updateItem(1, { rfid_tag: 'tag2', sku_code: 'sku2' });
+    const result = await updateItem(1, { rfid_tag: '30342509181408C000000002', sku_code: 'sku2' });
 
     expect(Item.findOne).toHaveBeenCalledTimes(2); // checked both
-    expect(mockItem.update).toHaveBeenCalledWith({ rfid_tag: 'tag2', sku_code: 'sku2' });
+    expect(mockItem.update).toHaveBeenCalledWith({ rfid_tag: '30342509181408C000000002', sku_code: 'sku2' });
   });
 });

@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { isValidEPC } = require("../utils/rfid-validator");
 
 const createOutboundSchema = Joi.object({
   order_number: Joi.string().required(),
@@ -15,7 +16,12 @@ const createOutboundSchema = Joi.object({
 });
 
 const scanRfidSchema = Joi.object({
-  rfid_tag: Joi.string().required(),
+  rfid_tag: Joi.string().required().custom((value, helpers) => {
+    if (!isValidEPC(value)) {
+      return helpers.message("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
+    }
+    return value;
+  }),
   location_qr: Joi.string().required(), // Now mandatory for location-aware picking
 });
 
