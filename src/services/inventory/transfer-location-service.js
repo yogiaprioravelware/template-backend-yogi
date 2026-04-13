@@ -26,9 +26,9 @@ const transferLocation = async (payload) => {
     throw err;
   }
 
-  const transaction = await sequelize.transaction();
-
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     // Validate Item
     const item = await Item.findByPk(item_id, { transaction });
     if (!item) {

@@ -179,6 +179,46 @@ describe('Service: set-location-service', () => {
 
     const result = await setLocation(1, 1, 'QR1');
     expect(result.success).toBe(true);
+    // Cover 'item' not found branch (line 96)
+    const { reconcileItemStock } = require('../../../src/utils/reconciliation');
+    expect(reconcileItemStock).not.toHaveBeenCalled();
+  });
+
+  it('should successfully set location when itemLoc already exists', async () => {
+    Location.findOne.mockResolvedValue({ id: 10, status: 'ACTIVE' });
+    Inbound.findByPk.mockResolvedValue({ id: 1, status: 'PROCES', save: jest.fn() });
+    const mockInboundItem = { id: 20, sku_code: 'SKU1', qty_received: 0, qty_target: 2, save: jest.fn() };
+    InboundItem.findOne.mockResolvedValue(mockInboundItem);
+    Item.findOne.mockResolvedValue({ id: 100, sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    
+    // Cover branch: itemLoc exists (line 103)
+    const ItemLocation = require('../../../src/models/ItemLocation');
+    const mockItemLoc = { stock: 5, save: jest.fn() };
+    ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+
+    InboundItem.findAll.mockResolvedValue([mockInboundItem]);
+
+    await setLocation(1, 1, 'QR1');
+    expect(mockItemLoc.save).toHaveBeenCalled();
+  });
+
+  it('should successfully set location and NOT update status if already PROCES', async () => {
+    Location.findOne.mockResolvedValue({ id: 10, status: 'ACTIVE' });
+    const mockInbound = { id: 1, status: 'PROCES', save: jest.fn() };
+    Inbound.findByPk.mockResolvedValue(mockInbound);
+    
+    const mockInboundItem = { id: 20, sku_code: 'SKU1', qty_received: 0, qty_target: 5, save: jest.fn() };
+    InboundItem.findOne.mockResolvedValue(mockInboundItem);
+    Item.findOne.mockResolvedValue({ id: 100, sku_code: 'SKU1', current_stock: 10, save: jest.fn() });
+    
+    InboundItem.findAll.mockResolvedValue([mockInboundItem]);
+
+    const result = await setLocation(1, 1, 'QR1');
+    
+    // Status was PROCES and not all complete, so it should stay PROCES
+    // The code only updates if status is PENDING. This covers the 'else' of 'else if (PENDING)' (line 147)
+    expect(mockInbound.status).toBe('PROCES');
+    expect(mockInbound.save).not.toHaveBeenCalledWith(expect.objectContaining({ status: 'PROCES' }));
   });
 
   it('should handle crash and return 500 error', async () => {
@@ -187,5 +227,13 @@ describe('Service: set-location-service', () => {
     expect(result.success).toBe(false);
     expect(result.statusCode).toBe(500);
     expect(result.message).toBe('Crash DB');
+  });
+
+  it('should handle transaction start failure', async () => {
+    const sequelize = require('../../../src/utils/database');
+    sequelize.transaction.mockRejectedValueOnce(new Error('Transaction Failed'));
+    const result = await setLocation(1, 1, 'QR1');
+    expect(result.success).toBe(false);
+    expect(result.message).toBe('Transaction Failed');
   });
 });

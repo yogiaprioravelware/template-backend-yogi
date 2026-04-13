@@ -139,4 +139,10 @@ describe('Service: transfer-location-service', () => {
     expect(InventoryMovement.create).toHaveBeenCalledTimes(2);
     expect(mockTransaction.commit).toHaveBeenCalled();
   });
+
+  it('should handle transaction start failure', async () => {
+    const payload = { item_id: 1, from_location_id: 1, to_location_id: 2, qty: 10 };
+    sequelize.transaction.mockRejectedValueOnce(new Error('Transaction Failed'));
+    await expect(transferLocation(payload)).rejects.toThrow('Transaction Failed');
+  });
 });

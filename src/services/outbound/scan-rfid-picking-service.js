@@ -22,9 +22,9 @@ const scanRfidPicking = async (outboundId, rfidData) => {
   }
 
   const { rfid_tag, location_qr } = rfidData;
-  const transaction = await sequelize.transaction();
-
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     // Check outbound ada atau tidak
     const outbound = await Outbound.findByPk(outboundId, { transaction });
     if (!outbound) {

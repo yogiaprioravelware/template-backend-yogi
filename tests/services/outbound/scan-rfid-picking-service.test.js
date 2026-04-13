@@ -213,4 +213,32 @@ describe('Service: scan-rfid-picking-service', () => {
     await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' }))
       .rejects.toThrow('Stok di lokasi');
   });
+
+  it('should process picking successfully and save (not destroy) itemLoc if stock > 0', async () => {
+    const mockOutbound = { status: 'PENDING', order_number: 'ORD-123', save: jest.fn() };
+    const mockItem = { id: 1, sku_code: 'A', rfid_tag: '30342509181408C000000101', current_stock: 10, save: jest.fn() };
+    const mockOutboundItem = { sku_code: 'A', qty_delivered: 0, qty_target: 1, save: jest.fn() };
+    const mockItemLoc = { stock: 5, location_id: 2, save: jest.fn(), destroy: jest.fn() }; // Stock 5 -> should decrement to 4
+    
+    Outbound.findByPk.mockResolvedValue(mockOutbound);
+    Location.findOne.mockResolvedValue({ id: 2, status: 'ACTIVE' });
+    Item.findOne.mockResolvedValue(mockItem);
+    ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+    InventoryMovement.create.mockResolvedValue({});
+    OutboundItem.findOne.mockResolvedValue(mockOutboundItem);
+    OutboundItem.findAll.mockResolvedValue([mockOutboundItem]);
+
+    await scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' });
+
+    expect(mockItemLoc.stock).toBe(4);
+    expect(mockItemLoc.save).toHaveBeenCalled();
+    expect(mockItemLoc.destroy).not.toHaveBeenCalled();
+  });
+
+  it('should handle transaction start failure', async () => {
+    const sequelize = require('../../../src/utils/database');
+    sequelize.transaction.mockRejectedValueOnce(new Error('Transaction Failed'));
+    await expect(scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' }))
+      .rejects.toThrow('Transaction Failed');
+  });
 });

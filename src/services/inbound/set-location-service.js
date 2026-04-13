@@ -13,9 +13,9 @@ const { reconcileItemStock } = require("../../utils/reconciliation"); // Added
 const setLocation = async (inboundId, inboundItemId, qrString) => {
   logger.info(`Setting location for inbound item ${inboundItemId} in inbound ${inboundId} with QR string: ${qrString}`);
   
-  const transaction = await sequelize.transaction(); // Start Transaction
-
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
     // Find location by qr_string
     const location = await Location.findOne({
       where: { qr_string: qrString },
