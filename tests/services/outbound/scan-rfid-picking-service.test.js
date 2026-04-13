@@ -1,4 +1,4 @@
-﻿const scanRfidPicking = require('../../../src/services/outbound/scan-rfid-picking-service');
+const scanRfidPicking = require('../../../src/services/outbound/scan-rfid-picking-service');
 const Outbound = require('../../../src/models/Outbound');
 const OutboundItem = require('../../../src/models/OutboundItem');
 const Item = require('../../../src/models/Item');
@@ -34,6 +34,15 @@ jest.mock('../../../src/models/InventoryMovement', () => {
   return SequelizeModel;
 });
 jest.mock('../../../src/utils/logger');
+jest.mock('../../../src/utils/database', () => ({
+  transaction: jest.fn(() => ({
+    commit: jest.fn(),
+    rollback: jest.fn()
+  }))
+}));
+jest.mock('../../../src/utils/reconciliation', () => ({
+  reconcileItemStock: jest.fn()
+}));
 
 describe('Service: scan-rfid-picking-service', () => {
   afterEach(() => {

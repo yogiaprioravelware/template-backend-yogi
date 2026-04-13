@@ -4,19 +4,27 @@ const Inbound = require("../../models/Inbound");
 const InboundItem = require("../../models/InboundItem");
 const InboundReceivingLog = require("../../models/InboundReceivingLog");
 const InventoryMovement = require("../../models/InventoryMovement");
+const ItemLocation = require("../../models/ItemLocation"); // Added as proper import
 const { errorResponse } = require("../../utils/response");
 const logger = require("../../utils/logger");
+const sequelize = require("../../utils/database"); // Added
+const { reconcileItemStock } = require("../../utils/reconciliation"); // Added
 
 const setLocation = async (inboundId, inboundItemId, qrString) => {
   logger.info(`Setting location for inbound item ${inboundItemId} in inbound ${inboundId} with QR string: ${qrString}`);
+  
+  const transaction = await sequelize.transaction(); // Start Transaction
+
   try {
     // Find location by qr_string
     const location = await Location.findOne({
       where: { qr_string: qrString },
+      transaction,
     });
 
     if (!location) {
       logger.warn(`Set location failed: Location with QR string ${qrString} not found`);
+      await transaction.rollback();
       return errorResponse(400, "Location not found", {
         message: "Lokasi dengan QR code tidak ditemukan",
       });
@@ -24,15 +32,17 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
 
     if (location.status !== "ACTIVE") {
       logger.warn(`Set location failed: Location ${location.location_code} is inactive`);
+      await transaction.rollback();
       return errorResponse(400, "Location is inactive", {
         message: "Lokasi tidak aktif untuk penerimaan",
       });
     }
 
     // Find inbound and inbound_item
-    const inbound = await Inbound.findByPk(inboundId);
+    const inbound = await Inbound.findByPk(inboundId, { transaction });
     if (!inbound) {
       logger.warn(`Set location failed: Inbound with id ${inboundId} not found`);
+      await transaction.rollback();
       return errorResponse(400, "Inbound not found", {
         message: "PO tidak ditemukan",
       });
@@ -43,10 +53,12 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
         id: inboundItemId,
         inbound_id: inboundId,
       },
+      transaction,
     });
 
     if (!inboundItem) {
       logger.warn(`Set location failed: Inbound item with id ${inboundItemId} not found in inbound ${inboundId}`);
+      await transaction.rollback();
       return errorResponse(400, "Inbound item not found", {
         message: "Item dalam PO tidak ditemukan",
       });
@@ -55,6 +67,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     // Check if qty_received already equals qty_target
     if (inboundItem.qty_received >= inboundItem.qty_target) {
       logger.warn(`Set location failed: Quantity for inbound item ${inboundItemId} already completed`);
+      await transaction.rollback();
       return errorResponse(400, "Item quantity already completed", {
         message: `Jumlah penerimaan untuk SKU sudah mencapai target`,
       });
@@ -62,7 +75,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
 
     // Update qty_received +1
     inboundItem.qty_received += 1;
-    await inboundItem.save();
+    await inboundItem.save({ transaction });
     logger.info(`Inbound item ${inboundItemId} quantity updated to ${inboundItem.qty_received}`);
 
     // Create InboundReceivingLog entry
@@ -71,52 +84,55 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       location_id: location.id,
       qty_received: 1,
       received_at: new Date(),
-    });
+    }, { transaction });
     logger.info(`Inbound receiving log created for inbound item ${inboundItemId} at location ${location.id}`);
 
-    // Update item current_stock +1
+    // Fetch the actual item record
     const item = await Item.findOne({
       where: { sku_code: inboundItem.sku_code },
+      transaction,
     });
 
     if (item) {
-      item.current_stock += 1;
-      await item.save();
-      logger.info(`Item stock for SKU ${item.sku_code} updated to ${item.current_stock}`);
-
-      const ItemLocation = require("../../models/ItemLocation");
+      // 1. Update/Create ItemLocation stock
       let itemLoc = await ItemLocation.findOne({
-        where: { item_id: item.id, location_id: location.id }
+        where: { item_id: item.id, location_id: location.id },
+        transaction,
       });
 
       if (itemLoc) {
         itemLoc.stock += 1;
-        await itemLoc.save();
+        await itemLoc.save({ transaction });
       } else {
         itemLoc = await ItemLocation.create({
           item_id: item.id,
           location_id: location.id,
           stock: 1
-        });
+        }, { transaction });
       }
-      logger.info(`Item location stock updated to ${itemLoc.stock} for item ${item.id} at location ${location.id}`);
+      logger.info(`Item location stock updated for item ${item.id} at location ${location.id}`);
 
-      // Log movement to Inventory Movement ledger
+      // 2. SELF-HEALING: Recalculate global current_stock from all locations
+      await reconcileItemStock(item.id, transaction);
+      logger.info(`Item total stock reconciled for SKU ${item.sku_code}`);
+
+      // 3. Log movement to Inventory Movement ledger
       await InventoryMovement.create({
         item_id: item.id,
         location_id: location.id,
         type: "INBOUND",
-        qty_change: 1, // Always +1 in inbound receiving per scan
+        qty_change: 1,
         balance_after: itemLoc.stock,
         reference_id: inbound.po_number,
-        operator_name: "SYSTEM", // Will enhance with user_id context later
-      });
+        operator_name: "SYSTEM",
+      }, { transaction });
       logger.info(`Inventory Movement logged for INBOUND ${inbound.po_number}`);
     }
 
     // Check if all inbound_items are complete
     const allInboundItems = await InboundItem.findAll({
       where: { inbound_id: inboundId },
+      transaction,
     });
 
     const allComplete = allInboundItems.every(
@@ -126,21 +142,22 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
     // Update inbound status if all complete
     if (allComplete) {
       inbound.status = "DONE";
-      await inbound.save();
+      await inbound.save({ transaction });
       logger.info(`Inbound ${inboundId} status updated to DONE`);
     } else if (inbound.status === "PENDING") {
-      // Set to PROCES if any item is partially received
       inbound.status = "PROCES";
-      await inbound.save();
+      await inbound.save({ transaction });
       logger.info(`Inbound ${inboundId} status updated to PROCES`);
     }
 
-    // Count completed items
+    await transaction.commit(); // COMMIT ALL CHANGES
+    logger.info(`Transaction committed successfully for inbound ${inboundId}`);
+
+    // Re-fetch all items to calculate progress (after commit to be safe, or use transaction)
     const completedCount = allInboundItems.filter(
       (ii) => ii.qty_received >= ii.qty_target
     ).length;
 
-    logger.info(`Item received successfully for inbound ${inboundId}`);
     return {
       success: true,
       statusCode: 200,
@@ -174,6 +191,7 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
       },
     };
   } catch (error) {
+    if (transaction) await transaction.rollback();
     logger.error(`Error setting location for inbound ${inboundId}: ${error.message}`);
     return errorResponse(
       500,
@@ -184,4 +202,4 @@ const setLocation = async (inboundId, inboundItemId, qrString) => {
   }
 };
 
-module.exports = { setLocation };
+module.exports = { setLocation };

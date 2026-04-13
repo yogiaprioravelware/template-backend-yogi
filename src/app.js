@@ -15,6 +15,14 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 app.disable("x-powered-by");
 
+// CORS first
+app.use(cors({
+  origin: true, 
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
 // Rate limiter for security
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -27,12 +35,6 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(cors({
-  origin: true, 
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
 app.use(express.json());
 app.use(requestLogger);
 

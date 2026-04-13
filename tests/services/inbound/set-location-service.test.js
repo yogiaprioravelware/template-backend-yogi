@@ -40,6 +40,24 @@ jest.mock('../../../src/models/Inbound');
 jest.mock('../../../src/models/InboundItem');
 jest.mock('../../../src/models/InboundReceivingLog');
 jest.mock('../../../src/utils/logger');
+jest.mock('../../../src/utils/database', () => ({
+  transaction: jest.fn(() => ({
+    commit: jest.fn(),
+    rollback: jest.fn()
+  })),
+  define: jest.fn(() => ({
+    belongsTo: jest.fn(),
+    hasMany: jest.fn(),
+    belongsToMany: jest.fn(),
+    findOne: jest.fn(),
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    sum: jest.fn(),
+  })),
+}));
+jest.mock('../../../src/utils/reconciliation', () => ({
+  reconcileItemStock: jest.fn()
+}));
 
 describe('Service: set-location-service', () => {
   afterEach(() => {

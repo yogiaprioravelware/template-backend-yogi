@@ -5,6 +5,7 @@ const InventoryMovement = require("../../models/InventoryMovement");
 const { transferLocationSchema } = require("../../validations/inventory-validation");
 const sequelize = require("../../utils/database");
 const logger = require("../../utils/logger");
+const { reconcileItemStock } = require("../../utils/reconciliation"); // Added
 
 const transferLocation = async (payload) => {
   logger.info(`Attempting internal transfer with payload: ${JSON.stringify(payload)}`);
@@ -111,6 +112,10 @@ const transferLocation = async (payload) => {
       operator_name: "SYSTEM",
     }, { transaction });
 
+    // 3. SELF-HEALING: Recalculate global current_stock from all locations
+    // Internal transfer shouldn't change the total mathematically, but this ensures integrity
+    await reconcileItemStock(item.id, transaction);
+
     await transaction.commit();
     logger.info(`Successfully transferred ${qty} of item ${item.sku_code} from ${fromLoc.location_code} to ${toLoc.location_code}`);
 
@@ -127,7 +132,7 @@ const transferLocation = async (payload) => {
       }
     };
   } catch (err) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error(`Transfer failed: ${err.message}`);
     throw err;
   }

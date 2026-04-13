@@ -30,6 +30,9 @@ jest.mock('../../../src/utils/logger');
 jest.mock('../../../src/utils/database', () => ({
   transaction: jest.fn()
 }));
+jest.mock('../../../src/utils/reconciliation', () => ({
+  reconcileItemStock: jest.fn()
+}));
 
 describe('Service: transfer-location-service', () => {
   let mockTransaction;
