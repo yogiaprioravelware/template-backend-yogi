@@ -53,6 +53,10 @@ jest.mock('../../../src/utils/database', () => ({
     findAll: jest.fn(),
     findByPk: jest.fn(),
     sum: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    save: jest.fn(),
+    destroy: jest.fn(),
   })),
 }));
 jest.mock('../../../src/utils/reconciliation', () => ({

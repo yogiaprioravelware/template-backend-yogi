@@ -38,7 +38,20 @@ jest.mock('../../../src/utils/database', () => ({
   transaction: jest.fn(() => ({
     commit: jest.fn(),
     rollback: jest.fn()
-  }))
+  })),
+  define: jest.fn(() => ({
+    belongsTo: jest.fn(),
+    hasMany: jest.fn(),
+    belongsToMany: jest.fn(),
+    findOne: jest.fn(),
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    sum: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    save: jest.fn(),
+    destroy: jest.fn(),
+  })),
 }));
 jest.mock('../../../src/utils/reconciliation', () => ({
   reconcileItemStock: jest.fn()
@@ -102,8 +115,9 @@ describe('Service: scan-rfid-picking-service', () => {
 
     const result = await scanRfidPicking(1, { rfid_tag: '30342509181408C000000101', location_qr: 'QR' });
 
-    expect(mockItem.current_stock).toBe(9); // decremented
-    expect(mockItem.save).toHaveBeenCalled();
+    const { reconcileItemStock } = require('../../../src/utils/reconciliation');
+    expect(reconcileItemStock).toHaveBeenCalledWith(mockItem.id, expect.anything());
+    expect(mockItemLoc.stock).toBe(0);
     expect(mockItemLoc.stock).toBe(0);
     expect(mockItemLoc.destroy).toHaveBeenCalled();
     expect(mockItemLoc.save).not.toHaveBeenCalled();
