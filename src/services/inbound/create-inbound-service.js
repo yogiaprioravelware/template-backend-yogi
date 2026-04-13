@@ -26,20 +26,8 @@ const createInbound = async (inboundData) => {
     throw err;
   }
 
-  // Validate all SKUs exist using bulk query (Standard Enterprise - avoids Brute Force)
-  const skuCodes = items.map(item => item.sku_code);
-  const existingItems = await Item.findAll({
-    where: { sku_code: { [Op.in]: skuCodes } }
-  });
-
-  if (existingItems.length !== skuCodes.length) {
-    const foundSkus = existingItems.map(i => i.sku_code);
-    const missingSkus = skuCodes.filter(sku => !foundSkus.includes(sku));
-    logger.warn(`Creation failed: SKU codes not found: ${missingSkus.join(", ")}`);
-    const err = new Error(`The following SKU codes were not found: ${missingSkus.join(", ")}`);
-    err.status = 400;
-    throw err;
-  }
+  const { validateSkusExist } = require("../../utils/item-validator");
+  await validateSkusExist(items);
 
   const inbound = await Inbound.create({
     po_number,

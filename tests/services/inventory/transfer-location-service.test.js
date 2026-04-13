@@ -115,7 +115,7 @@ describe('Service: transfer-location-service', () => {
     expect(ItemLocation.create).toHaveBeenCalledWith({ item_id: 1, location_id: 2, stock: 10 }, { transaction: mockTransaction });
     expect(InventoryMovement.create).toHaveBeenCalledTimes(2);
     expect(mockTransaction.commit).toHaveBeenCalled();
-    expect(result.message).toBe('Transfer berhasil');
+    expect(result.message).toBe('Transfer successful');
   });
 
   it('should process transfer and update dest itemLoc if it exists', async () => {

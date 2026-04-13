@@ -18,13 +18,11 @@ const assignRolePermissions = async (roleId, permissionIds) => {
   const transaction = await sequelize.transaction();
   
   try {
-    // 1. Remove all current permissions for this role
     await RolePermission.destroy({
       where: { role_id: roleId },
       transaction,
     });
 
-    // 2. Add new permissions
     if (permissionIds && permissionIds.length > 0) {
       const records = permissionIds.map((pid) => ({
         role_id: roleId,

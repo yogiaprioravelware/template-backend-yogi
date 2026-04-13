@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for validations/outbound-validation.js</title>
+    <title>Code coverage report for utils/item-validator.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">validations</a> outbound-validation.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">utils</a> item-validator.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>16/17</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -94,7 +94,21 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
@@ -103,58 +117,53 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const Joi = require("joi");
-const { isValidEPC } = require("../utils/rfid-validator");
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { Op } = require("sequelize");
+const Item = require("../models/Item");
+const logger = require("./logger");
 &nbsp;
-const createOutboundSchema = Joi.object({
-  order_number: Joi.string().required(),
-  outbound_type: Joi.string().valid("LUNAS", "PINJAM", "RETURN").required(),
-  items: Joi.array()
-    .items(
-      Joi.object({
-        sku_code: Joi.string().required(),
-        qty_target: Joi.number().integer().min(1).required(),
-      })
-    )
-    .min(1)
-    .required(),
-});
+/**
+ * Validates that all SKU codes in the provided items array exist in the system.
+ * Uses Set for efficient existence checking as recommended by best practices.
+ * 
+ * @param {Array} items - Array of objects containing sku_code
+ * @throws {Error} if any SKU code is not found
+ */
+const validateSkusExist = async (items) =&gt; {
+  const skuCodes = [...new Set(items.map(item =&gt; item.sku_code))];
+  
+  const existingItems = await Item.findAll({
+    where: { sku_code: { [Op.in]: skuCodes } },
+    attributes: ["sku_code"],
+    raw: true
+  });
 &nbsp;
-const scanRfidSchema = Joi.object({
-  rfid_tag: Joi.string().required().custom((value, helpers) =&gt; {
-    if (!isValidEPC(value)) {
-      return helpers.message("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
-    }
-    return value;
-  }),
-  location_qr: Joi.string().required(),
-});
+  if (existingItems.length !== skuCodes.length) {
+    const foundSkus = new Set(existingItems.map(<span class="fstat-no" title="function not covered" >i </span>=&gt; <span class="cstat-no" title="statement not covered" >i.sku_code)</span>);
+    const missingSkus = skuCodes.filter(sku =&gt; !foundSkus.has(sku));
+    
+    logger.warn(`SKU validation failed. Missing: ${missingSkus.join(", ")}`);
+    const err = new Error(`The following SKU codes were not found: ${missingSkus.join(", ")}`);
+    err.status = 400;
+    throw err;
+  }
+};
 &nbsp;
 module.exports = {
-  createOutboundSchema,
-  scanRfidSchema,
+  validateSkusExist
 };
 &nbsp;</pre></td></tr></table></pre>
 

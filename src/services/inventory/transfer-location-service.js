@@ -29,7 +29,6 @@ const transferLocation = async (payload) => {
   let transaction;
   try {
     transaction = await sequelize.transaction();
-    // Validate Item
     const item = await Item.findByPk(item_id, { transaction });
     if (!item) {
       const err = new Error("Item not found");
@@ -37,7 +36,7 @@ const transferLocation = async (payload) => {
       throw err;
     }
 
-    // Validate Locations
+    // Validate locations are active
     const fromLoc = await Location.findByPk(from_location_id, { transaction });
     const toLoc = await Location.findByPk(to_location_id, { transaction });
 
@@ -52,7 +51,7 @@ const transferLocation = async (payload) => {
       throw err;
     }
 
-    // Validate Source ItemLocation
+    // Ensure sufficient stock in source
     const sourceItemLoc = await ItemLocation.findOne({
       where: { item_id, location_id: from_location_id },
       transaction,
@@ -112,7 +111,7 @@ const transferLocation = async (payload) => {
       operator_name: "SYSTEM",
     }, { transaction });
 
-    // 3. SELF-HEALING: Recalculate global current_stock from all locations
+    // Recalculate global current_stock to ensure integrity
     // Internal transfer shouldn't change the total mathematically, but this ensures integrity
     await reconcileItemStock(item.id, transaction);
 
@@ -120,7 +119,7 @@ const transferLocation = async (payload) => {
     logger.info(`Successfully transferred ${qty} of item ${item.sku_code} from ${fromLoc.location_code} to ${toLoc.location_code}`);
 
     return {
-      message: "Transfer berhasil",
+      message: "Transfer successful",
       item: {
         sku_code: item.sku_code,
         item_name: item.item_name,

@@ -29,12 +29,12 @@ const getOutbounds = async () => {
 
   const result = outbounds.map((outbound) => {
     const s = statsMap[outbound.id] || {};
-    const totalTarget = parseInt(s.total_qty_target || 0);
-    const totalDelivered = parseInt(s.total_qty_delivered || 0);
+    const totalTarget = Number.parseInt(s.total_qty_target || 0);
+    const totalDelivered = Number.parseInt(s.total_qty_delivered || 0);
 
     return {
       ...outbound,
-      item_count: parseInt(s.item_count || 0),
+      item_count: Number.parseInt(s.item_count || 0),
       total_qty_target: totalTarget,
       total_qty_delivered: totalDelivered,
       progress_percentage: totalTarget > 0 ? Math.round((totalDelivered / totalTarget) * 100) : 0

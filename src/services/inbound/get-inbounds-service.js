@@ -29,12 +29,12 @@ const getInbounds = async () => {
 
   const result = inbounds.map((inbound) => {
     const s = statsMap[inbound.id] || {};
-    const totalTarget = parseInt(s.total_qty_target || 0);
-    const totalReceived = parseInt(s.total_qty_received || 0);
+    const totalTarget = Number.parseInt(s.total_qty_target || 0);
+    const totalReceived = Number.parseInt(s.total_qty_received || 0);
     
     return {
       ...inbound,
-      item_count: parseInt(s.item_count || 0),
+      item_count: Number.parseInt(s.item_count || 0),
       total_qty_target: totalTarget,
       total_qty_received: totalReceived,
       progress_percentage: totalTarget > 0 ? Math.round((totalReceived / totalTarget) * 100) : 0
