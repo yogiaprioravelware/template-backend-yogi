@@ -7,7 +7,7 @@ const PERMISSIONS = require("../utils/permission");
 const router = express.Router();
 
 router.post("/", authMiddleware, authorize(PERMISSIONS.ITEM_CREATE), itemController.registerItem);
-router.post("/opname", authMiddleware, authorize(PERMISSIONS.ITEM_UPDATE), itemController.setStockOpname);
+router.post("/opname", authMiddleware, authorize(PERMISSIONS.ITEM_OPNAME), itemController.setStockOpname);
 router.get("/", authMiddleware, authorize(PERMISSIONS.ITEM_READ), itemController.getItems);
 router.get("/reconciliation", authMiddleware, authorize(PERMISSIONS.ITEM_READ), itemController.getReconciliation);
 router.get("/:id", authMiddleware, authorize(PERMISSIONS.ITEM_READ), itemController.getItemById);

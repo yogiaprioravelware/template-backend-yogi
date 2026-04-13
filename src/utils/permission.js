@@ -13,6 +13,7 @@ const PERMISSIONS = {
   ITEM_READ: "item:read",
   ITEM_UPDATE: "item:update",
   ITEM_DELETE: "item:delete",
+  ITEM_OPNAME: "item:opname",
 
   // LOCATION permissions
   LOCATION_CREATE: "location:create",
