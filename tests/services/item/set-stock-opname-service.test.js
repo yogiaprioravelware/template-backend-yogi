@@ -52,6 +52,32 @@ describe('Service: set-stock-opname-service', () => {
     expect(mockTransaction.rollback).toHaveBeenCalled();
   });
 
+  it('should rollback transaction on error', async () => {
+    Item.findByPk.mockRejectedValue(new Error('DB Error'));
+    await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1')).rejects.toThrow('DB Error');
+    expect(mockTransaction.rollback).toHaveBeenCalled();
+  });
+
+  it('should handle error when transaction creation fails', async () => {
+    sequelize.transaction.mockRejectedValue(new Error('Transaction Fail'));
+    await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1')).rejects.toThrow('Transaction Fail');
+  });
+
+  it('should successfully set opname and use custom notes', async () => {
+    const mockItem = { id: 1, current_stock: 10, save: jest.fn() };
+    Item.findByPk.mockResolvedValue(mockItem);
+    Location.findByPk.mockResolvedValue({ id: 2 });
+    const mockItemLoc = { stock: 10, save: jest.fn() };
+    ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+    ItemLocation.sum.mockResolvedValue(10);
+
+    await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10, notes: 'custom' }, 'user1');
+    
+    expect(InventoryMovement.create).toHaveBeenCalledWith(expect.objectContaining({
+      reference_id: 'OPNAME - custom'
+    }), expect.anything());
+  });
+
   it('should handle zero deviation correctly', async () => {
     const mockItem = { id: 1, current_stock: 10, save: jest.fn() };
     Item.findByPk.mockResolvedValue(mockItem);
@@ -65,34 +91,40 @@ describe('Service: set-stock-opname-service', () => {
     expect(mockTransaction.commit).toHaveBeenCalled();
     expect(InventoryMovement.create).toHaveBeenCalledWith(expect.objectContaining({
       qty_change: 0,
-      type: 'STOCK_OPNAME'
+      type: 'STOCK_OPNAME',
+      operator_name: 'user1'
     }), expect.anything());
   });
 
-  it('should adjust stock correctly with a positive deviation', async () => {
+  it('should handle missing userId and notes correctly', async () => {
+    const mockItem = { id: 1, current_stock: 10, save: jest.fn() };
+    Item.findByPk.mockResolvedValue(mockItem);
+    Location.findByPk.mockResolvedValue({ id: 2 });
+    const mockItemLoc = { stock: 10, save: jest.fn() };
+    ItemLocation.findOne.mockResolvedValue(mockItemLoc);
+    ItemLocation.sum.mockResolvedValue(10);
+
+    await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, null);
+    
+    expect(InventoryMovement.create).toHaveBeenCalledWith(expect.objectContaining({
+      operator_name: 'SYSTEM',
+      reference_id: expect.stringMatching(/^OPNAME-\d+$/)
+    }), expect.anything());
+  });
+
+  it('should fail with a positive deviation', async () => {
     const mockItem = { id: 1, current_stock: 10, save: jest.fn() };
     const mockItemLoc = { stock: 10, save: jest.fn() };
     
     Item.findByPk.mockResolvedValue(mockItem);
     Location.findByPk.mockResolvedValue({ id: 2 });
     ItemLocation.findOne.mockResolvedValue(mockItemLoc);
-    ItemLocation.sum.mockResolvedValue(15);
-    InventoryMovement.create.mockResolvedValue({});
 
-    const result = await setStockOpname({ item_id: 1, location_id: 2, actual_qty: 15, notes: 'Found 5 more' }, 'user1');
+    await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 15, notes: 'Found 5 more' }, 'user1'))
+      .rejects.toThrow(/Stock Opname gagal: Jumlah fisik \(15\) tidak boleh lebih besar dari stok sistem \(10\)/);
     
-    expect(mockItemLoc.stock).toBe(15);
-    expect(mockItemLoc.save).toHaveBeenCalled();
-    expect(mockItem.current_stock).toBe(15); // 10 original + 5 diff
-    expect(mockItem.save).toHaveBeenCalled();
-    expect(InventoryMovement.create).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'STOCK_OPNAME',
-      qty_change: 5,
-      balance_after: 15,
-      operator_name: 'user1'
-    }), { transaction: mockTransaction });
-    expect(mockTransaction.commit).toHaveBeenCalled();
-    expect(result.deviation).toBe(5);
+    expect(mockItemLoc.save).not.toHaveBeenCalled();
+    expect(mockTransaction.rollback).toHaveBeenCalled();
   });
 
   it('should adjust stock correctly with a negative deviation (create location if missing)', async () => {

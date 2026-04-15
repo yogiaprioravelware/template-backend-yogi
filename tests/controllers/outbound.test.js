@@ -18,7 +18,7 @@ describe('Controller: outbound', () => {
         jest.clearAllMocks();
     });
 
-    ['createOutbound', 'getOutbounds', 'getOutboundDetail', 'scanRfidPicking', 'finalizeOrderSync'].forEach(method => {
+    ['createOutbound', 'getOutbounds', 'getOutboundDetail', 'scanQrPicking', 'scanRfidStaging', 'finalizeOutbound'].forEach(method => {
         it(`${method} success`, async () => {
             if (method === 'getOutbounds') {
                outboundService[method].mockResolvedValue({ data: [], pagination: {} });
@@ -36,27 +36,56 @@ describe('Controller: outbound', () => {
         });
     });
 
-    it('scanRfidPicking fail from service', async () => {
-        outboundService.scanRfidPicking.mockResolvedValue({ success: false, statusCode: 400, message: 'Invalid RFID' });
-        await outboundController.scanRfidPicking(req, res, next);
+    it('scanQrPicking fail from service', async () => {
+        outboundService.scanQrPicking.mockResolvedValue({ success: false, statusCode: 400, message: 'Invalid RFID' });
+        await outboundController.scanQrPicking(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('scanRfidPicking fail from service without statusCode should fallback to 400', async () => {
-        outboundService.scanRfidPicking.mockResolvedValue({ success: false, message: 'Invalid RFID' });
-        await outboundController.scanRfidPicking(req, res, next);
+    it('scanQrPicking fail from service without statusCode should fallback to 400', async () => {
+        outboundService.scanQrPicking.mockResolvedValue({ success: false, message: 'Invalid RFID' });
+        await outboundController.scanQrPicking(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('finalizeOrderSync fail from service', async () => {
-        outboundService.finalizeOrderSync.mockResolvedValue({ success: false, statusCode: 404, message: 'Not found' });
-        await outboundController.finalizeOrderSync(req, res, next);
+    it('scanRfidStaging fail from service without statusCode should fallback to 400', async () => {
+        outboundService.scanRfidStaging.mockResolvedValue({ success: false, message: 'Invalid RFID' });
+        await outboundController.scanRfidStaging(req, res, next);
+        expect(res.status).toHaveBeenCalledWith(400);
+    });
+
+    it('scanRfidStaging fail from service with null result', async () => {
+        outboundService.scanRfidStaging.mockResolvedValue(null);
+        await outboundController.scanRfidStaging(req, res, next);
+        expect(res.json).toHaveBeenCalled();
+    });
+
+    it('finalizeOutbound success from service with req.user', async () => {
+        req.params.id = 1;
+        req.user = { id: 100 };
+        outboundService.finalizeOutbound.mockResolvedValue({ success: true });
+        await outboundController.finalizeOutbound(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(outboundService.finalizeOutbound).toHaveBeenCalledWith(1, 100);
+    });
+
+    it('finalizeOutbound success from service without req.user', async () => {
+        req.params.id = 1;
+        outboundService.finalizeOutbound.mockResolvedValue({ success: true });
+        await outboundController.finalizeOutbound(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(outboundService.finalizeOutbound).toHaveBeenCalledWith(1, undefined);
+    });
+
+    it('finalizeOutbound fail from service', async () => {
+        outboundService.finalizeOutbound.mockResolvedValue({ success: false, statusCode: 404, message: 'Not found' });
+        await outboundController.finalizeOutbound(req, res, next);
         expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('finalizeOrderSync fail from service without statusCode should fallback to 400', async () => {
-        outboundService.finalizeOrderSync.mockResolvedValue({ success: false, message: 'Not found' });
-        await outboundController.finalizeOrderSync(req, res, next);
+    it('finalizeOutbound fail from service without statusCode should fallback to 400', async () => {
+        outboundService.finalizeOutbound.mockResolvedValue({ success: false, message: 'Not found' });
+        await outboundController.finalizeOutbound(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 });

@@ -5,8 +5,8 @@ const authorize = require("../middlewares/permission-middleware");
 const validate = require("../middlewares/validation-middleware");
 const { 
   createInboundSchema, 
-  scanItemSchema, 
-  setLocationSchema 
+  scanRfidReceivedSchema, 
+  scanQrStoredSchema 
 } = require("../validations/inbound-validation");
 const PERMISSIONS = require("../utils/permission");
 
@@ -35,19 +35,19 @@ router.get(
 );
 
 router.post(
-  "/:inboundId/scan-item", 
+  "/:inboundId/scan-received", 
   authMiddleware, 
   authorize(PERMISSIONS.INBOUND_UPDATE), 
-  validate(scanItemSchema),
-  inboundController.scanItem
+  validate(scanRfidReceivedSchema),
+  inboundController.scanRfidReceived
 );
 
 router.post(
-  "/:inboundId/set-location", 
+  "/scan-stored", 
   authMiddleware, 
   authorize(PERMISSIONS.INBOUND_UPDATE), 
-  validate(setLocationSchema),
-  inboundController.setLocation
+  validate(scanQrStoredSchema),
+  inboundController.scanQrStored
 );
 
 module.exports = router;

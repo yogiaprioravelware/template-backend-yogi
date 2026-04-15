@@ -1,10 +1,19 @@
 const express = require("express");
-const router = express.Router();
 const inventoryController = require("../controllers/inventory");
 const authMiddleware = require("../middlewares/auth-middleware");
+const authorize = require("../middlewares/permission-middleware");
+const validate = require("../middlewares/validation-middleware");
+const { transferLocationSchema } = require("../validations/inventory-validation");
+const PERMISSIONS = require("../utils/permission");
 
-router.use(authMiddleware);
+const router = express.Router();
 
-router.post("/transfer", inventoryController.transferLocation);
+router.post(
+  "/transfer",
+  authMiddleware,
+  authorize(PERMISSIONS.ITEM_UPDATE),
+  validate(transferLocationSchema),
+  inventoryController.transferLocation
+);
 
 module.exports = router;

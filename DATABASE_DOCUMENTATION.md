@@ -59,7 +59,7 @@ Header Purchase Order untuk barang masuk.
 | :---        | :---           | :---     | :---                | :---   | :--- |
 | `id`        | `SERIAL`       | NO       | -                   | YES    | Primary Key |
 | `po_number` | `VARCHAR(100)` | NO       | -                   | YES    | Nomor PO unik |
-| `status`    | `ENUM`         | NO       | `'PENDING'`         | NO     | Status: PENDING \| PROCES \| DONE |
+| `status`    | `ENUM`         | NO       | `'PENDING'`         | NO     | Status: PENDING \| PROCESS \| DONE |
 | `created_at` | `TIMESTAMP`   | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu pembuatan PO |
 | `updated_at` | `TIMESTAMP`   | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu update status |
 
@@ -94,7 +94,7 @@ Header Sales Order untuk barang keluar.
 | `id`          | `SERIAL`       | NO       | -                   | YES    | Primary Key |
 | `order_number` | `VARCHAR(100)` | NO      | -                   | YES    | Nomor order unik |
 | `outbound_type` | `ENUM`        | NO      | -                   | NO     | LUNAS \| PINJAM \| RETURN |
-| `status`      | `ENUM`         | NO       | `'PENDING'`         | NO     | PENDING \| PROCES \| DONE |
+| `status`      | `ENUM`         | NO       | `'PENDING'`         | NO     | PENDING \| PROCESS \| DONE |
 | `created_at`  | `TIMESTAMP`    | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu pembuatan |
 | `updated_at`  | `TIMESTAMP`    | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu update |
 

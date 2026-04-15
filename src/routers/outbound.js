@@ -5,7 +5,8 @@ const authorize = require("../middlewares/permission-middleware");
 const validate = require("../middlewares/validation-middleware");
 const { 
   createOutboundSchema, 
-  scanRfidSchema 
+  scanQrPickingSchema,
+  scanRfidStagingSchema
 } = require("../validations/outbound-validation");
 const PERMISSIONS = require("../utils/permission");
 
@@ -34,18 +35,26 @@ router.get(
 );
 
 router.post(
-  "/:outboundId/scan", 
+  "/:outboundId/scan-picking", 
   authMiddleware, 
   authorize(PERMISSIONS.OUTBOUND_UPDATE), 
-  validate(scanRfidSchema),
-  outboundController.scanRfidPicking
+  validate(scanQrPickingSchema),
+  outboundController.scanQrPicking
 );
 
 router.post(
-  "/:id/finalize-sync", 
+  "/scan-staging", 
   authMiddleware, 
   authorize(PERMISSIONS.OUTBOUND_UPDATE), 
-  outboundController.finalizeOrderSync
+  validate(scanRfidStagingSchema),
+  outboundController.scanRfidStaging
+);
+
+router.post(
+  "/:id/finalize", 
+  authMiddleware, 
+  authorize(PERMISSIONS.OUTBOUND_UPDATE), 
+  outboundController.finalizeOutbound
 );
 
 module.exports = router;

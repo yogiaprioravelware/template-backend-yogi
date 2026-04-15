@@ -58,57 +58,77 @@ describe('Controller: inbound', () => {
         expect(next).toHaveBeenCalled();
     });
 
-    // scanItem
-    it('scanItem success from service', async () => {
+    // scanRfidReceived
+    it('scanRfidReceived success from service with req.user', async () => {
         req.params.inboundId = 1;
-        req.body.rfid_tag = 'RFID1';
-        inboundService.scanItem.mockResolvedValue({ data: { id: 10 } });
-        await inboundController.scanItem(req, res, next);
+        req.body = { rfid_tag: 'RFID1', location_id: 10 };
+        req.user = { id: 100 };
+        inboundService.scanRfidReceived.mockResolvedValue({ data: { id: 10 } });
+        await inboundController.scanRfidReceived(req, res, next);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.scanRfidReceived).toHaveBeenCalledWith(1, 'RFID1', 10, 100);
     });
 
-    it('scanItem fail from service (legacy return pattern)', async () => {
-        inboundService.scanItem.mockResolvedValue({ success: false, statusCode: 404, message: 'Not found' });
-        await inboundController.scanItem(req, res, next);
+    it('scanRfidReceived success from service without req.user', async () => {
+        req.params.inboundId = 1;
+        req.body = { rfid_tag: 'RFID1', location_id: 10 };
+        inboundService.scanRfidReceived.mockResolvedValue({ data: { id: 10 } });
+        await inboundController.scanRfidReceived(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.scanRfidReceived).toHaveBeenCalledWith(1, 'RFID1', 10, null);
+    });
+
+    it('scanRfidReceived fail from service (legacy return pattern)', async () => {
+        inboundService.scanRfidReceived.mockResolvedValue({ success: false, statusCode: 404, message: 'Not found' });
+        await inboundController.scanRfidReceived(req, res, next);
         expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('scanItem fail from service without statusCode should fallback to 400', async () => {
-        inboundService.scanItem.mockResolvedValue({ success: false, message: 'Bad request' });
-        await inboundController.scanItem(req, res, next);
+    it('scanRfidReceived fail from service without statusCode should fallback to 400', async () => {
+        inboundService.scanRfidReceived.mockResolvedValue({ success: false, message: 'Bad request' });
+        await inboundController.scanRfidReceived(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('scanItem error', async () => {
-        inboundService.scanItem.mockRejectedValue(new Error('fail'));
-        await inboundController.scanItem(req, res, next);
+    it('scanRfidReceived error', async () => {
+        inboundService.scanRfidReceived.mockRejectedValue(new Error('fail'));
+        await inboundController.scanRfidReceived(req, res, next);
         expect(next).toHaveBeenCalled();
     });
 
-    // setLocation
-    it('setLocation success from service', async () => {
-        req.params.inboundId = 1;
-        req.body = { inbound_item_id: 1, qr_string: 'LOC1' };
-        inboundService.setLocation.mockResolvedValue({ data: { id: 20 } });
-        await inboundController.setLocation(req, res, next);
+    // scanQrStored
+    it('scanQrStored success from service with req.user', async () => {
+        req.body = { rfid_tag: 'RFID1', qr_string: 'LOC1' };
+        req.user = { id: 100 };
+        inboundService.scanQrStored.mockResolvedValue({ data: { id: 20 } });
+        await inboundController.scanQrStored(req, res, next);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.scanQrStored).toHaveBeenCalledWith('LOC1', 'RFID1', 100);
     });
 
-    it('setLocation fail from service', async () => {
-        inboundService.setLocation.mockResolvedValue({ success: false, statusCode: 400, message: 'Invalid location' });
-        await inboundController.setLocation(req, res, next);
+    it('scanQrStored success from service without req.user', async () => {
+        req.body = { rfid_tag: 'RFID1', qr_string: 'LOC1' };
+        inboundService.scanQrStored.mockResolvedValue({ data: { id: 20 } });
+        await inboundController.scanQrStored(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.scanQrStored).toHaveBeenCalledWith('LOC1', 'RFID1', null);
+    });
+
+    it('scanQrStored fail from service', async () => {
+        inboundService.scanQrStored.mockResolvedValue({ success: false, statusCode: 400, message: 'Invalid location' });
+        await inboundController.scanQrStored(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('setLocation fail from service without statusCode should fallback to 400', async () => {
-        inboundService.setLocation.mockResolvedValue({ success: false, message: 'Invalid location' });
-        await inboundController.setLocation(req, res, next);
+    it('scanQrStored fail from service without statusCode should fallback to 400', async () => {
+        inboundService.scanQrStored.mockResolvedValue({ success: false, message: 'Invalid location' });
+        await inboundController.scanQrStored(req, res, next);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    it('setLocation error', async () => {
-        inboundService.setLocation.mockRejectedValue(new Error('fail'));
-        await inboundController.setLocation(req, res, next);
+    it('scanQrStored error', async () => {
+        inboundService.scanQrStored.mockRejectedValue(new Error('fail'));
+        await inboundController.scanQrStored(req, res, next);
         expect(next).toHaveBeenCalled();
     });
 });

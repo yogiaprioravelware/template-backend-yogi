@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>39/39</span>
+                <span class='fraction'>47/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>24/24</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>39/39</span>
+                <span class='fraction'>47/47</span>
             </div>
         
             
@@ -134,7 +134,27 @@
 <a name='L69'></a><a href='#L69'>69</a>
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
-<a name='L72'></a><a href='#L72'>72</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -173,6 +193,10 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -190,16 +214,32 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,31 +280,50 @@ const getOutboundDetail = async (req, res, next) =&gt; {
   }
 };
 &nbsp;
-const scanRfidPicking = async (req, res, next) =&gt; {
-  logger.info(`Scanning RFID for picking in outbound: ${req.params.outboundId}`);
+const scanQrPicking = async (req, res, next) =&gt; {
+  logger.info(`Scanning item for picking in outbound: ${req.params.outboundId}`);
   try {
-    const result = await outboundService.scanRfidPicking(req.params.outboundId, req.body, req.user?.id || 1);
+    const result = await outboundService.scanQrPicking(
+      req.params.outboundId, 
+      req.body.qr_string, 
+      req.body.rfid_tag
+    );
     
     if (result &amp;&amp; result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
     
-    res.json(response.success(result.data || result, "RFID scanned and item picked successfully"));
+    res.json(response.success(result, "Item picked successfully"));
   } catch (err) {
     next(err);
   }
 };
 &nbsp;
-const finalizeOrderSync = async (req, res, next) =&gt; {
-  logger.info(`Finalizing and syncing outbound order: ${req.params.id}`);
+const scanRfidStaging = async (req, res, next) =&gt; {
+  logger.info(`Scanning item for staging: ${req.body.rfid_tag}`);
   try {
-    const result = await outboundService.finalizeOrderSync(req.params.id, req.user?.id || 1);
+    const result = await outboundService.scanRfidStaging(req.body.rfid_tag);
     
     if (result &amp;&amp; result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 &nbsp;
-    res.json(response.success(result.data || result, "Outbound order finalized and synced successfully"));
+    res.json(response.success(result, "Item successfully staged"));
+  } catch (err) {
+    next(err);
+  }
+};
+&nbsp;
+const finalizeOutbound = async (req, res, next) =&gt; {
+  logger.info(`Finalizing outbound order: ${req.params.id}`);
+  try {
+    const result = await outboundService.finalizeOutbound(req.params.id, req.user?.id);
+    
+    if (result &amp;&amp; result.success === false) {
+      return res.status(result.statusCode || 400).json(result);
+    }
+&nbsp;
+    res.json(response.success(result, "Outbound order finalized and stock deducted successfully"));
   } catch (err) {
     next(err);
   }
@@ -274,8 +333,9 @@ module.exports = {
   createOutbound,
   getOutbounds,
   getOutboundDetail,
-  scanRfidPicking,
-  finalizeOrderSync,
+  scanQrPicking,
+  scanRfidStaging,
+  finalizeOutbound,
 };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -283,7 +343,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-15T01:47:35.216Z
+                at 2026-04-15T06:19:31.394Z
             </div>
         <script src="../prettify.js"></script>
         <script>

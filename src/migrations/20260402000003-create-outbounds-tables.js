@@ -43,7 +43,7 @@ module.exports = {
       await queryInterface.sequelize.query(`
         ALTER TABLE outbounds 
         ADD CONSTRAINT outbounds_status_check 
-        CHECK (status IN ('PENDING', 'PROCES', 'DONE'))
+        CHECK (status IN ('PENDING', 'PROCESS', 'DONE'))
       `, { transaction });
 
       // Add constraint for outbound_type

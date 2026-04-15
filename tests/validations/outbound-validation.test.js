@@ -1,4 +1,4 @@
-const { createOutboundSchema, scanRfidSchema } = require('../../src/validations/outbound-validation');
+const { createOutboundSchema, scanQrPickingSchema, scanRfidStagingSchema } = require('../../src/validations/outbound-validation');
 
 describe('Validation: outbound-validation', () => {
   describe('createOutboundSchema', () => {
@@ -18,13 +18,24 @@ describe('Validation: outbound-validation', () => {
     });
   });
 
-  describe('scanRfidSchema', () => {
-    it('should validate rfid_tag and location_qr', () => {
-      const { error } = scanRfidSchema.validate({ rfid_tag: '30342509181408C000000101', location_qr: 'QR123' });
+  describe('scanQrPickingSchema', () => {
+    it('should validate rfid_tag and qr_string', () => {
+      const { error } = scanQrPickingSchema.validate({ rfid_tag: '30342509181408C000000101', qr_string: 'QR123' });
       expect(error).toBeUndefined();
     });
     it('should fail if rfid_tag is not EPC format', () => {
-      const { error } = scanRfidSchema.validate({ rfid_tag: 'INVALID', location_qr: 'QR123' });
+      const { error } = scanQrPickingSchema.validate({ rfid_tag: 'INVALID', qr_string: 'QR123' });
+      expect(error).toBeDefined();
+    });
+  });
+
+  describe('scanRfidStagingSchema', () => {
+    it('should validate rfid_tag', () => {
+      const { error } = scanRfidStagingSchema.validate({ rfid_tag: '30342509181408C000000101' });
+      expect(error).toBeUndefined();
+    });
+    it('should fail if rfid_tag is not EPC format', () => {
+      const { error } = scanRfidStagingSchema.validate({ rfid_tag: 'INVALID' });
       expect(error).toBeDefined();
     });
   });

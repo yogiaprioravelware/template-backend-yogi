@@ -24,10 +24,12 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
 
   afterAll(async () => {
     // Cleanup defensif untuk menjaga isolasi data antar eksekusi e2e
-    const { InventoryMovement, ItemLocation, InboundItem, OutboundItem, Item, Location } = require("../../src/models");
+    const { InventoryMovement, ItemLocation, InboundItem, OutboundItem, Item, Location, InboundLog, OutboundLog } = require("../../src/models");
     if (itemId) {
       await InventoryMovement.destroy({ where: { item_id: itemId } });
       await ItemLocation.destroy({ where: { item_id: itemId } });
+      await InboundLog.destroy({ where: { rfid_tag: rfid } });
+      await OutboundLog.destroy({ where: { rfid_tag: rfid } });
       await InboundItem.destroy({ where: { sku_code: sku } });
       await OutboundItem.destroy({ where: { sku_code: sku } });
       await Item.destroy({ where: { id: itemId } });
@@ -77,7 +79,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
   describe("2. Setup Mock Item & Location", () => {
     it("should create item for test", async () => {
       const res = await request(app).post("/api/items").set("Authorization", `Bearer ${adminToken}`)
-        .send({ rfid_tag: rfid, item_name: "Original Name", sku_code: sku, category: "TEST", uom: "PCS", current_stock: 0, location_id: 1 });
+        .send({ rfid_tag: rfid, item_name: "Original Name", sku_code: sku, category: "TEST", uom: "PCS", current_stock: 0 });
       expect([201, 400, 403]).toContain(res.status);
       if(res.body && res.body.data) itemId = res.body.data.id;
     });
@@ -118,7 +120,7 @@ describe("E2E Validation, Role, & Destructive (Update/Delete) Flow", () => {
     it("should process stock opname (adjustment)", async () => {
       if(!itemId || !locationId) return;
       const res = await request(app).post(`/api/items/opname`).set("Authorization", `Bearer ${adminToken}`)
-        .send({ item_id: itemId, location_id: locationId, actual_qty: 15, notes: "Audited manually" });
+        .send({ item_id: itemId, location_id: locationId, actual_qty: 0, notes: "Audited manually" });
       expect([200, 403]).toContain(res.status);
     });
 

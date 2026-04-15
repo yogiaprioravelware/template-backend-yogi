@@ -33,31 +33,50 @@ const getOutboundDetail = async (req, res, next) => {
   }
 };
 
-const scanRfidPicking = async (req, res, next) => {
-  logger.info(`Scanning RFID for picking in outbound: ${req.params.outboundId}`);
+const scanQrPicking = async (req, res, next) => {
+  logger.info(`Scanning item for picking in outbound: ${req.params.outboundId}`);
   try {
-    const result = await outboundService.scanRfidPicking(req.params.outboundId, req.body, req.user?.id || 1);
+    const result = await outboundService.scanQrPicking(
+      req.params.outboundId, 
+      req.body.qr_string, 
+      req.body.rfid_tag
+    );
     
     if (result && result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
     
-    res.json(response.success(result.data || result, "RFID scanned and item picked successfully"));
+    res.json(response.success(result, "Item picked successfully"));
   } catch (err) {
     next(err);
   }
 };
 
-const finalizeOrderSync = async (req, res, next) => {
-  logger.info(`Finalizing and syncing outbound order: ${req.params.id}`);
+const scanRfidStaging = async (req, res, next) => {
+  logger.info(`Scanning item for staging: ${req.body.rfid_tag}`);
   try {
-    const result = await outboundService.finalizeOrderSync(req.params.id, req.user?.id || 1);
+    const result = await outboundService.scanRfidStaging(req.body.rfid_tag);
     
     if (result && result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 
-    res.json(response.success(result.data || result, "Outbound order finalized and synced successfully"));
+    res.json(response.success(result, "Item successfully staged"));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const finalizeOutbound = async (req, res, next) => {
+  logger.info(`Finalizing outbound order: ${req.params.id}`);
+  try {
+    const result = await outboundService.finalizeOutbound(req.params.id, req.user?.id);
+    
+    if (result && result.success === false) {
+      return res.status(result.statusCode || 400).json(result);
+    }
+
+    res.json(response.success(result, "Outbound order finalized and stock deducted successfully"));
   } catch (err) {
     next(err);
   }
@@ -67,6 +86,7 @@ module.exports = {
   createOutbound,
   getOutbounds,
   getOutboundDetail,
-  scanRfidPicking,
-  finalizeOrderSync,
+  scanQrPicking,
+  scanRfidStaging,
+  finalizeOutbound,
 };

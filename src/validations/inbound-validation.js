@@ -14,22 +14,28 @@ const createInboundSchema = Joi.object({
     .required(),
 });
 
-const scanItemSchema = Joi.object({
+const scanRfidReceivedSchema = Joi.object({
   rfid_tag: Joi.string().required().custom((value, helpers) => {
     if (!isValidEPC(value)) {
       return helpers.message("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
     }
     return value;
   }),
+  location_id: Joi.number().integer().required(),
 });
 
-const setLocationSchema = Joi.object({
+const scanQrStoredSchema = Joi.object({
   qr_string: Joi.string().required(),
-  inbound_item_id: Joi.number().integer().required(),
+  rfid_tag: Joi.string().required().custom((value, helpers) => {
+    if (!isValidEPC(value)) {
+      return helpers.message("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
+    }
+    return value;
+  })
 });
 
 module.exports = {
   createInboundSchema,
-  scanItemSchema,
-  setLocationSchema,
+  scanRfidReceivedSchema,
+  scanQrStoredSchema,
 };

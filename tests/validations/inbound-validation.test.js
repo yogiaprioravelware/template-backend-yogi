@@ -1,4 +1,4 @@
-const { createInboundSchema, scanItemSchema, setLocationSchema } = require('../../src/validations/inbound-validation');
+const { createInboundSchema, scanRfidReceivedSchema, scanQrStoredSchema } = require('../../src/validations/inbound-validation');
 
 describe('Validation: inbound-validation', () => {
   describe('createInboundSchema', () => {
@@ -16,21 +16,25 @@ describe('Validation: inbound-validation', () => {
     });
   });
 
-  describe('scanItemSchema', () => {
+  describe('scanRfidReceivedSchema', () => {
     it('should validate rfid_tag', () => {
-      const { error } = scanItemSchema.validate({ rfid_tag: '30342509181408C000000101' });
+      const { error } = scanRfidReceivedSchema.validate({ rfid_tag: '30342509181408C000000101', location_id: 1 });
       expect(error).toBeUndefined();
     });
     it('should fail if rfid_tag is not EPC format', () => {
-      const { error } = scanItemSchema.validate({ rfid_tag: 'INVALID' });
+      const { error } = scanRfidReceivedSchema.validate({ rfid_tag: 'INVALID', location_id: 1 });
       expect(error).toBeDefined();
     });
   });
 
-  describe('setLocationSchema', () => {
+  describe('scanQrStoredSchema', () => {
     it('should validate qr_string', () => {
-      const { error } = setLocationSchema.validate({ qr_string: 'QR123', inbound_item_id: 1 });
+      const { error } = scanQrStoredSchema.validate({ qr_string: 'QR123', rfid_tag: '30342509181408C000000101' });
       expect(error).toBeUndefined();
+    });
+    it('should fail if rfid_tag is not EPC format', () => {
+      const { error } = scanQrStoredSchema.validate({ qr_string: 'QR123', rfid_tag: 'INVALID' });
+      expect(error).toBeDefined();
     });
   });
 });

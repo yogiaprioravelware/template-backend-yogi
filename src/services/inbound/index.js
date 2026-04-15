@@ -1,13 +1,13 @@
 const { createInbound } = require("./create-inbound-service");
 const { getInbounds } = require("./get-inbounds-service");
 const { getInboundDetail } = require("./get-inbound-detail-service");
-const { scanItem } = require("./scan-item-service");
-const { setLocation } = require("./set-location-service");
+const { scanRfidReceived } = require("./scan-rfid-received-service");
+const { scanQrStored } = require("./scan-qr-stored-service");
 
 module.exports = {
   createInbound,
   getInbounds,
   getInboundDetail,
-  scanItem,
-  setLocation,
+  scanRfidReceived,
+  scanQrStored,
 };

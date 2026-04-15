@@ -12,9 +12,10 @@ const setStockOpname = async (payload, userId) => {
   const { item_id, location_id, actual_qty, notes } = payload;
   logger.info(`Starting Stock Opname for item_id: ${item_id} at location_id: ${location_id}. Actual Qty: ${actual_qty}`);
 
-  const transaction = await sequelize.transaction();
+  let transaction;
 
   try {
+    transaction = await sequelize.transaction();
     const item = await Item.findByPk(item_id, { transaction });
     if (!item) {
       const error = new Error("Item not found");
@@ -46,6 +47,12 @@ const setStockOpname = async (payload, userId) => {
     }
 
     const qtyChange = actual_qty - currentStock;
+
+    if (qtyChange > 0) {
+      const error = new Error(`Stock Opname gagal: Jumlah fisik (${actual_qty}) tidak boleh lebih besar dari stok sistem (${currentStock}). Silakan lakukan pengecekan manual atau proses inbound.`);
+      error.status = 400;
+      throw error;
+    }
 
     itemLocation.stock = actual_qty;
     await itemLocation.save({ transaction });

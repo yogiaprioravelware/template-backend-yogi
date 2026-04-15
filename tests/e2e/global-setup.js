@@ -82,12 +82,17 @@ module.exports = async () => {
       role: "admin",
       role_id: adminRole.id,
     });
+
+    // Close the connection used for setup to avoid open handles
+    await sequelize.close();
   } catch (err) {
     console.error("Failed setting up test database:", err);
     throw err;
   } finally {
     try {
       await adminSequelize.close();
+      const { sequelize } = require("../../src/models");
+      await sequelize.close();
     } catch (_) {
       // ignore cleanup error in setup context
     }

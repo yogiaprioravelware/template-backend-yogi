@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
     } : {},
     pool: {
       max: 10,
-      min: 2,
+      min: process.env.NODE_ENV === "test" ? 0 : 2,
       acquire: 30000,
       idle: 10000
     }

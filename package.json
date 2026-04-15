@@ -36,6 +36,7 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "husky": "^9.1.7",
     "jest": "^30.3.0",
     "lint-staged": "^16.4.0",

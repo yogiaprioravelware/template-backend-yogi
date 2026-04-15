@@ -576,7 +576,7 @@ Authorization: Bearer <token>
     {
       "id": 1,
       "po_number": "PO-2026-001",
-      "status": "PROCES",
+      "status": "PROCESS",
       "item_count": 2,
       "created_at": "2026-04-02T10:00:00.000Z"
     }
@@ -604,7 +604,7 @@ Authorization: Bearer <token>
   "data": {
     "id": 1,
     "po_number": "PO-2026-001",
-    "status": "PROCES",
+    "status": "PROCESS",
     "items": [
       {
         "id": 1,
@@ -734,7 +734,7 @@ Authorization: Bearer <token>
     },
     "inbound_progress": {
       "po_number": "PO-2026-001",
-      "status": "PROCES",
+      "status": "PROCESS",
       "total_items": 2,
       "completed_items": 0,
       "progress_percentage": 12
@@ -911,7 +911,7 @@ Authorization: Bearer <token>
       "qty_delivered": 5
     },
     "stock_after_picking": 45,
-    "outbound_status": "PROCES"
+    "outbound_status": "PROCESS"
   }
 }
 ```

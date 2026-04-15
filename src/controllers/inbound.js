@@ -33,41 +33,40 @@ const getInboundDetail = async (req, res, next) => {
   }
 };
 
-const scanItem = async (req, res, next) => {
-  logger.info(`Scanning item for inbound: ${req.params.inboundId}`);
+const scanRfidReceived = async (req, res, next) => {
+  logger.info(`Scanning item for inbound (Received Area): ${req.params.inboundId}`);
   try {
-    // Validasi sudah ditangani oleh middleware validation
-    const result = await inboundService.scanItem(
+    const result = await inboundService.scanRfidReceived(
       req.params.inboundId,
-      req.body.rfid_tag
+      req.body.rfid_tag,
+      req.body.location_id,
+      req.user ? req.user.id : null
     );
     
-    // Jika service mengembalikan error terstruktur
     if (result && result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
     
-    res.json(response.success(result.data, "Item scanned successfully"));
+    res.json(response.success(result, "Item scanned at Received Area successfully"));
   } catch (err) {
     next(err);
   }
 };
 
-const setLocation = async (req, res, next) => {
-  logger.info(`Setting location for inbound: ${req.params.inboundId}`);
+const scanQrStored = async (req, res, next) => {
+  logger.info(`Scanning item to store in Rack`);
   try {
-    // Validasi sudah ditangani oleh middleware validation
-    const result = await inboundService.setLocation(
-      req.params.inboundId,
-      req.body.inbound_item_id,
-      req.body.qr_string
+    const result = await inboundService.scanQrStored(
+      req.body.qr_string,
+      req.body.rfid_tag,
+      req.user ? req.user.id : null
     );
 
     if (result && result.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 
-    res.json(response.success(result.data, "Location set successfully"));
+    res.json(response.success(result, "Item successfully stored at location"));
   } catch (err) {
     next(err);
   }
@@ -77,6 +76,6 @@ module.exports = {
   createInbound,
   getInbounds,
   getInboundDetail,
-  scanItem,
-  setLocation,
+  scanRfidReceived,
+  scanQrStored,
 };

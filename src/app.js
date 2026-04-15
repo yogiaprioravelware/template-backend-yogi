@@ -8,8 +8,6 @@ const inboundRouter = require("./routers/inbound");
 const outboundRouter = require("./routers/outbound");
 const roleRouter = require("./routers/role");
 const locationRouter = require("./routers/location");
-const inventoryRouter = require("./routers/inventory");
-const stagingRouter = require("./routers/staging");
 const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
@@ -54,7 +52,7 @@ const globalLimiter = rateLimit({
 app.use(globalLimiter);
 
 // Specific routes that need higher throughput but still protected
-app.use("/api/inbounds/:id/scan-item", scannerLimiter);
+app.use("/api/inbounds/:id/scan-received", scannerLimiter);
 app.use("/api/outbounds/:id/scan", scannerLimiter);
 app.use(express.json());
 app.use(requestLogger);
@@ -66,8 +64,6 @@ app.use("/api/inbounds", inboundRouter);
 app.use("/api/outbounds", outboundRouter);
 app.use("/api/locations", locationRouter);
 app.use("/api/roles", roleRouter);
-app.use("/api/inventory", inventoryRouter);
-app.use("/api/staging", stagingRouter);
 
 // error handler
 app.use(errorMiddleware);
