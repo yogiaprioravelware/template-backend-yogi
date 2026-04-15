@@ -6,7 +6,8 @@ const validate = require("../middlewares/validation-middleware");
 const { 
   createInboundSchema, 
   scanRfidReceivedSchema, 
-  scanQrStoredSchema 
+  scanQrStoredSchema,
+  finalizeInboundSchema
 } = require("../validations/inbound-validation");
 const PERMISSIONS = require("../utils/permission");
 
@@ -48,6 +49,14 @@ router.post(
   authorize(PERMISSIONS.INBOUND_UPDATE), 
   validate(scanQrStoredSchema),
   inboundController.scanQrStored
+);
+
+router.post(
+  "/:id/finalize",
+  authMiddleware,
+  authorize(PERMISSIONS.INBOUND_UPDATE),
+  validate(finalizeInboundSchema),
+  inboundController.finalizeInbound
 );
 
 module.exports = router;

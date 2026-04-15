@@ -86,6 +86,7 @@ const scanRfidReceived = async (inboundId, rfidTag, locationId, userId) => {
 
     // Log to InboundLog
     await InboundLog.create({
+      inbound_id: inboundId,
       rfid_tag: rfidTag,
       status: "RECEIVED",
       user_id: userId || null,

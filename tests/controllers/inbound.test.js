@@ -131,4 +131,28 @@ describe('Controller: inbound', () => {
         await inboundController.scanQrStored(req, res, next);
         expect(next).toHaveBeenCalled();
     });
+
+    // finalizeInbound
+    it('finalizeInbound success from service with req.user', async () => {
+        req.params.id = 1;
+        req.user = { id: 100 };
+        inboundService.finalizeInbound.mockResolvedValue({ po_number: 'PO-001' });
+        await inboundController.finalizeInbound(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.finalizeInbound).toHaveBeenCalledWith(1, 100);
+    });
+
+    it('finalizeInbound success from service without req.user', async () => {
+        req.params.id = 1;
+        inboundService.finalizeInbound.mockResolvedValue({ po_number: 'PO-001' });
+        await inboundController.finalizeInbound(req, res, next);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        expect(inboundService.finalizeInbound).toHaveBeenCalledWith(1, null);
+    });
+
+    it('finalizeInbound error', async () => {
+        inboundService.finalizeInbound.mockRejectedValue(new Error('fail'));
+        await inboundController.finalizeInbound(req, res, next);
+        expect(next).toHaveBeenCalled();
+    });
 });

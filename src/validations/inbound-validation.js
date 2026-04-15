@@ -34,8 +34,11 @@ const scanQrStoredSchema = Joi.object({
   })
 });
 
+const finalizeInboundSchema = Joi.object({});
+
 module.exports = {
   createInboundSchema,
   scanRfidReceivedSchema,
   scanQrStoredSchema,
+  finalizeInboundSchema,
 };

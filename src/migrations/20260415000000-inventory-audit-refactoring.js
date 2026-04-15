@@ -21,6 +21,10 @@ module.exports = {
         autoIncrement: true,
         allowNull: false
       },
+      inbound_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       rfid_tag: {
         type: Sequelize.STRING,
         allowNull: false

@@ -43,6 +43,10 @@ Inbound.associate = (models) => {
     foreignKey: "inbound_id",
     as: "items",
   });
+  Inbound.hasMany(models.InboundLog, {
+    foreignKey: "inbound_id",
+    as: "logs",
+  });
 };
 
 module.exports = Inbound;

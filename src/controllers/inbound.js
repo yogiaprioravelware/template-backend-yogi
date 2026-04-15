@@ -72,10 +72,24 @@ const scanQrStored = async (req, res, next) => {
   }
 };
 
+const finalizeInbound = async (req, res, next) => {
+  logger.info(`Finalizing inbound PO: ${req.params.id}`);
+  try {
+    const result = await inboundService.finalizeInbound(
+      req.params.id,
+      req.user ? req.user.id : null
+    );
+    res.json(response.success(result, "Inbound PO finalized and stock updated successfully"));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createInbound,
   getInbounds,
   getInboundDetail,
   scanRfidReceived,
   scanQrStored,
+  finalizeInbound,
 };

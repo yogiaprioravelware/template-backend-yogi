@@ -1,4 +1,4 @@
-const { createInboundSchema, scanRfidReceivedSchema, scanQrStoredSchema } = require('../../src/validations/inbound-validation');
+const { createInboundSchema, scanRfidReceivedSchema, scanQrStoredSchema, finalizeInboundSchema } = require('../../src/validations/inbound-validation');
 
 describe('Validation: inbound-validation', () => {
   describe('createInboundSchema', () => {
@@ -35,6 +35,13 @@ describe('Validation: inbound-validation', () => {
     it('should fail if rfid_tag is not EPC format', () => {
       const { error } = scanQrStoredSchema.validate({ qr_string: 'QR123', rfid_tag: 'INVALID' });
       expect(error).toBeDefined();
+    });
+  });
+
+  describe('finalizeInboundSchema', () => {
+    it('should validate empty object', () => {
+      const { error } = finalizeInboundSchema.validate({});
+      expect(error).toBeUndefined();
     });
   });
 });

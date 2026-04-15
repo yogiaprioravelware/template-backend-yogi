@@ -9,6 +9,10 @@ const InboundLog = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    inbound_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     rfid_tag: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -45,6 +49,10 @@ const InboundLog = sequelize.define(
 );
 
 InboundLog.associate = (models) => {
+  InboundLog.belongsTo(models.Inbound, {
+    foreignKey: "inbound_id",
+    as: "inbound",
+  });
   InboundLog.belongsTo(models.User, {
     foreignKey: "user_id",
     as: "user",
