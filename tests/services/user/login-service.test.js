@@ -45,7 +45,8 @@ describe('Service: loginUser', () => {
       email: 'test@test.com', 
       password: 'hashedpassword', 
       name: 'Test User',
-      role_id: 1 
+      role_id: 1,
+      role: 'admin'
     };
     const fakePermissions = ['create:item', 'read:item'];
 
@@ -63,6 +64,7 @@ describe('Service: loginUser', () => {
       email: 'test@test.com',
       name: 'Test User',
       role_id: 1,
+      role: 'admin',
       permissions: fakePermissions
     });
     expect(result).toHaveProperty('accessToken');

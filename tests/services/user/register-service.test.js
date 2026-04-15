@@ -31,6 +31,7 @@ describe('Service: register-service', () => {
       name: 'Test', 
       email: 'test@test.com', 
       role_id: 2,
+      role: 'admin',
       toJSON: function() { return { ...this }; }
     };
     User.create.mockResolvedValue(mockCreatedUser);

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1776244184965" clover="3.2.0">
-  <project timestamp="1776244184966" name="All files">
-    <metrics statements="1386" coveredstatements="1386" conditionals="435" coveredconditionals="435" methods="131" coveredmethods="131" elements="1952" coveredelements="1952" complexity="0" loc="1386" ncloc="1386" packages="10" files="75" classes="75"/>
+<coverage generated="1776245684380" clover="3.2.0">
+  <project timestamp="1776245684381" name="All files">
+    <metrics statements="1385" coveredstatements="1385" conditionals="437" coveredconditionals="437" methods="131" coveredmethods="131" elements="1953" coveredelements="1953" complexity="0" loc="1385" ncloc="1385" packages="10" files="75" classes="75"/>
     <package name="controllers">
-      <metrics statements="296" coveredstatements="296" conditionals="90" coveredconditionals="90" methods="38" coveredmethods="38"/>
+      <metrics statements="295" coveredstatements="295" conditionals="92" coveredconditionals="92" methods="38" coveredmethods="38"/>
       <file name="inbound.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\inbound.js">
         <metrics statements="45" coveredstatements="45" conditionals="18" coveredconditionals="18" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
@@ -227,21 +227,20 @@
         <line num="85" count="1" type="stmt"/>
       </file>
       <file name="role.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\role.js">
-        <metrics statements="32" coveredstatements="32" conditionals="2" coveredconditionals="2" methods="5" coveredmethods="5"/>
+        <metrics statements="31" coveredstatements="31" conditionals="4" coveredconditionals="4" methods="5" coveredmethods="5"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
-        <line num="9" count="2" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="22" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="24" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="23" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
         <line num="29" count="1" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
         <line num="34" count="1" type="stmt"/>
@@ -539,9 +538,9 @@
         <line num="1" count="13" type="stmt"/>
         <line num="2" count="13" type="stmt"/>
         <line num="4" count="13" type="stmt"/>
-        <line num="44" count="13" type="stmt"/>
-        <line num="45" count="13" type="stmt"/>
-        <line num="48" count="13" type="stmt"/>
+        <line num="49" count="13" type="stmt"/>
+        <line num="50" count="13" type="stmt"/>
+        <line num="53" count="13" type="stmt"/>
       </file>
       <file name="index.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\models\index.js">
         <metrics statements="16" coveredstatements="16" conditionals="5" coveredconditionals="5" methods="3" coveredmethods="3"/>
@@ -1408,7 +1407,7 @@
         <line num="46" count="2" type="stmt"/>
         <line num="52" count="2" type="stmt"/>
         <line num="54" count="2" type="stmt"/>
-        <line num="67" count="2" type="stmt"/>
+        <line num="68" count="2" type="stmt"/>
       </file>
       <file name="refresh-token-service.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\services\user\refresh-token-service.js">
         <metrics statements="23" coveredstatements="23" conditionals="8" coveredconditionals="8" methods="1" coveredmethods="1"/>

@@ -26,7 +26,14 @@ describe('Controller: role', () => {
     // getRoles
     it('getRoles success', async () => {
         Role.findAll.mockResolvedValue([
-            { toJSON: () => ({ id: 1, name: 'admin', Permissions: [{ name: 'A' }] }) }
+            { toJSON: () => ({ id: 1, name: 'admin', permissions: [{ name: 'A' }] }) }
+        ]);
+        await roleController.getRoles(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+    it('getRoles success with empty permissions', async () => {
+        Role.findAll.mockResolvedValue([
+            { toJSON: () => ({ id: 2, name: 'guest', permissions: null }) }
         ]);
         await roleController.getRoles(req, res);
         expect(res.status).toHaveBeenCalledWith(200);

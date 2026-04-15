@@ -29,6 +29,11 @@ const User = sequelize.define(
         key: "id",
       },
     },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "operator",
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

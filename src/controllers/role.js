@@ -10,8 +10,9 @@ const getRoles = async (req, res) => {
       include: [
         {
           model: Permission,
+          as: "permissions",
           attributes: ["name"],
-          through: { attributes: [] }, // Exclude join table data
+          through: { attributes: [] },
         },
       ],
     });
@@ -19,8 +20,7 @@ const getRoles = async (req, res) => {
     // Flatten permissions for frontend ease of use
     const rolesWithFlatPerms = roles.map((role) => {
       const roleJSON = role.toJSON();
-      roleJSON.permissions = roleJSON.Permissions.map((p) => p.name);
-      delete roleJSON.Permissions;
+      roleJSON.permissions = (roleJSON.permissions || []).map((p) => p.name);
       return roleJSON;
     });
 

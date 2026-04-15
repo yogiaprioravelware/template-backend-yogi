@@ -3,7 +3,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     // 2. Drop location_transfers
-    await queryInterface.dropTable('location_transfers', { cascade: true }).catch(() => {});
+    try {
+      await queryInterface.dropTable('location_transfers', { cascade: true });
+    } catch (e) {
+      console.warn(`Migration notice: Table 'location_transfers' might not exist. Error: ${e.message}`);
+    }
 
     // 3. Drop location_id from items
     try {
@@ -12,7 +16,7 @@ module.exports = {
         await queryInterface.removeColumn('items', 'location_id');
       }
     } catch(e) {
-      console.warn("Migration skip: Column 'location_id' might not exist in 'items'.");
+      console.warn(`Migration skip: Column 'location_id' might not exist in 'items'. Technical error: ${e.message}`);
     }
 
     // 4. Create inbound_logs
@@ -93,7 +97,16 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('inbound_logs').catch(() => {});
-    await queryInterface.dropTable('outbound_logs').catch(() => {});
+    try {
+      await queryInterface.dropTable('inbound_logs');
+    } catch (e) {
+      console.warn(`Down-migration notice: inbound_logs might not exist. Error: ${e.message}`);
+    }
+
+    try {
+      await queryInterface.dropTable('outbound_logs');
+    } catch (e) {
+      console.warn(`Down-migration notice: outbound_logs might not exist. Error: ${e.message}`);
+    }
   }
 };

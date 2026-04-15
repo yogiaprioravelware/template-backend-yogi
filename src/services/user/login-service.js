@@ -57,6 +57,7 @@ const loginUser = async (userData) => {
       email: user.email,
       name: user.name,
       role_id: user.role_id,
+      role: user.role,
       permissions,
     },
     accessToken,
