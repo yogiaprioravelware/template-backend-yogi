@@ -11,10 +11,10 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeIndex('items', 'items_rfid_tag_idx');
-    await queryInterface.removeIndex('items', 'items_sku_code_idx');
-    await queryInterface.removeIndex('locations', 'locations_qr_string_idx');
-    await queryInterface.removeIndex('locations', 'locations_location_code_idx');
-    await queryInterface.removeIndex('inventory_movements', 'inventory_movements_reference_id_idx');
+    await queryInterface.removeIndex('items', 'items_rfid_tag_idx').catch(() => {});
+    await queryInterface.removeIndex('items', 'items_sku_code_idx').catch(() => {});
+    await queryInterface.removeIndex('locations', 'locations_qr_string_idx').catch(() => {});
+    await queryInterface.removeIndex('locations', 'locations_location_code_idx').catch(() => {});
+    await queryInterface.removeIndex('inventory_movements', 'inventory_movements_reference_id_idx').catch(() => {});
   }
 };

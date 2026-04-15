@@ -10,7 +10,6 @@ module.exports = {
     await queryInterface.bulkDelete('outbound_items', null, {});
     await queryInterface.bulkDelete('inbound_items', null, {});
     await queryInterface.bulkDelete('item_locations', null, {});
-    await queryInterface.bulkDelete('inventory_movements', null, {});
     await queryInterface.bulkDelete('items', null, {});
 
     const items = [];
@@ -37,7 +36,6 @@ module.exports = {
     await queryInterface.bulkDelete('outbound_items', null, {});
     await queryInterface.bulkDelete('inbound_items', null, {});
     await queryInterface.bulkDelete('item_locations', null, {});
-    await queryInterface.bulkDelete('inventory_movements', null, {});
     return queryInterface.bulkDelete('items', null, {});
   }
 };

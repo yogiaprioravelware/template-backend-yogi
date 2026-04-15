@@ -4,7 +4,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Clear existing locations and dependencies safely
-    await queryInterface.bulkDelete('inbound_receiving_log', null, {});
     await queryInterface.bulkDelete('item_locations', null, {});
     await queryInterface.bulkDelete('locations', null, {});
 
@@ -125,7 +124,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('inbound_receiving_log', null, {});
     await queryInterface.bulkDelete('item_locations', null, {});
     return queryInterface.bulkDelete('locations', null, {});
   }

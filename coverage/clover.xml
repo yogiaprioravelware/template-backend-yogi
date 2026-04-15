@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1776233971910" clover="3.2.0">
-  <project timestamp="1776233971912" name="All files">
-    <metrics statements="1334" coveredstatements="1334" conditionals="437" coveredconditionals="437" methods="125" coveredmethods="125" elements="1896" coveredelements="1896" complexity="0" loc="1334" ncloc="1334" packages="10" files="74" classes="74"/>
+<coverage generated="1776240558973" clover="3.2.0">
+  <project timestamp="1776240558973" name="All files">
+    <metrics statements="1334" coveredstatements="1334" conditionals="439" coveredconditionals="438" methods="125" coveredmethods="125" elements="1898" coveredelements="1897" complexity="0" loc="1334" ncloc="1334" packages="10" files="74" classes="74"/>
     <package name="controllers">
       <metrics statements="290" coveredstatements="290" conditionals="98" coveredconditionals="98" methods="37" coveredmethods="37"/>
       <file name="inbound.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\controllers\inbound.js">
@@ -482,10 +482,10 @@
         <line num="1" count="13" type="stmt"/>
         <line num="2" count="13" type="stmt"/>
         <line num="4" count="13" type="stmt"/>
+        <line num="45" count="13" type="stmt"/>
+        <line num="46" count="13" type="stmt"/>
         <line num="50" count="13" type="stmt"/>
-        <line num="51" count="13" type="stmt"/>
-        <line num="55" count="13" type="stmt"/>
-        <line num="62" count="13" type="stmt"/>
+        <line num="57" count="13" type="stmt"/>
       </file>
       <file name="OutboundLog.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\models\OutboundLog.js">
         <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
@@ -1440,9 +1440,9 @@
       </file>
     </package>
     <package name="utils">
-      <metrics statements="56" coveredstatements="56" conditionals="33" coveredconditionals="33" methods="9" coveredmethods="9"/>
+      <metrics statements="56" coveredstatements="56" conditionals="35" coveredconditionals="34" methods="9" coveredmethods="9"/>
       <file name="database.js" path="D:\MAGANG PT REVELWARE TECHNOLOGY\PROJECT\backend-api\template-backend-yogiravelware\src\utils\database.js">
-        <metrics statements="4" coveredstatements="4" conditionals="8" coveredconditionals="8" methods="0" coveredmethods="0"/>
+        <metrics statements="4" coveredstatements="4" conditionals="10" coveredconditionals="9" methods="0" coveredmethods="0"/>
         <line num="1" count="18" type="stmt"/>
         <line num="2" count="18" type="stmt"/>
         <line num="4" count="18" type="stmt"/>

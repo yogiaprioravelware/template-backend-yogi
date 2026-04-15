@@ -26,11 +26,6 @@ const OutboundItem = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
-    qty_staged: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

@@ -45,7 +45,6 @@ module.exports = {
         sku_code: `SKU-ITEM-${(i + 1).toString().padStart(3, '0')}`,
         qty_target: qtyTarget,
         qty_delivered: faker.helpers.arrayElement([0, qtyTarget, faker.number.int({ min: 0, max: qtyTarget })]),
-        qty_staged: 0,
         created_at: new Date(),
         updated_at: new Date()
       });
