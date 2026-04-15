@@ -30,7 +30,7 @@ const getUserPermissions = async (user) => {
       ]
     });
 
-    if (!role || !role.permissions) return [];
+    if (!role?.permissions) return [];
     
     return role.permissions.map(p => p.name);
   } catch (error) {

@@ -16,7 +16,9 @@ module.exports = {
       if (itemsDesc.qty_staged) {
         await queryInterface.removeColumn("outbound_items", "qty_staged");
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Migration skip: Column 'qty_staged' might not exist in 'outbound_items'.");
+    }
   },
 
   async down(queryInterface, Sequelize) {

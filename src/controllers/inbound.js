@@ -43,7 +43,7 @@ const scanRfidReceived = async (req, res, next) => {
       req.user ? req.user.id : null
     );
     
-    if (result && result.success === false) {
+    if (result?.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
     
@@ -62,7 +62,7 @@ const scanQrStored = async (req, res, next) => {
       req.user ? req.user.id : null
     );
 
-    if (result && result.success === false) {
+    if (result?.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 

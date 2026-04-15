@@ -1,6 +1,5 @@
-
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const Sequelize = require('sequelize');
 const sequelize = require('../utils/database');
 const db = {};
@@ -8,7 +7,7 @@ const db = {};
 // Membaca semua file di direktori models
 fs.readdirSync(__dirname)
   .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.slice(-3) === '.js');
+    return !file.startsWith('.') && (file !== 'index.js') && file.endsWith('.js');
   })
   .forEach(file => {
     const model = require(path.join(__dirname, file));

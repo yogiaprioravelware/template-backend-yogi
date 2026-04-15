@@ -11,6 +11,61 @@ const logger = require("../../utils/logger");
 const { reconcileItemStock } = require("../../utils/reconciliation");
 
 /**
+ * Helper to process a single staged log during finalization.
+ * Reduces cognitive complexity of finalizeOutbound.
+ */
+const processStagedLog = async (log, outbound, userId, transaction) => {
+  const item = await Item.findOne({ where: { rfid_tag: log.rfid_tag }, transaction });
+  if (!item) return;
+
+  // Update OutboundItem delivered qty
+  const outboundItem = await OutboundItem.findOne({
+    where: { outbound_id: outbound.id, sku_code: item.sku_code },
+    transaction
+  });
+
+  if (outboundItem) {
+    outboundItem.qty_delivered += 1;
+    await outboundItem.save({ transaction });
+  }
+
+  // Deduct stock from the pick location
+  const itemLoc = await ItemLocation.findOne({
+    where: { item_id: item.id, location_id: log.location_id },
+    transaction
+  });
+
+  if (itemLoc) {
+    itemLoc.stock -= 1;
+    const balanceAfter = itemLoc.stock;
+    
+    if (itemLoc.stock <= 0) {
+      await itemLoc.destroy({ transaction });
+    } else {
+      await itemLoc.save({ transaction });
+    }
+
+    // Record Movement
+    await InventoryMovement.create({
+      item_id: item.id,
+      location_id: log.location_id,
+      type: "OUTBOUND",
+      qty_change: -1,
+      balance_after: balanceAfter,
+      reference_id: outbound.order_number,
+      operator_name: userId ? `USER_${userId}` : "SYSTEM",
+    }, { transaction });
+
+    // Reconciliation
+    await reconcileItemStock(item.id, transaction);
+  }
+
+  // Update Log status to FINALIZED
+  log.status = "FINALIZED";
+  await log.save({ transaction });
+};
+
+/**
  * Tahap Terakhir Outbound (Finalize)
  * Mengonfirmasi seluruh barang yang sudah di-stage untuk dikirim.
  * Melakukan pengurangan stok fisik, pencatatan mutasi, dan penyelesaian dokumen.
@@ -55,54 +110,7 @@ const finalizeOutbound = async (outboundId, userId) => {
 
     // Proses setiap item yang di-stage
     for (const log of stagedLogs) {
-      const item = await Item.findOne({ where: { rfid_tag: log.rfid_tag }, transaction });
-      if (!item) continue;
-
-      // Update OutboundItem delivered qty
-      const outboundItem = await OutboundItem.findOne({
-        where: { outbound_id: outboundId, sku_code: item.sku_code },
-        transaction
-      });
-
-      if (outboundItem) {
-        outboundItem.qty_delivered += 1;
-        await outboundItem.save({ transaction });
-      }
-
-      // Deduct stock from the pick location
-      const itemLoc = await ItemLocation.findOne({
-        where: { item_id: item.id, location_id: log.location_id },
-        transaction
-      });
-
-      if (itemLoc) {
-        itemLoc.stock -= 1;
-        const balanceAfter = itemLoc.stock;
-        
-        if (itemLoc.stock <= 0) {
-          await itemLoc.destroy({ transaction });
-        } else {
-          await itemLoc.save({ transaction });
-        }
-
-        // Record Movement
-        await InventoryMovement.create({
-          item_id: item.id,
-          location_id: log.location_id,
-          type: "OUTBOUND",
-          qty_change: -1,
-          balance_after: balanceAfter,
-          reference_id: outbound.order_number,
-          operator_name: userId ? `USER_${userId}` : "SYSTEM",
-        }, { transaction });
-
-        // Reconciliation
-        await reconcileItemStock(item.id, transaction);
-      }
-
-      // Update Log status to FINALIZED
-      log.status = "FINALIZED";
-      await log.save({ transaction });
+      await processStagedLog(log, outbound, userId, transaction);
     }
 
     // Update Outbound status
@@ -114,12 +122,7 @@ const finalizeOutbound = async (outboundId, userId) => {
     
     const isFullyFulfilled = updatedOrderItems.every(item => item.qty_delivered >= item.qty_target);
     
-    if (isFullyFulfilled) {
-      outbound.status = "DONE";
-    } else {
-      outbound.status = "PROCESS"; // Tetap PROCESS jika partial
-    }
-    
+    outbound.status = isFullyFulfilled ? "DONE" : "PROCESS";
     await outbound.save({ transaction });
 
     await transaction.commit();

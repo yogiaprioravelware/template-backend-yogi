@@ -42,7 +42,7 @@ const scanQrPicking = async (req, res, next) => {
       req.body.rfid_tag
     );
     
-    if (result && result.success === false) {
+    if (result?.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
     
@@ -57,7 +57,7 @@ const scanRfidStaging = async (req, res, next) => {
   try {
     const result = await outboundService.scanRfidStaging(req.body.rfid_tag);
     
-    if (result && result.success === false) {
+    if (result?.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 
@@ -72,7 +72,7 @@ const finalizeOutbound = async (req, res, next) => {
   try {
     const result = await outboundService.finalizeOutbound(req.params.id, req.user?.id);
     
-    if (result && result.success === false) {
+    if (result?.success === false) {
       return res.status(result.statusCode || 400).json(result);
     }
 

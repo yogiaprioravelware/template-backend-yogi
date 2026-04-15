@@ -11,7 +11,9 @@ module.exports = {
       if (itemsDesc.location_id) {
         await queryInterface.removeColumn('items', 'location_id');
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn("Migration skip: Column 'location_id' might not exist in 'items'.");
+    }
 
     // 4. Create inbound_logs
     await queryInterface.createTable('inbound_logs', {

@@ -9,10 +9,17 @@ const success = (data, message = "Operation successful", extra = {}) => {
 };
 
 const error = (message = "An error occurred", details = null, statusCode = 500) => {
+  let errors = [];
+  if (Array.isArray(details)) {
+    errors = details;
+  } else if (details) {
+    errors = [details];
+  }
+
   return {
     success: false,
     message,
-    errors: Array.isArray(details) ? details : (details ? [details] : []),
+    errors,
     statusCode
   };
 };

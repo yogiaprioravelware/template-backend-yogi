@@ -42,7 +42,7 @@ const scanQrPicking = async (outboundId, qrString, rfidTag) => {
       transaction 
     });
     
-    if (!loc || loc.status !== "ACTIVE") {
+    if (loc?.status !== "ACTIVE") {
       const err = new Error("Location not found or inactive");
       err.status = 400;
       throw err;
@@ -85,18 +85,6 @@ const scanQrPicking = async (outboundId, qrString, rfidTag) => {
       throw err;
     }
 
-    // Check picked quota (count in OutboundLogs)
-    const pickedCount = await OutboundLog.count({
-      where: { 
-        outbound_id: outboundId,
-      },
-      include: [{
-        model: Outbound,
-        as: 'outbound',
-        where: { id: outboundId } // just joining logically
-      }],
-      transaction
-    });
     // Actually we need the count of picked items for this particular SKU to compare against qty_target.
     // Wait, OutboundLog does not store SKU, but we can find it via Items.
     // Let's do a simple Item query to get all RFIDs picked so far for this order to check by SKU.
