@@ -1,11 +1,13 @@
 const getReconciliationReport = require('../../../src/services/item/get-reconciliation-service');
-const sequelize = require('../../../src/utils/database');
+const { sequelize } = require('../../../src/models');
 
 // Mock database and logger
-jest.mock('../../../src/utils/database', () => ({
-  query: jest.fn(),
-  QueryTypes: {
-    SELECT: 'SELECT'
+jest.mock('../../../src/models', () => ({
+  sequelize: {
+    query: jest.fn(),
+    QueryTypes: {
+      SELECT: 'SELECT'
+    }
   }
 }));
 

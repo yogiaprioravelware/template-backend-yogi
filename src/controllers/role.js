@@ -1,4 +1,4 @@
-const Role = require("../models/Role");
+const { Role, Permission } = require("../models");
 const getPermissionsService = require("../services/role/get-permissions-service");
 const assignRolePermissionsService = require("../services/role/assign-role-permissions-service");
 const response = require("../utils/response");
@@ -6,7 +6,6 @@ const logger = require("../utils/logger");
 
 const getRoles = async (req, res) => {
   try {
-    const Permission = require("../models/Permission"); // Lazy-loading because RolePermission defines associations
     const roles = await Role.findAll({
       include: [
         {

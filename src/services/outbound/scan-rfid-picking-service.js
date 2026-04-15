@@ -1,34 +1,36 @@
-const Outbound = require("../../models/Outbound");
-const OutboundItem = require("../../models/OutboundItem");
-const Item = require("../../models/Item");
-const ItemLocation = require("../../models/ItemLocation");
-const InventoryMovement = require("../../models/InventoryMovement");
-const locationModel = require("../../models/Location");
-const { scanRfidSchema } = require("../../validations/outbound-validation");
+const { 
+  Outbound, 
+  OutboundItem, 
+  Item, 
+  ItemLocation, 
+  InventoryMovement, 
+  Location,
+  sequelize 
+} = require("../../models");
 const logger = require("../../utils/logger");
-const sequelize = require("../../utils/database");
 const { reconcileItemStock } = require("../../utils/reconciliation");
+const { handleAutomatedStaging } = require("../staging/automated-staging-service");
 
-const scanRfidPicking = async (outboundId, rfidData) => {
+/**
+ * Memproses pengambilan (picking) item berdasarkan scan RFID dan lokasi.
+ * Melakukan pemutakhiran stok, pencatatan mutasi, dan memicu proses staging otomatis.
+ * @param {number} outboundId 
+ * @param {Object} rfidData 
+ * @param {number} userId 
+ * @returns {Promise<Object>}
+ */
+const scanRfidPicking = async (outboundId, rfidData, userId = 1) => {
   logger.info(`Scanning RFID for picking. Outbound ID: ${outboundId}, RFID: ${rfidData.rfid_tag}`);
   
-  const { error } = scanRfidSchema.validate(rfidData);
-  if (error) {
-    logger.warn(`Validation failed for RFID picking: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-
   const { rfid_tag, location_qr } = rfidData;
-  let transaction;
+
+  const transaction = await sequelize.transaction();
   try {
-    transaction = await sequelize.transaction();
     const outbound = await Outbound.findByPk(outboundId, { transaction });
     if (!outbound) {
       logger.warn(`Outbound not found for ID: ${outboundId}`);
       const err = new Error("Outbound not found");
-      err.status = 400;
+      err.status = 404;
       throw err;
     }
 
@@ -39,12 +41,12 @@ const scanRfidPicking = async (outboundId, rfidData) => {
       throw err;
     }
 
-    const loc = await locationModel.findOne({ 
+    const loc = await Location.findOne({ 
       where: { qr_string: location_qr },
       transaction 
     });
     
-    if (loc?.status !== "ACTIVE") {
+    if (!loc || loc.status !== "ACTIVE") {
       logger.warn(`Picking failed: Location with QR ${location_qr} not found or inactive`);
       const err = new Error("Location not found or inactive");
       err.status = 400;
@@ -59,7 +61,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
     if (!scannedItem) {
       logger.warn(`RFID tag not found in system: ${rfid_tag}`);
       const err = new Error("RFID tag not found in system");
-      err.status = 400;
+      err.status = 404;
       throw err;
     }
 
@@ -97,6 +99,7 @@ const scanRfidPicking = async (outboundId, rfidData) => {
       throw err;
     }
 
+    // Process picking
     outboundItem.qty_delivered += 1;
     await outboundItem.save({ transaction });
 
@@ -121,6 +124,16 @@ const scanRfidPicking = async (outboundId, rfidData) => {
       operator_name: "SYSTEM",
     }, { transaction });
 
+    // --- AUTOMATED STAGING HOOK ---
+    await handleAutomatedStaging(
+      rfid_tag, 
+      outboundId, 
+      loc.id, 
+      userId, 
+      transaction, 
+      outboundItem.id
+    );
+
     const allOutboundItems = await OutboundItem.findAll({
       where: { outbound_id: outboundId },
       transaction
@@ -130,11 +143,10 @@ const scanRfidPicking = async (outboundId, rfidData) => {
 
     if (allComplete) {
       outbound.status = "DONE";
-      await outbound.save({ transaction });
     } else if (outbound.status === "PENDING") {
       outbound.status = "PROCES";
-      await outbound.save({ transaction });
     }
+    await outbound.save({ transaction });
 
     await transaction.commit();
     logger.info(`Picking successful for RFID ${rfid_tag}. Transaction committed.`);

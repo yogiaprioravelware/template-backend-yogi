@@ -1,7 +1,12 @@
 const deleteItem = require('../../../src/services/item/delete-item-service');
-const Item = require('../../../src/models/Item');
+const { Item } = require('../../../src/models');
 
-jest.mock('../../../src/models/Item');
+jest.mock('../../../src/models', () => ({
+  Item: {
+    findByPk: jest.fn(),
+  },
+}));
+
 jest.mock('../../../src/utils/logger');
 
 describe('Service: delete-item-service', () => {

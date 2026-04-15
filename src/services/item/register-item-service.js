@@ -1,24 +1,18 @@
-const Item = require("../../models/Item");
-const Location = require("../../models/Location");
-const ItemLocation = require("../../models/ItemLocation");
-const sequelize = require("../../utils/database");
-const { registerItemSchema } = require("../../validations/item-validation");
+const { Item, Location, ItemLocation, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
 const { isValidEPC } = require("../../utils/rfid-validator");
 
+/**
+ * Mendaftarkan item baru ke sistem dan menginisialisasi stok di lokasi tertentu.
+ * @param {Object} itemData 
+ * @returns {Promise<Object>}
+ */
 const registerItem = async (itemData) => {
   logger.info("Attempting to register a new item with location support");
   
+  // Custom EPC validation remains in service as it's a domain requirement
   if (!isValidEPC(itemData.rfid_tag)) {
     const err = new Error("Invalid RFID format. Must be a 24-character SGTIN-96 Hexadecimal string starting with '30'");
-    err.status = 400;
-    throw err;
-  }
-
-  const { error } = registerItemSchema.validate(itemData);
-  if (error) {
-    logger.warn(`Validation error during item registration: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
     err.status = 400;
     throw err;
   }
@@ -72,12 +66,13 @@ const registerItem = async (itemData) => {
 
     await transaction.commit();
     logger.info(`Item with SKU ${sku_code} registered and located successfully`);
-    return item.dataValues;
+    
+    return item.toJSON();
   } catch (err) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error(`Registration failed: ${err.message}`);
     throw err;
   }
 };
 
-module.exports = registerItem;
+module.exports = registerItem;

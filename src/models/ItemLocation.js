@@ -45,4 +45,16 @@ const ItemLocation = sequelize.define(
   }
 );
 
+
+ItemLocation.associate = (models) => {
+  ItemLocation.belongsTo(models.Item, {
+    foreignKey: "item_id",
+    as: "item",
+  });
+  ItemLocation.belongsTo(models.Location, {
+    foreignKey: "location_id",
+    as: "location",
+  });
+};
+
 module.exports = ItemLocation;

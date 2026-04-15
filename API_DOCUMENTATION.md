@@ -16,10 +16,11 @@ Dokumentasi lengkap untuk RFID-based warehouse management system dengan user aut
 2. [Item Management](#item-management) (8 endpoints)
 3. [Inbound (Two-Stage Receiving)](#inbound-two-stage-receiving) (5 endpoints)
 4. [Outbound (Order Dispatch)](#outbound-order-dispatch) (4 endpoints)
-5. [Location Management](#location-management) (5 endpoints)
-6. [Role & Permission Management](#role--permission-management) (3 endpoints)
-7. [Response Format](#response-format)
-8. [Error Handling](#error-handling)
+5. [Staging Outbound (Consolidation)](#staging-outbound-consolidation) (5 endpoints)
+6. [Location Management](#location-management) (5 endpoints)
+7. [Role & Permission Management](#role--permission-management) (3 endpoints)
+8. [Response Format](#response-format)
+9. [Error Handling](#error-handling)
 
 ---
 
@@ -1158,6 +1159,146 @@ Authorization: Bearer <token>
 {
   "success": true,
   "data": "Permissions assigned successfully"
+}
+```
+
+---
+
+# 📦 STAGING OUTBOUND (CONSOLIDATION)
+
+Sistem konsolidasi barang sebelum pengiriman akhir (Finalize). Memungkinkan penggunaan satu sesi untuk multiple orders.
+
+## 1. Create Staging Session
+
+**Endpoint**: `POST /api/staging`
+
+Membuat sesi staging baru.
+
+### Request Body
+```json
+{
+  "session_number": "STG-20260414-001"
+}
+```
+
+### Response Success (201 Created)
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "session_number": "STG-20260414-001",
+    "status": "OPEN",
+    "created_at": "2026-04-14T10:00:00.000Z"
+  }
+}
+```
+
+---
+
+## 2. Get All Staging Sessions
+
+**Endpoint**: `GET /api/staging`
+
+Mendapatkan daftar semua sesi staging.
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "session_number": "STG-20260414-001",
+      "status": "OPEN",
+      "created_at": "2026-04-14T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+## 3. Get Session Detail
+
+**Endpoint**: `GET /api/staging/:id`
+
+Mendapatkan detail item dan log audit dalam satu sesi.
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "session_number": "STG-20260414-001",
+    "status": "OPEN",
+    "items": [
+      {
+        "id": 1,
+        "rfid_tag": "RFID-001",
+        "item_name": "Electronic A",
+        "sku_code": "SKU-001",
+        "order_number": "ORD-2026-001",
+        "source_location": "GDG-A-01",
+        "status": "STAGED"
+      }
+    ],
+    "audit_logs": [
+      {
+        "action": "ADD_ITEM",
+        "operator_name": "Admin",
+        "details": { "rfid_tag": "RFID-001" },
+        "created_at": "2026-04-14T10:10:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 4. Add Item to Staging
+
+**Endpoint**: `POST /api/staging/:id/items`
+
+Menambahkan barang ke area staging dengan men-scan lokasi asal dan RFID.
+
+### Request Body
+```json
+{
+  "location_qr": "QR-GDG-A-01",
+  "rfid_tag": "RFID-001"
+}
+```
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": {
+    "staging_item": { "id": 1, "rfid_tag": "RFID-001", "status": "STAGED" },
+    "order_info": { "order_number": "ORD-2026-001", "qty_staged": 1, "qty_target": 10 }
+  }
+}
+```
+
+---
+
+## 5. Finalize Staging Session
+
+**Endpoint**: `POST /api/staging/:id/finalize`
+
+Memfinalisasi sesi staging: memindahkan barang benar-benar keluar dari sistem dan mengupdate status order.
+
+### Response Success (200 OK)
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Staging session finalized successfully",
+    "item_count": 5
+  }
 }
 ```
 

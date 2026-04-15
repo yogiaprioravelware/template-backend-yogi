@@ -60,4 +60,16 @@ const InventoryMovement = sequelize.define(
   }
 );
 
+
+InventoryMovement.associate = (models) => {
+  InventoryMovement.belongsTo(models.Item, {
+    foreignKey: "item_id",
+    as: "item",
+  });
+  InventoryMovement.belongsTo(models.Location, {
+    foreignKey: "location_id",
+    as: "location",
+  });
+};
+
 module.exports = InventoryMovement;

@@ -20,7 +20,8 @@ describe("E2E User & Authentication Flow", () => {
         email: testEmail,
         password: "password123",
       });
-      console.log(res.status, res.body); expect(res.status).toBe(201);
+      if (res.status === 500) console.log("ERROR 500:", res.body);
+      expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(res.body.data.email).toBe(testEmail);
     });

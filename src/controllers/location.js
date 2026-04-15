@@ -1,4 +1,4 @@
-const Location = require("../models/Location");
+const { Location } = require("../models");
 const { successResponse, errorResponse } = require("../utils/response");
 const logger = require("../utils/logger");
 const {

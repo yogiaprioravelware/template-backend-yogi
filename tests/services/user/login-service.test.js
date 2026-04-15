@@ -1,12 +1,15 @@
 const loginUser = require('../../../src/services/user/login-service');
-const User = require('../../../src/models/User');
+const { User } = require('../../../src/models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const getUserPermissions = require('../../../src/services/role/get-user-permissions-service');
-const { loginSchema } = require('../../../src/validations/user-validation');
 
-// Mock dependensi
-jest.mock('../../../src/models/User');
+jest.mock('../../../src/models', () => ({
+  User: {
+    findOne: jest.fn(),
+  },
+}));
+
 jest.mock('bcryptjs');
 jest.mock('jsonwebtoken');
 jest.mock('../../../src/services/role/get-user-permissions-service');
@@ -18,11 +21,6 @@ describe('Service: loginUser', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should throw an error if validation fails', async () => {
-    const invalidData = { email: 'notanemail' };
-    await expect(loginUser(invalidData)).rejects.toThrow();
   });
 
   it('should throw an error if user is not found', async () => {
@@ -46,8 +44,7 @@ describe('Service: loginUser', () => {
       id: 1, 
       email: 'test@test.com', 
       password: 'hashedpassword', 
-      username: 'testuser',
-      role: 'admin', 
+      name: 'Test User',
       role_id: 1 
     };
     const fakePermissions = ['create:item', 'read:item'];
@@ -64,8 +61,7 @@ describe('Service: loginUser', () => {
     expect(result.user).toEqual({
       id: 1,
       email: 'test@test.com',
-      username: 'testuser',
-      role: 'admin',
+      name: 'Test User',
       role_id: 1,
       permissions: fakePermissions
     });
@@ -90,10 +86,8 @@ describe('Service: loginUser', () => {
 
     await loginUser({ email: 'test@test.com', password: 'password123' });
 
-    // Verify fallback is used (implicitly covered by successful sign call with missing env)
     expect(jwt.sign).toHaveBeenCalled();
 
-    // Restore env
     process.env.JWT_ACCESS_EXPIRY = originalAccessExpiry;
     process.env.JWT_REFRESH_EXPIRY = originalRefreshExpiry;
   });

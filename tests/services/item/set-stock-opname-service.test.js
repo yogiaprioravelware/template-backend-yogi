@@ -1,41 +1,29 @@
 const setStockOpname = require('../../../src/services/item/set-stock-opname-service');
-const Item = require('../../../src/models/Item');
-const Location = require('../../../src/models/Location');
-const ItemLocation = require('../../../src/models/ItemLocation');
-const InventoryMovement = require('../../../src/models/InventoryMovement');
-const sequelize = require('../../../src/utils/database');
+const { Item, Location, ItemLocation, InventoryMovement, sequelize } = require('../../../src/models');
 
-jest.mock('../../../src/models/Item', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findOne = jest.fn();
-  SequelizeModel.findByPk = jest.fn();
-  SequelizeModel.hasMany = jest.fn();
-  SequelizeModel.belongsToMany = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/Location', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findOne = jest.fn();
-  SequelizeModel.findByPk = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/ItemLocation', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findOne = jest.fn();
-  SequelizeModel.create = jest.fn();
-  SequelizeModel.sum = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/InventoryMovement', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.create = jest.fn();
-  SequelizeModel.belongsTo = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/utils/logger');
-jest.mock('../../../src/utils/database', () => ({
-  transaction: jest.fn()
+jest.mock('../../../src/models', () => ({
+  Item: {
+    findOne: jest.fn(),
+    findByPk: jest.fn(),
+  },
+  Location: {
+    findOne: jest.fn(),
+    findByPk: jest.fn(),
+  },
+  ItemLocation: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+    sum: jest.fn(),
+  },
+  InventoryMovement: {
+    create: jest.fn(),
+  },
+  sequelize: {
+    transaction: jest.fn(),
+  },
 }));
+
+jest.mock('../../../src/utils/logger');
 
 describe('Service: set-stock-opname-service', () => {
   let mockTransaction;
@@ -130,5 +118,18 @@ describe('Service: set-stock-opname-service', () => {
       operator_name: 'SYSTEM'
     }), { transaction: mockTransaction });
     expect(mockTransaction.commit).toHaveBeenCalled();
+  });
+
+  it('should handle transaction error in setStockOpname', async () => {
+    sequelize.transaction.mockRejectedValueOnce(new Error('Transaction fail'));
+    await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1')).rejects.toThrow('Transaction fail');
+  });
+
+  it('should throw and skip rollback if transaction object is unavailable', async () => {
+    sequelize.transaction.mockResolvedValueOnce(undefined);
+    Item.findByPk.mockRejectedValueOnce(new Error('Opname failed without tx'));
+
+    await expect(setStockOpname({ item_id: 1, location_id: 2, actual_qty: 10 }, 'user1'))
+      .rejects.toThrow('Opname failed without tx');
   });
 });

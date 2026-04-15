@@ -1,14 +1,11 @@
+const { Item, ItemLocation } = require('../../src/models');
 const { reconcileItemStock } = require('../../src/utils/reconciliation');
-const Item = require('../../src/models/Item');
-const ItemLocation = require('../../src/models/ItemLocation');
+
 const logger = require('../../src/utils/logger');
 
-jest.mock('../../src/models/Item', () => ({
-  findByPk: jest.fn(),
-}));
-
-jest.mock('../../src/models/ItemLocation', () => ({
-  sum: jest.fn(),
+jest.mock('../../src/models', () => ({
+  Item: { findByPk: jest.fn() },
+  ItemLocation: { sum: jest.fn() }
 }));
 
 jest.mock('../../src/utils/logger', () => ({

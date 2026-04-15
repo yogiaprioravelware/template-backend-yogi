@@ -1,8 +1,13 @@
-const Item = require("../../models/Item");
-const { updateItemSchema } = require("../../validations/item-validation");
+const { Item } = require("../../models");
 const logger = require("../../utils/logger");
 const { isValidEPC } = require("../../utils/rfid-validator");
 
+/**
+ * Updates an existing item's profile data.
+ * @param {number} id 
+ * @param {Object} itemData 
+ * @returns {Promise<Object>}
+ */
 const updateItem = async (id, itemData) => {
   logger.info(`Attempting to update item with id: ${id}`);
   
@@ -11,22 +16,16 @@ const updateItem = async (id, itemData) => {
     err.status = 400;
     throw err;
   }
-  const { error } = updateItemSchema.validate(itemData);
-  if (error) {
-    logger.warn(`Validation error during item update: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
 
   const item = await Item.findByPk(id);
   if (!item) {
     logger.warn(`Update failed: Item with id ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 400;
+    err.status = 404;
     throw err;
   }
 
+  // Check RFID uniqueness if changed
   if (itemData.rfid_tag && itemData.rfid_tag !== item.rfid_tag) {
     const existingRfid = await Item.findOne({ where: { rfid_tag: itemData.rfid_tag } });
     if (existingRfid) {
@@ -37,6 +36,7 @@ const updateItem = async (id, itemData) => {
     }
   }
 
+  // Check SKU uniqueness if changed
   if (itemData.sku_code && itemData.sku_code !== item.sku_code) {
     const existingSku = await Item.findOne({ where: { sku_code: itemData.sku_code } });
     if (existingSku) {
@@ -49,6 +49,7 @@ const updateItem = async (id, itemData) => {
 
   await item.update(itemData);
   logger.info(`Item with id: ${id} updated successfully`);
+  
   return item;
 };
 

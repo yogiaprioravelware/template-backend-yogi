@@ -1,12 +1,31 @@
-const { Op } = require("sequelize");
-const Outbound = require("../../models/Outbound");
-const OutboundItem = require("../../models/OutboundItem");
-const Item = require("../../models/Item");
+const { Outbound, OutboundItem, Item } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengambil detail Outbound order beserta item dan metadata produk menggunakan Eager Loading.
+ * @param {number} outboundId 
+ * @returns {Promise<Object>}
+ */
 const getOutboundDetail = async (outboundId) => {
   logger.info(`Fetching details for outbound ID: ${outboundId}`);
-  const outbound = await Outbound.findByPk(outboundId);
+
+  const outbound = await Outbound.findByPk(outboundId, {
+    include: [
+      {
+        model: OutboundItem,
+        as: "items",
+        attributes: ["id", "sku_code", "qty_target", "qty_delivered"],
+        include: [
+          {
+            model: Item,
+            as: "metadata",
+            attributes: ["item_name", "category", "uom", "current_stock"],
+          },
+        ],
+      },
+    ],
+  });
+
   if (!outbound) {
     logger.warn(`Outbound with ID: ${outboundId} not found`);
     const err = new Error("Outbound not found");
@@ -14,39 +33,40 @@ const getOutboundDetail = async (outboundId) => {
     throw err;
   }
 
-  const outboundItems = await OutboundItem.findAll({
-    where: { outbound_id: outboundId },
-    attributes: ["id", "sku_code", "qty_target", "qty_delivered"],
-    raw: true
-  });
+  const data = outbound.toJSON();
+  
+  // Transformasi items dan kalkulasi statistik
+  let totalQtyTarget = 0;
+  let totalQtyDelivered = 0;
 
-  const skuCodes = outboundItems.map(item => item.sku_code);
-  const itemsMetadata = await Item.findAll({
-    where: { sku_code: { [Op.in]: skuCodes } },
-    attributes: ["sku_code", "item_name", "category", "uom", "current_stock"],
-    raw: true
-  });
+  data.items = data.items.map(item => {
+    const qtyTarget = Number(item.qty_target) || 0;
+    const qtyDelivered = Number(item.qty_delivered) || 0;
+    
+    totalQtyTarget += qtyTarget;
+    totalQtyDelivered += qtyDelivered;
 
-  const metadataMap = itemsMetadata.reduce((acc, current) => {
-    acc[current.sku_code] = current;
-    return acc;
-  }, {});
-
-  const itemsWithDetails = outboundItems.map(item => {
-    const meta = metadataMap[item.sku_code];
     return {
-      ...item,
-      item_name: meta?.item_name || "",
-      category: meta?.category || "",
-      uom: meta?.uom || "",
-      current_stock: meta?.current_stock || 0,
+      id: item.id,
+      sku_code: item.sku_code,
+      qty_target: qtyTarget,
+      qty_delivered: qtyDelivered,
+      item_name: item.metadata?.item_name || "",
+      category: item.metadata?.category || "",
+      uom: item.metadata?.uom || "",
+      current_stock: item.metadata?.current_stock || 0,
     };
   });
 
-  logger.info(`Found ${itemsWithDetails.length} items for outbound ID: ${outboundId}`);
+  const progressPercentage = totalQtyTarget > 0 ? Math.round((totalQtyDelivered / totalQtyTarget) * 100) : 0;
+
+  logger.info(`Found ${data.items.length} items for outbound ID: ${outboundId}`);
+  
   return {
-    ...outbound.dataValues,
-    items: itemsWithDetails,
+    ...data,
+    total_qty_target: totalQtyTarget,
+    total_qty_delivered: totalQtyDelivered,
+    progress_percentage: progressPercentage
   };
 };
 

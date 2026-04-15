@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>30/30</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>29/29</span>
+                <span class='fraction'>25/25</span>
             </div>
         
             
@@ -114,19 +114,26 @@
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -136,18 +143,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,60 +157,69 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Op } = require("sequelize");
-const Outbound = require("../../models/Outbound");
-const OutboundItem = require("../../models/OutboundItem");
-const Item = require("../../models/Item");
-const { createOutboundSchema } = require("../../validations/outbound-validation");
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Outbound, OutboundItem, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
+const { validateSkusExist } = require("../../utils/item-validator");
 &nbsp;
 /**
- * Service to create a new outbound order
+ * Creates a new outbound order along with its items.
+ * Ensures order number uniqueness and validates SKU existence.
+ * @param {Object} outboundData 
+ * @returns {Promise&lt;Object&gt;}
  */
 const createOutbound = async (outboundData) =&gt; {
   logger.info("Attempting to create a new outbound order");
-  const { error } = createOutboundSchema.validate(outboundData);
-  if (error) {
-    logger.warn(`Validation error during outbound order creation: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-&nbsp;
+  
   const { order_number, outbound_type, items } = outboundData;
 &nbsp;
-  const existingOrder = await Outbound.findOne({ where: { order_number } });
-  if (existingOrder) {
-    logger.warn(`Creation failed: Order number ${order_number} already exists`);
-    const err = new Error("Order number already exists");
-    err.status = 400;
-    throw err;
+  const transaction = await sequelize.transaction();
+  try {
+    const existingOrder = await Outbound.findOne({ where: { order_number }, transaction });
+    if (existingOrder) {
+      logger.warn(`Creation failed: Order number ${order_number} already exists`);
+      const err = new Error("Order number already exists");
+      err.status = 400;
+      throw err;
+    }
+&nbsp;
+    await validateSkusExist(items);
+&nbsp;
+    const outbound = await Outbound.create({
+      order_number,
+      outbound_type,
+      status: "PENDING",
+    }, { transaction });
+&nbsp;
+    logger.info(`Outbound header created for order number: ${order_number}`);
+&nbsp;
+    await OutboundItem.bulkCreate(items.map(item =&gt; ({
+      outbound_id: outbound.id,
+      sku_code: item.sku_code,
+      qty_target: item.qty_target,
+      qty_delivered: 0,
+    })), { transaction });
+&nbsp;
+    logger.info(`Outbound items created for order number: ${order_number}`);
+&nbsp;
+    await transaction.commit();
+    return outbound;
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    logger.error(`Outbound order creation failed: ${error.message}`);
+    throw error;
   }
-&nbsp;
-  const { validateSkusExist } = require("../../utils/item-validator");
-  await validateSkusExist(items);
-&nbsp;
-  const outbound = await Outbound.create({
-    order_number,
-    outbound_type,
-    status: "PENDING",
-  });
-  logger.info(`Outbound header created for order number: ${order_number}`);
-&nbsp;
-  await OutboundItem.bulkCreate(items.map(item =&gt; ({
-    outbound_id: outbound.id,
-    sku_code: item.sku_code,
-    qty_target: item.qty_target,
-    qty_delivered: 0,
-  })));
-  logger.info(`Outbound items created for order number: ${order_number}`);
-&nbsp;
-  return outbound;
 };
 &nbsp;
 module.exports = createOutbound;</pre></td></tr></table></pre>
@@ -223,7 +229,7 @@ module.exports = createOutbound;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T09:05:12.270Z
+                at 2026-04-15T01:47:35.216Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

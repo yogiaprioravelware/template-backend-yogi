@@ -55,4 +55,14 @@ const Location = sequelize.define(
   }
 );
 
+
+Location.associate = (models) => {
+  Location.belongsToMany(models.Item, {
+    through: models.ItemLocation,
+    foreignKey: "location_id",
+    otherKey: "item_id",
+    as: "items",
+  });
+};
+
 module.exports = Location;

@@ -28,6 +28,10 @@ describe('Validation: item-validation', () => {
       const { error } = updateItemSchema.validate({ current_stock: 20 });
       expect(error).toBeUndefined();
     });
+    it('should validate correct rfid_tag in update', () => {
+      const { error } = updateItemSchema.validate({ rfid_tag: '30342509181408C000000101' });
+      expect(error).toBeUndefined();
+    });
     it('should fail if update rfid_tag is not EPC format', () => {
       const { error } = updateItemSchema.validate({ rfid_tag: 'INVALID' });
       expect(error).toBeDefined();

@@ -1,6 +1,12 @@
 const jwt = require("jsonwebtoken");
+const { User } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Menghasilkan Access Token baru menggunakan Refresh Token yang valid.
+ * @param {string} token 
+ * @returns {Promise<Object>}
+ */
 const refreshToken = async (token) => {
   if (!token) {
     const err = new Error("Refresh token is required");
@@ -11,7 +17,6 @@ const refreshToken = async (token) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
     
-    const User = require("../../models/User");
     const user = await User.findByPk(payload.id);
     
     if (!user) {
@@ -20,8 +25,13 @@ const refreshToken = async (token) => {
       throw err;
     }
 
+    // Generate new access token with updated payload
     const accessToken = jwt.sign(
-      { id: user.id, username: user.username, role: user.role, role_id: user.role_id },
+      { 
+        id: user.id, 
+        name: user.name, 
+        role_id: user.role_id 
+      },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_ACCESS_EXPIRY || '15m' }
     );

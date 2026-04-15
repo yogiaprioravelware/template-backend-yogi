@@ -1,39 +1,26 @@
 
-const success = (data) => {
-  return {
-    success: true,
-    data,
-  };
-};
-
-const error = (errors) => {
-  const errorArray = Array.isArray(errors) ? errors : [{ message: errors }];
-  return {
-    success: false,
-    errors: errorArray,
-  };
-};
-
-const successResponse = (data, message = "Success") => {
+const success = (data, message = "Operation successful", extra = {}) => {
   return {
     success: true,
     message,
     data,
+    ...extra
   };
 };
 
-const errorResponse = (statusCode, message, details = {}) => {
+const error = (message = "An error occurred", details = null, statusCode = 500) => {
   return {
     success: false,
-    statusCode,
     message,
-    ...details,
+    errors: Array.isArray(details) ? details : (details ? [details] : []),
+    statusCode
   };
 };
 
 module.exports = {
   success,
   error,
-  successResponse,
-  errorResponse,
+  // Aliases for enterprise standard / backward compatibility
+  successResponse: success,
+  errorResponse: (statusCode, message, details) => error(message, details, statusCode),
 };

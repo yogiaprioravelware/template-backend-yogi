@@ -1,7 +1,13 @@
-const Permission = require("../../models/Permission");
-const Role = require("../../models/Role");
+const { Role, Permission } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengecek apakah user memiliki permission tertentu.
+ * Admin selalu memiliki akses penuh (true).
+ * @param {Object} user 
+ * @param {string} requiredPermission 
+ * @returns {Promise<boolean>}
+ */
 const checkUserPermission = async (user, requiredPermission) => {
   if (!user || (!user.role_id && !user.role)) {
     logger.warn("Permission check failed: User information is missing");
@@ -16,6 +22,7 @@ const checkUserPermission = async (user, requiredPermission) => {
       include: [
         {
           model: Permission,
+          as: "permissions",
           where: { name: requiredPermission },
           required: true,
         },

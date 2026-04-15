@@ -5,6 +5,7 @@ const getUserById = require("./get-user-by-id-service");
 const updateUser = require("./update-user-service");
 const deleteUser = require("./delete-user-service");
 const assignRole = require("./assign-role-service");
+const refreshToken = require("./refresh-token-service");
 
 module.exports = {
   registerUser,
@@ -14,4 +15,5 @@ module.exports = {
   updateUser,
   deleteUser,
   assignRole,
+  refreshToken,
 };

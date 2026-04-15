@@ -12,7 +12,7 @@ jest.mock('../../src/utils/response', () => ({
 describe('Controller: user', () => {
     let req, res, next;
     beforeEach(() => {
-        req = { body: {}, params: {} };
+        req = { body: {}, params: {}, query: {} };
         res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
         next = jest.fn();
         jest.clearAllMocks();
@@ -20,13 +20,17 @@ describe('Controller: user', () => {
 
     ['registerUser', 'loginUser', 'getUsers', 'getUserById', 'updateUser', 'deleteUser', 'assignRole', 'refreshToken'].forEach(method => {
         it(`${method} success`, async () => {
-            userService[method] = jest.fn().mockResolvedValue({});
+             if (method === 'getUsers') {
+                userService[method].mockResolvedValue({ data: [], pagination: {} });
+             } else {
+                userService[method].mockResolvedValue({});
+             }
             await userController[method](req, res, next);
             if(method === 'registerUser') expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalled();
+            expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
         });
         it(`${method} error`, async () => {
-            userService[method] = jest.fn().mockRejectedValue(new Error('fail'));
+            userService[method].mockRejectedValue(new Error('fail'));
             await userController[method](req, res, next);
             expect(next).toHaveBeenCalled();
         });

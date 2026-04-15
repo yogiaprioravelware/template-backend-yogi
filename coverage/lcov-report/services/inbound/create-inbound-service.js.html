@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>30/30</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>29/29</span>
+                <span class='fraction'>25/25</span>
             </div>
         
             
@@ -111,17 +111,26 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -131,18 +140,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -154,57 +153,67 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Op } = require("sequelize");
-const Inbound = require("../../models/Inbound");
-const InboundItem = require("../../models/InboundItem");
-const Item = require("../../models/Item");
-const { createInboundSchema } = require("../../validations/inbound-validation");
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Inbound, InboundItem, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
+const { validateSkusExist } = require("../../utils/item-validator");
 &nbsp;
-&nbsp;
+/**
+ * Membuat dokumen Inbound baru (Purchase Order) beserta daftar itemnya.
+ * @param {Object} inboundData 
+ * @returns {Promise&lt;Object&gt;}
+ */
 const createInbound = async (inboundData) =&gt; {
   logger.info("Attempting to create a new inbound PO");
-  const { error } = createInboundSchema.validate(inboundData);
-  if (error) {
-    logger.warn(`Validation error during inbound PO creation: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-&nbsp;
+  
   const { po_number, items } = inboundData;
 &nbsp;
-  const existingPo = await Inbound.findOne({ where: { po_number } });
-  if (existingPo) {
-    logger.warn(`Creation failed: PO number ${po_number} already exists`);
-    const err = new Error("PO number already exists");
-    err.status = 400;
-    throw err;
+  const transaction = await sequelize.transaction();
+  try {
+    const existingPo = await Inbound.findOne({ where: { po_number }, transaction });
+    if (existingPo) {
+      logger.warn(`Creation failed: PO number ${po_number} already exists`);
+      const err = new Error("PO number already exists");
+      err.status = 400;
+      throw err;
+    }
+&nbsp;
+    await validateSkusExist(items);
+&nbsp;
+    const inbound = await Inbound.create({
+      po_number,
+      status: "PENDING",
+    }, { transaction });
+&nbsp;
+    logger.info(`Inbound header created for PO number: ${po_number}`);
+&nbsp;
+    await InboundItem.bulkCreate(items.map(item =&gt; ({
+      inbound_id: inbound.id,
+      sku_code: item.sku_code,
+      qty_target: item.qty_target,
+      qty_received: 0,
+    })), { transaction });
+&nbsp;
+    logger.info(`Inbound items created for PO number: ${po_number}`);
+&nbsp;
+    await transaction.commit();
+    return inbound;
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+    logger.error(`Inbound PO creation failed: ${error.message}`);
+    throw error;
   }
-&nbsp;
-  const { validateSkusExist } = require("../../utils/item-validator");
-  await validateSkusExist(items);
-&nbsp;
-  const inbound = await Inbound.create({
-    po_number,
-    status: "PENDING",
-  });
-  logger.info(`Inbound header created for PO number: ${po_number}`);
-&nbsp;
-  await InboundItem.bulkCreate(items.map(item =&gt; ({
-    inbound_id: inbound.id,
-    sku_code: item.sku_code,
-    qty_target: item.qty_target,
-    qty_received: 0,
-  })));
-  logger.info(`Inbound items created for PO number: ${po_number}`);
-&nbsp;
-  return inbound;
 };
 &nbsp;
 module.exports = { createInbound };</pre></td></tr></table></pre>
@@ -214,7 +223,7 @@ module.exports = { createInbound };</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T09:05:12.270Z
+                at 2026-04-15T01:47:35.216Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

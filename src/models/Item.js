@@ -28,9 +28,12 @@ const Item = sequelize.define(
       allowNull: false,
     },
     uom: {
-      type: DataTypes.ENUM("PCS", "BOX", "SET"),
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "PCS",
+      validate: {
+        isIn: [["PCS", "BOX", "SET"]]
+      }
     },
     current_stock: {
       type: DataTypes.INTEGER,
@@ -53,30 +56,18 @@ const Item = sequelize.define(
   }
 );
 
-const Location = require("./Location");
-const ItemLocation = require("./ItemLocation");
-const InventoryMovement = require("./InventoryMovement");
 
-Item.belongsToMany(Location, {
-  through: ItemLocation,
-  foreignKey: "item_id",
-  otherKey: "location_id",
-  as: "locations",
-});
-
-Item.hasMany(InventoryMovement, {
-  foreignKey: "item_id",
-  as: "movements",
-});
-
-InventoryMovement.belongsTo(Item, {
-  foreignKey: "item_id",
-  as: "item",
-});
-
-InventoryMovement.belongsTo(Location, {
-  foreignKey: "location_id",
-  as: "location",
-});
+Item.associate = (models) => {
+  Item.belongsToMany(models.Location, {
+    through: models.ItemLocation,
+    foreignKey: "item_id",
+    otherKey: "location_id",
+    as: "locations",
+  });
+  Item.hasMany(models.InventoryMovement, {
+    foreignKey: "item_id",
+    as: "movements",
+  });
+};
 
 module.exports = Item;

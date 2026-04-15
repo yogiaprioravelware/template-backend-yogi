@@ -1,6 +1,10 @@
-const sequelize = require("../../utils/database");
+const { sequelize } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengambil laporan rekonsiliasi stok dari database view (vw_stock_reconciliation).
+ * @returns {Promise<Array>}
+ */
 const getReconciliationReport = async () => {
   logger.info("Fetching Stock Reconciliation Report from database view");
 

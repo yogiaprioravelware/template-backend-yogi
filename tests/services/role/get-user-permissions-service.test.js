@@ -1,9 +1,15 @@
 const getUserPermissions = require('../../../src/services/role/get-user-permissions-service');
-const Role = require('../../../src/models/Role');
-const Permission = require('../../../src/models/Permission');
+const { Role, Permission } = require('../../../src/models');
 
-jest.mock('../../../src/models/Role');
-jest.mock('../../../src/models/Permission');
+jest.mock('../../../src/models', () => ({
+  Role: {
+    findByPk: jest.fn(),
+  },
+  Permission: {
+    findAll: jest.fn(),
+  },
+}));
+
 jest.mock('../../../src/utils/logger');
 
 describe('Service: get-user-permissions-service', () => {
@@ -24,7 +30,7 @@ describe('Service: get-user-permissions-service', () => {
 
   it('should return mapped permissions for specific role', async () => {
     const mockRole = {
-      Permissions: [{ name: 'item:read' }]
+      permissions: [{ name: 'item:read' }]
     };
     Role.findByPk.mockResolvedValue(mockRole);
     

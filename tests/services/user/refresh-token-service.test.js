@@ -1,8 +1,9 @@
+const { User } = require('../../../src/models');
 const refreshTokenService = require('../../../src/services/user/refresh-token-service');
-const User = require('../../../src/models/User');
+
 const jwt = require('jsonwebtoken');
 
-jest.mock('../../../src/models/User');
+jest.mock('../../../src/models');
 jest.mock('jsonwebtoken');
 jest.mock('../../../src/utils/logger');
 

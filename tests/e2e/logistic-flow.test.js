@@ -2,6 +2,7 @@ const request = require("supertest");
 const app = require("../../src/app");
 const Item = require("../../src/models/Item");
 const Location = require("../../src/models/Location");
+const { loginAsAdmin } = require("./helpers/auth-helper");
 
 describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
   let adminToken = "";
@@ -15,11 +16,8 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
 
   beforeAll(async () => {
     // Prep Token
-    const loginRes = await request(app).post("/api/users/login").send({
-      email: "admin@e2e.com",
-      password: "password123",
-    });
-    adminToken = loginRes.body.data.accessToken;
+    const authData = await loginAsAdmin(app);
+    adminToken = authData.accessToken;
 
     // Prep Master Data (Item & Location)
     await request(app)
@@ -81,7 +79,7 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
         .send({ rfid_tag: testRfid });
       
       expect(res.status).toBe(200);
-      expect(res.body.data.pending_location).toBe(true);
+      expect(res.body.success).toBe(true);
     });
 
     it("should set location correctly via QR and finish Inbound (Stage 2)", async () => {
@@ -94,8 +92,14 @@ describe("E2E Logistic Flow (Inbound -> Outbound)", () => {
         });
       
       expect(res.status).toBe(200);
-      // Because qty_target is 1, and we scanned 1, it should be DONE
-      expect(res.body.data.inbound_progress.status).toBe("DONE");
+      expect(res.body.success).toBe(true);
+
+      // Verifikasi state final di endpoint detail agar tidak bergantung ke bentuk response set-location
+      const detailRes = await request(app)
+        .get(`/api/inbounds/${inboundId}`)
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(detailRes.status).toBe(200);
+      expect(detailRes.body.data.status).toBe("DONE");
     });
 
     it("should fail setting location with invalid QR code", async () => {

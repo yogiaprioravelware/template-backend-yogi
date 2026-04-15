@@ -1,8 +1,15 @@
 const checkUserPermission = require('../../../src/services/role/check-user-permission-service');
-const Role = require('../../../src/models/Role');
+const { Role, Permission } = require('../../../src/models');
 
-jest.mock('../../../src/models/Role');
-jest.mock('../../../src/models/Permission');
+jest.mock('../../../src/models', () => ({
+  Role: {
+    findByPk: jest.fn(),
+  },
+  Permission: {
+    findAll: jest.fn(),
+  },
+}));
+
 jest.mock('../../../src/utils/logger');
 
 describe('Service: check-user-permission-service', () => {

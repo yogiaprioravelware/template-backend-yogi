@@ -1,7 +1,11 @@
-const Item = require("../../models/Item");
-const Location = require("../../models/Location");
+const { Item, Location } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Fetch item details by ID along with its locations.
+ * @param {number} id 
+ * @returns {Promise<Object>}
+ */
 const getItemById = async (id) => {
   logger.info(`Fetching item with id: ${id}`);
   const item = await Item.findByPk(id, {
@@ -20,13 +24,14 @@ const getItemById = async (id) => {
       {
         model: Location,
         as: "locations",
+        through: { attributes: ["stock"] },
       },
     ],
   });
   if (!item) {
     logger.warn(`Item with id: ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 400;
+    err.status = 404;
     throw err;
   }
   logger.info(`Item with id: ${id} found`);

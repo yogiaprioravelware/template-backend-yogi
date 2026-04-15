@@ -1,7 +1,12 @@
 const getItemById = require('../../../src/services/item/get-item-by-id-service');
-const Item = require('../../../src/models/Item');
+const { Item } = require('../../../src/models');
 
-jest.mock('../../../src/models/Item');
+jest.mock('../../../src/models', () => ({
+  Item: {
+    findByPk: jest.fn(),
+  },
+}));
+
 jest.mock('../../../src/utils/logger');
 
 describe('Service: get-item-by-id-service', () => {

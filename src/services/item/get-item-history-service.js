@@ -1,8 +1,11 @@
-const Item = require("../../models/Item");
-const Location = require("../../models/Location");
-const InventoryMovement = require("../../models/InventoryMovement");
+const { Item, Location, InventoryMovement } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengambil riwayat mutasi stok (InventoryMovement) untuk item tertentu.
+ * @param {number} itemId 
+ * @returns {Promise<Array>}
+ */
 const getItemHistory = async (itemId) => {
   logger.info(`Fetching inventory movement history for item id: ${itemId}`);
   

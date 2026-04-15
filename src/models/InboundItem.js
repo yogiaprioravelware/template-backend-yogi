@@ -41,4 +41,17 @@ const InboundItem = sequelize.define(
   }
 );
 
+
+InboundItem.associate = (models) => {
+  InboundItem.belongsTo(models.Inbound, {
+    foreignKey: "inbound_id",
+    as: "inbound",
+  });
+  InboundItem.belongsTo(models.Item, {
+    foreignKey: "sku_code",
+    targetKey: "sku_code",
+    as: "metadata",
+  });
+};
+
 module.exports = InboundItem;

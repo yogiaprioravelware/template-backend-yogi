@@ -1,10 +1,11 @@
+const { Role } = require('../../src/models');
 const roleController = require('../../src/controllers/role');
-const Role = require('../../src/models/Role');
+
 const getPermissionsService = require('../../src/services/role/get-permissions-service');
 const assignRolePermissionsService = require('../../src/services/role/assign-role-permissions-service');
 
-jest.mock('../../src/models/Role');
-jest.mock('../../src/models/Permission'); // prevent sequelize loading issues
+jest.mock('../../src/models');
+jest.mock('../../src/models'); // prevent sequelize loading issues
 jest.mock('../../src/services/role/get-permissions-service');
 jest.mock('../../src/services/role/assign-role-permissions-service');
 jest.mock('../../src/utils/logger');

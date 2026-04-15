@@ -1,23 +1,17 @@
-const Item = require("../../models/Item");
-const Location = require("../../models/Location");
-const ItemLocation = require("../../models/ItemLocation");
-const InventoryMovement = require("../../models/InventoryMovement");
-const { transferLocationSchema } = require("../../validations/inventory-validation");
-const sequelize = require("../../utils/database");
+const { Item, Location, ItemLocation, InventoryMovement, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
-const { reconcileItemStock } = require("../../utils/reconciliation"); // Added
+const { reconcileItemStock } = require("../../utils/reconciliation");
 
+/**
+ * Melakukan transfer stok internal antar lokasi untuk item tertentu.
+ * Memastikan ketersediaan stok di lokasi sumber dan validitas lokasi tujuan.
+ * Mencatat mutasi keluar dari sumber dan mutasi masuk ke tujuan.
+ * @param {Object} payload 
+ * @returns {Promise<Object>}
+ */
 const transferLocation = async (payload) => {
   logger.info(`Attempting internal transfer with payload: ${JSON.stringify(payload)}`);
   
-  const { error } = transferLocationSchema.validate(payload);
-  if (error) {
-    logger.warn(`Transfer validation error: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-
   const { item_id, from_location_id, to_location_id, qty } = payload;
 
   if (from_location_id === to_location_id) {
@@ -26,9 +20,9 @@ const transferLocation = async (payload) => {
     throw err;
   }
 
-  let transaction;
+  const transaction = await sequelize.transaction();
+  
   try {
-    transaction = await sequelize.transaction();
     const item = await Item.findByPk(item_id, { transaction });
     if (!item) {
       const err = new Error("Item not found");
@@ -40,12 +34,12 @@ const transferLocation = async (payload) => {
     const fromLoc = await Location.findByPk(from_location_id, { transaction });
     const toLoc = await Location.findByPk(to_location_id, { transaction });
 
-    if (fromLoc?.status !== "ACTIVE") {
+    if (!fromLoc || fromLoc.status !== "ACTIVE") {
       const err = new Error("Source location not found or inactive");
       err.status = 400;
       throw err;
     }
-    if (toLoc?.status !== "ACTIVE") {
+    if (!toLoc || toLoc.status !== "ACTIVE") {
       const err = new Error("Destination location not found or inactive");
       err.status = 400;
       throw err;
@@ -57,8 +51,9 @@ const transferLocation = async (payload) => {
       transaction,
     });
 
-    if ((sourceItemLoc?.stock || 0) < qty) {
-      const err = new Error(`Insufficient stock in source location (${fromLoc.location_code}). Available: ${sourceItemLoc?.stock || 0}, Requested: ${qty}`);
+    if (!sourceItemLoc || sourceItemLoc.stock < qty) {
+      const available = sourceItemLoc ? sourceItemLoc.stock : 0;
+      const err = new Error(`Insufficient stock in source location (${fromLoc.location_code}). Available: ${available}, Requested: ${qty}`);
       err.status = 400;
       throw err;
     }
@@ -112,7 +107,6 @@ const transferLocation = async (payload) => {
     }, { transaction });
 
     // Recalculate global current_stock to ensure integrity
-    // Internal transfer shouldn't change the total mathematically, but this ensures integrity
     await reconcileItemStock(item.id, transaction);
 
     await transaction.commit();

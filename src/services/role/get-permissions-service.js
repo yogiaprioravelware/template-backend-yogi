@@ -1,6 +1,10 @@
-const Permission = require("../../models/Permission");
+const { Permission } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengambil daftar seluruh permission dan mengelompokkannya berdasarkan modul.
+ * @returns {Promise<Object>} Grouped permissions by module
+ */
 const getPermissions = async () => {
   logger.info("Fetching all permissions for ACL management");
   try {

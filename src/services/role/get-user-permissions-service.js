@@ -1,14 +1,20 @@
-const Role = require("../../models/Role");
-const Permission = require("../../models/Permission");
+const { Role, Permission } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mengambil daftar nama permission yang dimiliki oleh user berdasarkan role-nya.
+ * Jika user adalah admin, akan mengembalikan seluruh permission yang ada.
+ * @param {Object} user - User object from request (with role_id and optionally role)
+ * @returns {Promise<string[]>} Array of permission names
+ */
 const getUserPermissions = async (user) => {
   if (!user || (!user.role_id && user.role !== "admin")) {
     return [];
   }
 
+  // Admin bypass
   if (user.role === "admin") {
-    const allPerms = await Permission.findAll();
+    const allPerms = await Permission.findAll({ attributes: ["name"] });
     return allPerms.map(p => p.name);
   }
 
@@ -17,14 +23,16 @@ const getUserPermissions = async (user) => {
       include: [
         {
           model: Permission,
+          as: "permissions",
           attributes: ["name"],
           through: { attributes: [] }
         }
       ]
     });
 
-    if (!role) return [];
-    return role.Permissions.map(p => p.name);
+    if (!role || !role.permissions) return [];
+    
+    return role.permissions.map(p => p.name);
   } catch (error) {
     logger.error(`Error fetching user permissions: ${error.message}`);
     return [];

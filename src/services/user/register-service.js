@@ -1,19 +1,15 @@
 const bcrypt = require("bcryptjs");
-const User = require("../../models/User");
-const Role = require("../../models/Role");
-const { registerSchema } = require("../../validations/user-validation");
+const { User, Role } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Mendaftarkan user baru ke sistem.
+ * @param {Object} userData 
+ * @returns {Promise<Object>}
+ */
 const registerUser = async (userData) => {
   logger.info("Attempting to register a new user");
-  const { error } = registerSchema.validate(userData);
-  if (error) {
-    logger.warn(`Validation error during user registration: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-
+  
   const { name, email, password, role_id } = userData;
 
   const existingUser = await User.findOne({ where: { email } });
@@ -33,10 +29,15 @@ const registerUser = async (userData) => {
     const selectedRole = await Role.findByPk(finalRoleId);
     if (selectedRole) {
       finalRoleName = selectedRole.name;
+    } else {
+        // Jika role_id tidak valid, gunakan default operator
+        const defaultRole = await Role.findOne({ where: { name: "operator" } });
+        finalRoleId = defaultRole ? defaultRole.id : null;
     }
   } else {
     const defaultRole = await Role.findOne({ where: { name: "operator" } });
     finalRoleId = defaultRole ? defaultRole.id : null;
+    finalRoleName = defaultRole ? defaultRole.name : "operator";
   }
 
   const newUser = await User.create({ 
@@ -46,8 +47,14 @@ const registerUser = async (userData) => {
     role: finalRoleName,
     role_id: finalRoleId
   });
+
   logger.info(`User ${email} registered successfully`);
-  return newUser;
+  
+  // Kembalikan objek user tanpa password
+  const result = newUser.toJSON();
+  delete result.password;
+  
+  return result;
 };
 
 module.exports = registerUser;

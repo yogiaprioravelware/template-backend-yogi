@@ -1,8 +1,9 @@
+const { Location } = require('../../src/models');
 const locationController = require('../../src/controllers/location');
-const Location = require('../../src/models/Location');
+
 const { successResponse, errorResponse } = require('../../src/utils/response');
 
-jest.mock('../../src/models/Location');
+jest.mock('../../src/models');
 jest.mock('../../src/utils/logger');
 
 describe('Controller: location', () => {

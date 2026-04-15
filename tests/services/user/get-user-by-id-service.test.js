@@ -1,7 +1,8 @@
+const { User } = require('../../../src/models');
 const getUserById = require('../../../src/services/user/get-user-by-id-service');
-const User = require('../../../src/models/User');
 
-jest.mock('../../../src/models/User');
+
+jest.mock('../../../src/models');
 jest.mock('../../../src/utils/logger'); // Silence logs
 
 describe('Service: get-user-by-id-service', () => {

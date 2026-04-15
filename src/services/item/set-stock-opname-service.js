@@ -1,10 +1,13 @@
-const Item = require("../../models/Item");
-const Location = require("../../models/Location");
-const ItemLocation = require("../../models/ItemLocation");
-const InventoryMovement = require("../../models/InventoryMovement");
-const sequelize = require("../../utils/database");
+const { Item, Location, ItemLocation, InventoryMovement, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Melakukan Stock Opname (penyelesaian selisih stok) untuk item tertentu di lokasi tertentu.
+ * Mencatat riwayat mutasi sebagai STOCK_OPNAME.
+ * @param {Object} payload 
+ * @param {string|number} userId 
+ * @returns {Promise<Object>}
+ */
 const setStockOpname = async (payload, userId) => {
   const { item_id, location_id, actual_qty, notes } = payload;
   logger.info(`Starting Stock Opname for item_id: ${item_id} at location_id: ${location_id}. Actual Qty: ${actual_qty}`);
@@ -47,6 +50,7 @@ const setStockOpname = async (payload, userId) => {
     itemLocation.stock = actual_qty;
     await itemLocation.save({ transaction });
 
+    // Recalculate total item stock across all locations
     const totalStock = await ItemLocation.sum('stock', { 
       where: { item_id },
       transaction 
@@ -75,7 +79,7 @@ const setStockOpname = async (payload, userId) => {
       new_stock: actual_qty 
     };
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     logger.error(`Stock Opname failed: ${error.message}`);
     throw error;
   }

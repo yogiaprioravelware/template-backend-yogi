@@ -9,6 +9,7 @@ const outboundRouter = require("./routers/outbound");
 const roleRouter = require("./routers/role");
 const locationRouter = require("./routers/location");
 const inventoryRouter = require("./routers/inventory");
+const stagingRouter = require("./routers/staging");
 const errorMiddleware = require("./middlewares/error-middleware");
 const requestLogger = require("./middlewares/request-logger");
 
@@ -66,6 +67,7 @@ app.use("/api/outbounds", outboundRouter);
 app.use("/api/locations", locationRouter);
 app.use("/api/roles", roleRouter);
 app.use("/api/inventory", inventoryRouter);
+app.use("/api/staging", stagingRouter);
 
 // error handler
 app.use(errorMiddleware);

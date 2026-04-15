@@ -1,6 +1,7 @@
 const request = require("supertest");
 const app = require("../../src/app");
 const Item = require("../../src/models/Item");
+const { loginAsAdmin } = require("./helpers/auth-helper");
 
 describe("E2E Master Data Flow (Item & Location)", () => {
   let adminToken = "";
@@ -8,12 +9,9 @@ describe("E2E Master Data Flow (Item & Location)", () => {
   const randomRfid = `30${Math.floor(Math.random() * 1e16).toString(16).padStart(22, 'c')}`;
 
   beforeAll(async () => {
-    // Login menggunakan Admin E2E yang diseed pada setup.js
-    const loginRes = await request(app).post("/api/users/login").send({
-      email: "admin@e2e.com",
-      password: "password123",
-    });
-    adminToken = loginRes.body.data.accessToken;
+    // Precondition check: admin login harus sukses sebelum flow berjalan.
+    const authData = await loginAsAdmin(app);
+    adminToken = authData.accessToken;
   });
 
   describe("1. Item Management", () => {
@@ -62,7 +60,8 @@ describe("E2E Master Data Flow (Item & Location)", () => {
         .get("/api/items")
         .set("Authorization", `Bearer ${adminToken}`);
       expect(res.status).toBe(200);
-      expect(Array.isArray(res.body.data)).toBe(true);
+      const items = Array.isArray(res.body.data) ? res.body.data : res.body.data?.data;
+      expect(Array.isArray(items)).toBe(true);
     });
   });
 

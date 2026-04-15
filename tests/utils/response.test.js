@@ -3,36 +3,84 @@ const response = require('../../src/utils/response');
 describe('Utils: response', () => {
   it('should return a success object with data', () => {
     const result = response.success({ id: 1 });
-    expect(result).toEqual({ success: true, data: { id: 1 } });
+    expect(result).toEqual({ 
+      success: true, 
+      message: 'Operation successful',
+      data: { id: 1 } 
+    });
   });
 
-  it('should return an error object from a string', () => {
+  it('should return a success object with custom message', () => {
+    const result = response.success({ id: 1 }, 'Custom success');
+    expect(result).toEqual({ 
+      success: true, 
+      message: 'Custom success',
+      data: { id: 1 } 
+    });
+  });
+
+  it('should return an error object from a string message', () => {
     const result = response.error('Not found');
-    expect(result).toEqual({ success: false, errors: [{ message: 'Not found' }] });
+    expect(result).toEqual({ 
+      success: false, 
+      message: 'Not found',
+      errors: [],
+      statusCode: 500
+    });
   });
 
-  it('should return an error object from an array', () => {
-    const result = response.error([{ message: 'Error 1' }]);
-    expect(result).toEqual({ success: false, errors: [{ message: 'Error 1' }] });
+  it('should return an error object with custom status and details', () => {
+    const result = response.error('Validation failed', { field: 'email' }, 400);
+    expect(result).toEqual({ 
+      success: false, 
+      message: 'Validation failed',
+      errors: [{ field: 'email' }],
+      statusCode: 400
+    });
   });
 
-  it('should return a structured success response', () => {
-    const result = response.successResponse({ id: 1 }, 'Custom success');
-    expect(result).toEqual({ success: true, message: 'Custom success', data: { id: 1 } });
+  it('should handle array as error details', () => {
+    const result = response.error('Multi errors', [{ msg: 'err1' }, { msg: 'err2' }]);
+    expect(result.errors).toHaveLength(2);
+    expect(result.errors[0].msg).toBe('err1');
   });
 
-  it('should return a structured error response', () => {
-    const result = response.errorResponse(404, 'Not Found', { detail: 'Missing ID' });
-    expect(result).toEqual({ success: false, statusCode: 404, message: 'Not Found', detail: 'Missing ID' });
+  it('should return errorResponse alias with correct parameter order', () => {
+    const result = response.errorResponse(400, 'Bad Request', { field: 'email' });
+    expect(result).toEqual({
+      success: false,
+      message: 'Bad Request',
+      errors: [{ field: 'email' }],
+      statusCode: 400
+    });
   });
 
-  it('should use default message for successResponse', () => {
-    const result = response.successResponse({ id: 1 });
-    expect(result.message).toBe('Success');
+  it('should return successResponse alias', () => {
+    const result = response.successResponse({ id: 1 }, 'Created');
+    expect(result).toEqual({
+      success: true,
+      message: 'Created',
+      data: { id: 1 }
+    });
   });
 
-  it('should use default details for errorResponse', () => {
-    const result = response.errorResponse(500, 'Server fail');
-    expect(result).toEqual({ success: false, statusCode: 500, message: 'Server fail' });
+  it('should handle non-array details in error function', () => {
+    const result = response.error('Single error', { field: 'name' });
+    expect(result.errors).toEqual([{ field: 'name' }]);
+  });
+
+  it('should handle null details in error function', () => {
+    const result = response.error('Null details');
+    expect(result.errors).toEqual([]);
+  });
+
+  it('should use default error message and status when called without args', () => {
+    const result = response.error();
+    expect(result).toEqual({
+      success: false,
+      message: 'An error occurred',
+      errors: [],
+      statusCode: 500
+    });
   });
 });

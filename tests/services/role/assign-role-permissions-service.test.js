@@ -1,23 +1,27 @@
 const assignRolePermissions = require('../../../src/services/role/assign-role-permissions-service');
-const Role = require('../../../src/models/Role');
-const RolePermission = require('../../../src/models/RolePermission');
-const sequelize = require('../../../src/utils/database');
+const { Role, RolePermission, sequelize } = require('../../../src/models');
 
-jest.mock('../../../src/models/Role', () => ({ findByPk: jest.fn() }));
-jest.mock('../../../src/models/RolePermission', () => ({ destroy: jest.fn(), bulkCreate: jest.fn() }));
-jest.mock('../../../src/utils/logger');
-
-// Mock Sequelize Transaction
-const mockTransaction = {
-  commit: jest.fn(),
-  rollback: jest.fn()
-};
-jest.mock('../../../src/utils/database', () => ({
-  transaction: jest.fn(),
-  define: jest.fn()
+jest.mock('../../../src/models', () => ({
+  Role: {
+    findByPk: jest.fn(),
+  },
+  RolePermission: {
+    destroy: jest.fn(),
+    bulkCreate: jest.fn(),
+  },
+  sequelize: {
+    transaction: jest.fn(),
+  },
 }));
 
+jest.mock('../../../src/utils/logger');
+
 describe('Service: assign-role-permissions-service', () => {
+  const mockTransaction = {
+    commit: jest.fn(),
+    rollback: jest.fn()
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     sequelize.transaction.mockResolvedValue(mockTransaction);
@@ -41,7 +45,11 @@ describe('Service: assign-role-permissions-service', () => {
       { role_id: 1, permission_id: 2 }
     ], { transaction: mockTransaction });
     expect(mockTransaction.commit).toHaveBeenCalled();
-    expect(result).toEqual({ success: true, roleId: 1, count: 2 });
+    expect(result).toEqual({ 
+      message: "Role permissions updated successfully", 
+      roleId: 1, 
+      count: 2 
+    });
   });
 
   it('should rollback transaction on error', async () => {
@@ -58,18 +66,23 @@ describe('Service: assign-role-permissions-service', () => {
 
     const result = await assignRolePermissions(1, []);
 
+    expect(RolePermission.destroy).toHaveBeenCalledWith(expect.objectContaining({
+      where: { role_id: 1 }
+    }));
     expect(RolePermission.bulkCreate).not.toHaveBeenCalled();
-    expect(result).toEqual({ success: true, roleId: 1, count: 0 });
+    expect(result).toEqual({ 
+      message: "Role permissions updated successfully", 
+      roleId: 1, 
+      count: 0 
+    });
   });
 
   it('should skip inserting new permissions if permissionIds is undefined', async () => {
     Role.findByPk.mockResolvedValue({ id: 1, name: 'admin' });
-    RolePermission.destroy.mockResolvedValue(true);
-
-    const result = await assignRolePermissions(1); // not passing permissionIds
+    
+    const result = await assignRolePermissions(1, undefined);
 
     expect(RolePermission.bulkCreate).not.toHaveBeenCalled();
-    // Default is undefined, so length is not evaluated
-    expect(result.success).toBe(true);
+    expect(result.message).toBe("Role permissions updated successfully");
   });
 });

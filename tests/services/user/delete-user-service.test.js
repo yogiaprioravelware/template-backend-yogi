@@ -1,7 +1,8 @@
+const { User } = require('../../../src/models');
 const deleteUser = require('../../../src/services/user/delete-user-service');
-const User = require('../../../src/models/User');
 
-jest.mock('../../../src/models/User');
+
+jest.mock('../../../src/models');
 jest.mock('../../../src/utils/logger'); // Silence logs
 
 describe('Service: delete-user-service', () => {

@@ -1,99 +1,73 @@
 const inboundService = require("../services/inbound");
 const response = require("../utils/response");
 const logger = require("../utils/logger");
-const {
-  scanItemSchema,
-  setLocationSchema,
-} = require("../validations/inbound-validation");
-
 
 const createInbound = async (req, res, next) => {
   logger.info("Creating a new inbound PO");
   try {
     const result = await inboundService.createInbound(req.body);
-    res.status(201).json(response.success(result));
+    res.status(201).json(response.success(result, "Inbound PO created successfully"));
   } catch (err) {
     next(err);
   }
 };
-
 
 const getInbounds = async (req, res, next) => {
-  logger.info("Fetching all inbounds");
+  const { page, limit } = req.query;
+  logger.info(`Fetching inbounds - Page: ${page || 1}, Limit: ${limit || 10}`);
   try {
-    const inbounds = await inboundService.getInbounds();
-    res.json(response.success(inbounds));
+    const result = await inboundService.getInbounds({ page, limit });
+    res.json(response.success(result.data, "Inbounds fetched successfully", { pagination: result.pagination }));
   } catch (err) {
     next(err);
   }
 };
-
 
 const getInboundDetail = async (req, res, next) => {
   logger.info(`Fetching inbound detail for id: ${req.params.id}`);
   try {
     const detail = await inboundService.getInboundDetail(req.params.id);
-    res.json(response.success(detail));
+    res.json(response.success(detail, "Inbound detail fetched successfully"));
   } catch (err) {
     next(err);
   }
 };
-
 
 const scanItem = async (req, res, next) => {
   logger.info(`Scanning item for inbound: ${req.params.inboundId}`);
   try {
-    // Validate request body
-    const { error, value } = scanItemSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
-    }
-
+    // Validasi sudah ditangani oleh middleware validation
     const result = await inboundService.scanItem(
       req.params.inboundId,
-      value.rfid_tag
+      req.body.rfid_tag
     );
-    if (!result.success) {
-      return res.status(result.statusCode).json(result);
+    
+    // Jika service mengembalikan error terstruktur
+    if (result && result.success === false) {
+      return res.status(result.statusCode || 400).json(result);
     }
-    res.json(response.success(result.data));
+    
+    res.json(response.success(result.data, "Item scanned successfully"));
   } catch (err) {
     next(err);
   }
 };
 
-
 const setLocation = async (req, res, next) => {
   logger.info(`Setting location for inbound: ${req.params.inboundId}`);
   try {
-    // Validate request body
-    const { error, value } = setLocationSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
-    }
-
-    if (!req.body.inbound_item_id) {
-      return res.status(400).json({
-        success: false,
-        message: "inbound_item_id is required",
-      });
-    }
-
+    // Validasi sudah ditangani oleh middleware validation
     const result = await inboundService.setLocation(
       req.params.inboundId,
       req.body.inbound_item_id,
-      value.qr_string
+      req.body.qr_string
     );
-    if (!result.success) {
-      return res.status(result.statusCode).json(result);
+
+    if (result && result.success === false) {
+      return res.status(result.statusCode || 400).json(result);
     }
-    res.json(response.success(result.data));
+
+    res.json(response.success(result.data, "Location set successfully"));
   } catch (err) {
     next(err);
   }
@@ -105,4 +79,4 @@ module.exports = {
   getInboundDetail,
   scanItem,
   setLocation,
-};
+};

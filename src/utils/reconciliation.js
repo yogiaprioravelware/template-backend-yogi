@@ -1,5 +1,4 @@
-const Item = require("../models/Item");
-const ItemLocation = require("../models/ItemLocation");
+const { Item, ItemLocation, sequelize } = require("../models");
 const logger = require("./logger");
 
 /**

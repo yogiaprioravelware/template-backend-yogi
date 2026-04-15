@@ -1,22 +1,21 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/User");
-const { loginSchema } = require("../../validations/user-validation");
+const { User } = require("../../models");
 const logger = require("../../utils/logger");
+const getUserPermissions = require("../role/get-user-permissions-service");
 
+/**
+ * Memproses login user: verifikasi kredensial dan generate JWT tokens.
+ * @param {Object} userData 
+ * @returns {Promise<Object>}
+ */
 const loginUser = async (userData) => {
-  logger.info(`Login attempt for user: ${userData.email}`);
-  const { error } = loginSchema.validate(userData);
-  if (error) {
-    logger.warn(`Validation error during login: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-
   const { email, password } = userData;
+  logger.info(`Login attempt for user: ${email}`);
 
+  // Mengambil user beserta detail role untuk kelengkapan token
   const user = await User.findOne({ where: { email } });
+  
   if (!user) {
     logger.warn(`Login failed: User with email ${email} not found`);
     const err = new Error("Invalid credentials");
@@ -32,11 +31,14 @@ const loginUser = async (userData) => {
     throw err;
   }
 
-  const getUserPermissions = require("../role/get-user-permissions-service");
   const permissions = await getUserPermissions(user);
 
   const accessToken = jwt.sign(
-    { id: user.id, username: user.username, role: user.role, role_id: user.role_id },
+    { 
+      id: user.id, 
+      name: user.name, 
+      role_id: user.role_id 
+    },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_ACCESS_EXPIRY || '15m' }
   );
@@ -53,8 +55,7 @@ const loginUser = async (userData) => {
     user: {
       id: user.id,
       email: user.email,
-      username: user.username,
-      role: user.role,
+      name: user.name,
       role_id: user.role_id,
       permissions,
     },

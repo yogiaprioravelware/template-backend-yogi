@@ -1,4 +1,4 @@
-﻿{
+{
   "info": {
     "name": "E2E Template Backend Ravelware - Full Automation",
     "description": "Full E2E automation for Register, Login, Items (CRUD), Location (CRUD), Inbound, Outbound, Role, Profile. Everything executed chronologically. Do NOT shuffle.",
@@ -510,7 +510,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "raw": "{\n  \"rfid_tag\": \"{{rfid_tag}}\",\n  \"location_qr\": \"{{qr_string}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -634,7 +634,7 @@
               "script": {
                 "exec": [
                   "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.be.oneOf(200); });",
-                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Outbound is DONE', function() { pm.expect(res.data.outbound_status).to.eql('DONE'); }); }"
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Item picked & Auto-staged', function() { pm.expect(res.data.message).to.contain('picked'); }); }"
                 ],
                 "type": "text/javascript"
               }
@@ -671,6 +671,66 @@
                 "outbounds",
                 "{{outbound_id}}",
                 "scan"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Outbound Progress",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Check new aggregate fields', function() { pm.expect(res.data).to.have.property('total_qty_target'); pm.expect(res.data).to.have.property('progress_percentage'); }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/outbounds/{{outbound_id}}", "host": ["{{base_url}}"], "path": ["api", "outbounds", "{{outbound_id}}"] }
+          }
+        },
+        {
+          "name": "Finalize & Sync Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });",
+                  "if(pm.response.code === 200) { const res = pm.response.json(); pm.test('Order is finalized in sync', function() { pm.expect(res.data.message).to.contain('synchronized'); }); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/outbounds/{{outbound_id}}/finalize-sync",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "outbounds",
+                "{{outbound_id}}",
+                "finalize-sync"
               ]
             }
           }
@@ -1295,7 +1355,527 @@
           }
         }
       ]
-    }
+    },
+    {
+      "name": "5. Staging Outbound Flow",
+      "item": [
+        {
+          "name": "Create Staging Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('staging_id', res.data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_number\": \"STG-POSTMAN-{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/staging",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "staging"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Item to Staging",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_qr\": \"{{qr_string}}\",\n  \"rfid_tag\": \"{{rfid_tag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/staging/{{staging_id}}/items",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "staging",
+                "{{staging_id}}",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Finalize Staging Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/staging/{{staging_id}}/finalize",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "staging",
+                "{{staging_id}}",
+                "finalize"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Staging & Outbound Full Flow (E2E)",
+      "item": [
+        {
+          "name": "Setup: Create SKU A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('sku_a', res.data.sku_code); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku_code\": \"SKU-E2E-A-{{$randomInt}}\",\n  \"item_name\": \"E2E Test Item A\",\n  \"category\": \"TEST\",\n  \"uom\": \"PCS\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/items", "host": ["{{base_url}}"], "path": ["api", "items"] }
+          }
+        },
+        {
+          "name": "Setup: Create SKU B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('sku_b', res.data.sku_code); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku_code\": \"SKU-E2E-B-{{$randomInt}}\",\n  \"item_name\": \"E2E Test Item B\",\n  \"category\": \"TEST\",\n  \"uom\": \"PCS\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/items", "host": ["{{base_url}}"], "path": ["api", "items"] }
+          }
+        },
+        {
+          "name": "Setup: Create LOC 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('loc_1_qr', res.data.qr_string); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_code\": \"LOC-E2E-01-{{$randomInt}}\",\n  \"qr_string\": \"QR-E2E-01-{{$randomInt}}\",\n  \"capacity\": 100\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/locations", "host": ["{{base_url}}"], "path": ["api", "locations"] }
+          }
+        },
+        {
+          "name": "Setup: Create LOC 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('loc_2_qr', res.data.qr_string); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_code\": \"LOC-E2E-02-{{$randomInt}}\",\n  \"qr_string\": \"QR-E2E-02-{{$randomInt}}\",\n  \"capacity\": 100\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/locations", "host": ["{{base_url}}"], "path": ["api", "locations"] }
+          }
+        },
+        {
+          "name": "Setup: Inbound SKU A to LOC 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"po_number\": \"PO-E2E-{{$randomInt}}\",\n  \"items\": [{\n    \"sku_code\": \"{{sku_a}}\",\n    \"qty_target\": 10\n  }]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/inbounds", "host": ["{{base_url}}"], "path": ["api", "inbounds"] }
+          }
+        },
+        {
+          "name": "Setup: Create Outbound Order 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('outbound_1_id', res.data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_number\": \"ORD-E2E-01-{{$randomInt}}\",\n  \"customer_name\": \"E2E Customer\",\n  \"items\": [{\n    \"sku_code\": \"{{sku_a}}\",\n    \"qty_target\": 2\n  }]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+          }
+        },
+        {
+          "name": "Scenario 1: Create Staging Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function() { pm.expect(pm.response.code).to.eql(201); });",
+                  "if(pm.response.code === 201) { const res = pm.response.json(); pm.collectionVariables.set('staging_1_id', res.data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_number\": \"STG-SCENARIO-1-{{$randomInt}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/staging", "host": ["{{base_url}}"], "path": ["api", "staging"] }
+          }
+        },
+        {
+          "name": "Scenario 1: Add SKU A from LOC 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_qr\": \"{{loc_1_qr}}\",\n  \"rfid_tag\": \"RFID-A-{{$randomInt}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/staging/{{staging_1_id}}/items", "host": ["{{base_url}}"], "path": ["api", "staging", "{{staging_1_id}}", "items"] }
+          }
+        },
+        {
+          "name": "Scenario 1: Finalize Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function() { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/api/staging/{{staging_1_id}}/finalize", "host": ["{{base_url}}"], "path": ["api", "staging", "{{staging_1_id}}", "finalize"] }
+          }
+        },
+        {
+          "name": "Scenario 2: Multiple Orders same rack (FIFO)",
+          "item": [
+            {
+              "name": "Step 1: Create Order OLD",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('order_old_id', pm.response.json().data.id);"], "type": "text/javascript" }
+                }
+              ],
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                "method": "POST",
+                "body": { "mode": "raw", "raw": "{\n  \"order_number\": \"ORD-FIFO-OLD-{{$randomInt}}\",\n  \"customer_name\": \"FIFO OLD\",\n  \"items\": [{\"sku_code\": \"{{sku_a}}\", \"qty_target\": 1}]\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+              }
+            },
+            {
+              "name": "Step 2: Create Order NEW",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('order_new_id', pm.response.json().data.id);"], "type": "text/javascript" }
+                }
+              ],
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                "method": "POST",
+                "body": { "mode": "raw", "raw": "{\n  \"order_number\": \"ORD-FIFO-NEW-{{$randomInt}}\",\n  \"customer_name\": \"FIFO NEW\",\n  \"items\": [{\"sku_code\": \"{{sku_a}}\", \"qty_target\": 1}]\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+               }
+             }
+           ]
+         },
+         {
+           "name": "Scenario 3: Single Order same rack",
+           "item": [
+             {
+               "name": "Step 1: Create Order Single",
+               "event": [
+                 {
+                   "listen": "test",
+                   "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('order_single_id', pm.response.json().data.id);"], "type": "text/javascript" }
+                 }
+               ],
+               "request": {
+                 "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                 "method": "POST",
+                 "body": { "mode": "raw", "raw": "{\n  \"order_number\": \"ORD-SINGLE-{{$randomInt}}\",\n  \"customer_name\": \"Single Customer\",\n  \"items\": [{\"sku_code\": \"{{sku_b}}\", \"qty_target\": 1}]\n}", "options": { "raw": { "language": "json" } } },
+                 "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+               }
+             }
+           ]
+         },
+         {
+           "name": "Scenario 4: Two Orders mixed SKUs same rack",
+           "item": [
+             {
+               "name": "Step 1: Create Order A",
+               "event": [
+                 {
+                   "listen": "test",
+                   "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('order_a_id', pm.response.json().data.id);"], "type": "text/javascript" }
+                 }
+               ],
+               "request": {
+                 "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                 "method": "POST",
+                 "body": { "mode": "raw", "raw": "{\n  \"order_number\": \"ORD-MIX-A-{{$randomInt}}\",\n  \"customer_name\": \"Mix A\",\n  \"items\": [{\"sku_code\": \"{{sku_a}}\", \"qty_target\": 1}]\n}", "options": { "raw": { "language": "json" } } },
+                 "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+               }
+             },
+             {
+               "name": "Step 2: Create Order B",
+               "event": [
+                 {
+                   "listen": "test",
+                   "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('order_b_id', pm.response.json().data.id);"], "type": "text/javascript" }
+                 }
+               ],
+               "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "body": { "mode": "raw", "raw": "{\n  \"order_number\": \"ORD-MIX-B-{{$randomInt}}\",\n  \"customer_name\": \"Mix B\",\n  \"items\": [{\"sku_code\": \"{{sku_b}}\", \"qty_target\": 1}]\n}", "options": { "raw": { "language": "json" } } },
+                  "url": { "raw": "{{base_url}}/api/outbounds", "host": ["{{base_url}}"], "path": ["api", "outbounds"] }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Full Flow: Scenarios 2-4 Staging",
+            "item": [
+              {
+                "name": "Create Multi-Scenario Session",
+                "event": [
+                  { "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.expect(pm.response.code).to.eql(201));", "if(pm.response.code === 201) pm.collectionVariables.set('staging_multi_id', pm.response.json().data.id);"], "type": "text/javascript" } }
+                ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "body": { "mode": "raw", "raw": "{\n  \"session_number\": \"STG-MULTI-{{$randomInt}}\"\n}", "options": { "raw": { "language": "json" } } },
+                  "url": { "raw": "{{base_url}}/api/staging", "host": ["{{base_url}}"], "path": ["api", "staging"] }
+                }
+              },
+              {
+                "name": "Scenario 2: Scan SKU A for OLD order",
+                "event": [ { "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.expect(pm.response.code).to.eql(200));"], "type": "text/javascript" } } ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "body": { "mode": "raw", "raw": "{\n  \"location_qr\": \"{{loc_1_qr}}\",\n  \"rfid_tag\": \"RFID-FIFO-1-{{$randomInt}}\"\n}", "options": { "raw": { "language": "json" } } },
+                  "url": { "raw": "{{base_url}}/api/staging/{{staging_multi_id}}/items", "host": ["{{base_url}}"], "path": ["api", "staging", "{{staging_multi_id}}", "items"] }
+                }
+              },
+              {
+                "name": "Scenario 2: Scan SKU A for NEW order",
+                "event": [ { "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.expect(pm.response.code).to.eql(200));"], "type": "text/javascript" } } ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "body": { "mode": "raw", "raw": "{\n  \"location_qr\": \"{{loc_1_qr}}\",\n  \"rfid_tag\": \"RFID-FIFO-2-{{$randomInt}}\"\n}", "options": { "raw": { "language": "json" } } },
+                  "url": { "raw": "{{base_url}}/api/staging/{{staging_multi_id}}/items", "host": ["{{base_url}}"], "path": ["api", "staging", "{{staging_multi_id}}", "items"] }
+                }
+              },
+              {
+                "name": "Finalize Multi-Scenario Session",
+                "event": [ { "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.expect(pm.response.code).to.eql(200));"], "type": "text/javascript" } } ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "url": { "raw": "{{base_url}}/api/staging/{{staging_multi_id}}/finalize", "host": ["{{base_url}}"], "path": ["api", "staging", "{{staging_multi_id}}", "finalize"] }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Final Sync & Business Assertion",
+            "item": [
+              {
+                "name": "Sync Finalize Order OLD",
+                "event": [ { "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.expect(pm.response.code).to.eql(200));"], "type": "text/javascript" } } ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "POST",
+                  "url": { "raw": "{{base_url}}/api/outbounds/{{order_old_id}}/finalize-sync", "host": ["{{base_url}}"], "path": ["api", "outbounds", "{{order_old_id}}", "finalize-sync"] }
+                }
+              },
+              {
+                "name": "Verify Order OLD Status",
+                "event": [ { "listen": "test", "script": { "exec": ["pm.test('Order is DONE', () => pm.expect(pm.response.json().data.status).to.eql('DONE'));"], "type": "text/javascript" } } ],
+                "request": {
+                  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }] },
+                  "method": "GET",
+                  "url": { "raw": "{{base_url}}/api/outbounds/{{order_old_id}}", "host": ["{{base_url}}"], "path": ["api", "outbounds", "{{order_old_id}}"] }
+                }
+              }
+            ]
+          }
+        ]
+      }
   ],
   "variable": [
     {
@@ -1355,6 +1935,11 @@
     },
     {
       "key": "inbound_po_number",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "staging_id",
       "value": "",
       "type": "string"
     }

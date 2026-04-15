@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/database");
-const Role = require("./Role");
 
 const User = sequelize.define(
   "User",
@@ -26,14 +25,9 @@ const User = sequelize.define(
     role_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: Role,
+        model: "roles",
         key: "id",
       },
-    },
-    role: { // Keep for backward compatibility or remove later
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "operator",
     },
     created_at: {
       type: DataTypes.DATE,
@@ -47,7 +41,8 @@ const User = sequelize.define(
 );
 
 
-User.belongsTo(Role, { foreignKey: "role_id" });
-Role.hasMany(User, { foreignKey: "role_id" });
+User.associate = (models) => {
+  User.belongsTo(models.Role, { foreignKey: "role_id", as: "role_detail" });
+};
 
 module.exports = User;

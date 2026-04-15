@@ -12,7 +12,7 @@ Dokumen ini menjelaskan struktur database lengkap, aturan penamaan, dan prosedur
 
 ---
 
-## Skema Tabel (13 Total)
+## Skema Tabel (16 Total)
 
 ### 1. Tabel `users`
 Menyimpan informasi pengguna aplikasi dengan role-based access.
@@ -235,6 +235,54 @@ Laporan/ledger pergerakan stok sebagai audit trail lengkap.
 | `created_at`   | `TIMESTAMP`    | NO       | `NOW()` | Waktu transaksi |
 
 **Migrations**: `20260410101502-create-inventory-movements-table.js`
+
+---
+
+### 15. Tabel `staging_sessions` ⭐ NEW
+Menyimpan informasi sesi konsolidasi barang outbound.
+
+| Nama Kolom       | Tipe Data      | Nullable | Default             | Unique | Keterangan |
+| :---             | :---           | :---     | :---                | :---   | :--- |
+| `id`             | `SERIAL`       | NO       | -                   | YES    | Primary Key |
+| `session_number` | `VARCHAR(100)` | NO       | -                   | YES    | Nomor sesi unik |
+| `status`         | `ENUM`         | NO       | `'OPEN'`            | NO     | OPEN \| CLOSED \| FINALIZED |
+| `created_by_id`  | `INTEGER`      | YES      | -                   | NO     | FK → users.id |
+| `created_at`     | `TIMESTAMP`    | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu dibuat |
+| `updated_at`     | `TIMESTAMP`    | NO       | `CURRENT_TIMESTAMP` | NO     | Waktu diperbarui |
+
+**Migrations**: `20260414100000-create-staging-tables.js`
+
+---
+
+### 16. Tabel `staging_items` ⭐ NEW
+Detail barang yang masuk dalam sesi staging.
+
+| Nama Kolom          | Tipe Data      | Nullable | Default | Keterangan |
+| :---                | :---           | :---     | :---    | :--- |
+| `id`                | `SERIAL`       | NO       | -       | Primary Key |
+| `staging_session_id`| `INTEGER`      | NO       | -       | FK → staging_sessions.id |
+| `rfid_tag`          | `VARCHAR(100)` | NO       | -       | RFID tag barang |
+| `outbound_item_id`  | `INTEGER`      | YES      | -       | FK → outbound_items.id |
+| `location_id`       | `INTEGER`      | NO       | -       | FK → locations.id (lokasi asal) |
+| `status`            | `ENUM`         | NO       | `'STAGED'` | STAGED \| FINALIZED |
+
+**Migrations**: `20260414100000-create-staging-tables.js`
+
+---
+
+### 17. Tabel `staging_audit_logs` ⭐ NEW
+Audit trail aktivitas di area staging.
+
+| Nama Kolom          | Tipe Data | Nullable | Default | Keterangan |
+| :---                | :---      | :---     | :---    | :--- |
+| `id`                | `SERIAL`  | NO       | -       | Primary Key |
+| `staging_session_id`| `INTEGER` | NO       | -       | FK → staging_sessions.id |
+| `user_id`           | `INTEGER` | YES      | -       | FK → users.id |
+| `action`            | `VARCHAR` | NO       | -       | ADD_ITEM, FINALIZE, dll |
+| `details`           | `TEXT`    | YES      | -       | JSON details (RFID, SKU, dll) |
+| `created_at`        | `TIMESTAMP` | NO     | `NOW()` | Waktu aksi |
+
+**Migrations**: `20260414100000-create-staging-tables.js`
 
 ---
 

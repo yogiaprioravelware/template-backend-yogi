@@ -3,6 +3,17 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const hashedPassword = await bcrypt.hash("password123", 10);
+    
+    // Clear existing users with these emails to prevent duplicate key errors
+    await queryInterface.bulkDelete("users", {
+      email: [
+        "admin@warehouse.com",
+        "operator1@warehouse.com",
+        "operator2@warehouse.com",
+        "operator3@warehouse.com"
+      ]
+    });
+
     return queryInterface.bulkInsert("users", [
       {
         name: "Admin Warehouse",

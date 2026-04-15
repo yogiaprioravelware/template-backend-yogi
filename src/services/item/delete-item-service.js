@@ -1,8 +1,10 @@
-const Item = require("../../models/Item");
+const { Item } = require("../../models");
 const logger = require("../../utils/logger");
 
 /**
- * Service to delete an item based on ID
+ * Deletes an item based on its ID.
+ * @param {number} id 
+ * @returns {Promise<Object>}
  */
 const deleteItem = async (id) => {
   logger.info(`Attempting to delete item with id: ${id}`);
@@ -10,7 +12,7 @@ const deleteItem = async (id) => {
   if (!item) {
     logger.warn(`Deletion failed: Item with id ${id} not found`);
     const err = new Error("Item not found");
-    err.status = 400;
+    err.status = 404;
     throw err;
   }
 

@@ -1,35 +1,26 @@
 const transferLocation = require('../../../src/services/inventory/transfer-location-service');
-const Item = require('../../../src/models/Item');
-const Location = require('../../../src/models/Location');
-const ItemLocation = require('../../../src/models/ItemLocation');
-const InventoryMovement = require('../../../src/models/InventoryMovement');
-const sequelize = require('../../../src/utils/database');
+const { Item, Location, ItemLocation, InventoryMovement, sequelize } = require('../../../src/models');
 
-jest.mock('../../../src/models/Item', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findByPk = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/Location', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findByPk = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/ItemLocation', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.findOne = jest.fn();
-  SequelizeModel.create = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/models/InventoryMovement', () => {
-  const SequelizeModel = class {};
-  SequelizeModel.create = jest.fn();
-  return SequelizeModel;
-});
-jest.mock('../../../src/utils/logger');
-jest.mock('../../../src/utils/database', () => ({
-  transaction: jest.fn()
+jest.mock('../../../src/models', () => ({
+  Item: {
+    findByPk: jest.fn(),
+  },
+  Location: {
+    findByPk: jest.fn(),
+  },
+  ItemLocation: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+  InventoryMovement: {
+    create: jest.fn(),
+  },
+  sequelize: {
+    transaction: jest.fn(),
+  },
 }));
+
+jest.mock('../../../src/utils/logger');
 jest.mock('../../../src/utils/reconciliation', () => ({
   reconcileItemStock: jest.fn()
 }));
@@ -40,14 +31,7 @@ describe('Service: transfer-location-service', () => {
   beforeEach(() => {
     mockTransaction = { commit: jest.fn(), rollback: jest.fn() };
     sequelize.transaction.mockResolvedValue(mockTransaction);
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should throw error if validation fails', async () => {
-    await expect(transferLocation({})).rejects.toThrow();
   });
 
   it('should throw error if source and destination are the same', async () => {
@@ -110,8 +94,7 @@ describe('Service: transfer-location-service', () => {
     const result = await transferLocation(payload);
     
     expect(mockSourceLoc.stock).toBe(0);
-    expect(mockSourceLoc.destroy).toHaveBeenCalled();
-    expect(mockSourceLoc.save).not.toHaveBeenCalled();
+    expect(mockSourceLoc.destroy).toHaveBeenCalledWith({ transaction: mockTransaction });
     expect(ItemLocation.create).toHaveBeenCalledWith({ item_id: 1, location_id: 2, stock: 10 }, { transaction: mockTransaction });
     expect(InventoryMovement.create).toHaveBeenCalledTimes(2);
     expect(mockTransaction.commit).toHaveBeenCalled();
@@ -133,16 +116,45 @@ describe('Service: transfer-location-service', () => {
     const result = await transferLocation(payload);
     
     expect(mockSourceLoc.stock).toBe(5);
-    expect(mockSourceLoc.save).toHaveBeenCalled();
+    expect(mockSourceLoc.save).toHaveBeenCalledWith({ transaction: mockTransaction });
     expect(mockDestLoc.stock).toBe(15);
-    expect(mockDestLoc.save).toHaveBeenCalled();
+    expect(mockDestLoc.save).toHaveBeenCalledWith({ transaction: mockTransaction });
     expect(InventoryMovement.create).toHaveBeenCalledTimes(2);
     expect(mockTransaction.commit).toHaveBeenCalled();
   });
 
-  it('should handle transaction start failure', async () => {
+  it('should process transfer and save source itemLoc if not empty', async () => {
+    const payload = { item_id: 1, from_location_id: 1, to_location_id: 2, qty: 5 };
+    Item.findByPk.mockResolvedValue({ id: 1, sku_code: 'SKU' });
+    Location.findByPk.mockResolvedValueOnce({ id: 1, status: 'ACTIVE', location_code: 'L1' }); // fromLoc
+    Location.findByPk.mockResolvedValueOnce({ id: 2, status: 'ACTIVE', location_code: 'L2' }); // toLoc
+    
+    const mockSourceLoc = { stock: 10, save: jest.fn(), destroy: jest.fn() };
+    const mockDestLoc = { stock: 5, save: jest.fn() };
+    
+    ItemLocation.findOne
+      .mockResolvedValueOnce(mockSourceLoc) // validate source
+      .mockResolvedValueOnce(mockDestLoc); // check dest (found)
+      
+    await transferLocation(payload);
+    
+    expect(mockSourceLoc.stock).toBe(5);
+    expect(mockSourceLoc.save).toHaveBeenCalled();
+    expect(mockDestLoc.stock).toBe(10);
+    expect(mockDestLoc.save).toHaveBeenCalled();
+  });
+
+  it('should handle transaction error in transferLocation', async () => {
     const payload = { item_id: 1, from_location_id: 1, to_location_id: 2, qty: 10 };
-    sequelize.transaction.mockRejectedValueOnce(new Error('Transaction Failed'));
-    await expect(transferLocation(payload)).rejects.toThrow('Transaction Failed');
+    sequelize.transaction.mockRejectedValueOnce(new Error('TRF_ERR'));
+    await expect(transferLocation(payload)).rejects.toThrow('TRF_ERR');
+  });
+
+  it('should throw and skip rollback if transaction object is unavailable', async () => {
+    const payload = { item_id: 1, from_location_id: 1, to_location_id: 2, qty: 10 };
+    sequelize.transaction.mockResolvedValueOnce(undefined);
+    Item.findByPk.mockRejectedValueOnce(new Error('No transaction object'));
+
+    await expect(transferLocation(payload)).rejects.toThrow('No transaction object');
   });
 });

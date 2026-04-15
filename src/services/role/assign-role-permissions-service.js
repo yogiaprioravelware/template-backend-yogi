@@ -1,9 +1,13 @@
-const RolePermission = require("../../models/RolePermission");
-const Role = require("../../models/Role");
-const Permission = require("../../models/Permission");
+const { Role, Permission, RolePermission, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
-const sequelize = require("../../utils/database");
 
+/**
+ * Memperbarui daftar permission yang diasosiasikan dengan sebuah role.
+ * Menggunakan transaksi untuk menjamin integritas data (hapus lama, pasang baru).
+ * @param {number} roleId 
+ * @param {number[]} permissionIds 
+ * @returns {Promise<Object>}
+ */
 const assignRolePermissions = async (roleId, permissionIds) => {
   logger.info(`Assigning permissions to role ID ${roleId}`);
   
@@ -18,22 +22,31 @@ const assignRolePermissions = async (roleId, permissionIds) => {
   const transaction = await sequelize.transaction();
   
   try {
+    // Bersihkan permission lama
     await RolePermission.destroy({
       where: { role_id: roleId },
       transaction,
     });
 
+    // Tambahkan permission baru jika ada
+    let count = 0;
     if (permissionIds && permissionIds.length > 0) {
       const records = permissionIds.map((pid) => ({
         role_id: roleId,
         permission_id: pid,
       }));
       await RolePermission.bulkCreate(records, { transaction });
+      count = records.length;
     }
 
     await transaction.commit();
     logger.info(`Successfully updated permissions for role ${role.name}`);
-    return { success: true, roleId, count: permissionIds ? permissionIds.length : 0 };
+    
+    return { 
+      message: "Role permissions updated successfully",
+      roleId, 
+      count 
+    };
   } catch (error) {
     await transaction.rollback();
     logger.error(`Error assigning permissions: ${error.message}`);

@@ -1,22 +1,21 @@
-const User = require("../../models/User");
-const { assignRoleSchema } = require("../../validations/user-validation");
+const { User } = require("../../models");
 const logger = require("../../utils/logger");
 
+/**
+ * Memperbarui role_id milik user berdasarkan ID.
+ * @param {number} id 
+ * @param {Object} roleData 
+ * @returns {Promise<Object>}
+ */
 const assignRole = async (id, roleData) => {
   logger.info(`Attempting to assign role to user with id: ${id}`);
-  const { error } = assignRoleSchema.validate(roleData);
-  if (error) {
-    logger.warn(`Validation error during role assignment: ${error.details[0].message}`);
-    const err = new Error(error.details[0].message);
-    err.status = 400;
-    throw err;
-  }
-
+  
   const user = await User.findByPk(id);
+  
   if (!user) {
     logger.warn(`Role assignment failed: User with id ${id} not found`);
     const err = new Error("User not found");
-    err.status = 400;
+    err.status = 404;
     throw err;
   }
 
@@ -24,7 +23,15 @@ const assignRole = async (id, roleData) => {
   await user.update({ role_id });
 
   logger.info(`User with id: ${id} role updated to role_id: ${role_id}`);
-  return { message: `User role updated successfully`, user };
+  
+  return { 
+    message: "User role updated successfully", 
+    user: {
+      id: user.id,
+      email: user.email,
+      role_id: user.role_id
+    }
+  };
 };
 
 module.exports = assignRole;

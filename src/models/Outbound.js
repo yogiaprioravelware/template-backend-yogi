@@ -15,13 +15,19 @@ const Outbound = sequelize.define(
       unique: true,
     },
     outbound_type: {
-      type: DataTypes.ENUM("LUNAS", "PINJAM", "RETURN"),
+      type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isIn: [["LUNAS", "PINJAM", "RETURN"]]
+      }
     },
     status: {
-      type: DataTypes.ENUM("PENDING", "PROCES", "DONE"),
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "PENDING",
+      validate: {
+        isIn: [["PENDING", "PROCESS", "DONE"]]
+      }
     },
     created_at: {
       type: DataTypes.DATE,
@@ -37,5 +43,13 @@ const Outbound = sequelize.define(
     timestamps: false,
   }
 );
+
+
+Outbound.associate = (models) => {
+  Outbound.hasMany(models.OutboundItem, {
+    foreignKey: "outbound_id",
+    as: "items",
+  });
+};
 
 module.exports = Outbound;

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>25/25</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -114,15 +114,35 @@
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -130,27 +150,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -162,18 +166,35 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const { Op } = require("sequelize");
-const Inbound = require("../../models/Inbound");
-const InboundItem = require("../../models/InboundItem");
-const Item = require("../../models/Item");
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { Inbound, InboundItem, Item } = require("../../models");
 const logger = require("../../utils/logger");
 &nbsp;
+/**
+ * Mengambil detail Inbound PO beserta item dan metadata produk menggunakan Eager Loading.
+ * @param {number} inboundId 
+ * @returns {Promise&lt;Object&gt;}
+ */
 const getInboundDetail = async (inboundId) =&gt; {
   logger.info(`Fetching inbound detail for id: ${inboundId}`);
-  const inbound = await Inbound.findByPk(inboundId);
+&nbsp;
+  const inbound = await Inbound.findByPk(inboundId, {
+    include: [
+      {
+        model: InboundItem,
+        as: "items",
+        attributes: ["id", "sku_code", "qty_target", "qty_received"],
+        include: [
+          {
+            model: Item,
+            as: "metadata",
+            attributes: ["item_name", "category", "uom"],
+          },
+        ],
+      },
+    ],
+  });
+&nbsp;
   if (!inbound) {
     logger.warn(`Inbound with id: ${inboundId} not found`);
     const err = new Error("Inbound PO not found");
@@ -181,49 +202,31 @@ const getInboundDetail = async (inboundId) =&gt; {
     throw err;
   }
 &nbsp;
-  const inboundItems = await InboundItem.findAll({
-    where: { inbound_id: inboundId },
-    attributes: ["id", "sku_code", "qty_target", "qty_received"],
-    raw: true
-  });
+  // Transform data untuk mempertahankan struktur response lama (backward compatibility)
+  const result = inbound.toJSON();
+  result.items = result.items.map(item =&gt; ({
+    id: item.id,
+    sku_code: item.sku_code,
+    qty_target: item.qty_target,
+    qty_received: item.qty_received,
+    item_name: item.metadata?.item_name || "",
+    category: item.metadata?.category || "",
+    uom: item.metadata?.uom || "",
+  }));
 &nbsp;
-  const skuCodes = inboundItems.map(item =&gt; item.sku_code);
-  const itemsMetadata = await Item.findAll({
-    where: { sku_code: { [Op.in]: skuCodes } },
-    attributes: ["sku_code", "item_name", "category", "uom"],
-    raw: true
-  });
-&nbsp;
-  const metadataMap = itemsMetadata.reduce((acc, current) =&gt; {
-    acc[current.sku_code] = current;
-    return acc;
-  }, {});
-&nbsp;
-  const itemsWithDetails = inboundItems.map(item =&gt; {
-    const meta = metadataMap[item.sku_code];
-    return {
-      ...item,
-      item_name: meta?.item_name || "",
-      category: meta?.category || "",
-      uom: meta?.uom || "",
-    };
-  });
-&nbsp;
-  logger.info(`Found ${itemsWithDetails.length} items for inbound id: ${inboundId}`);
-  return {
-    ...inbound.dataValues,
-    items: itemsWithDetails,
-  };
+  logger.info(`Found ${result.items.length} items for inbound id: ${inboundId}`);
+  return result;
 };
 &nbsp;
-module.exports = { getInboundDetail };</pre></td></tr></table></pre>
+module.exports = { getInboundDetail };
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-13T09:05:12.270Z
+                at 2026-04-15T01:47:35.216Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

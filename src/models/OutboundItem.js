@@ -26,6 +26,11 @@ const OutboundItem = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    qty_staged: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
@@ -40,5 +45,18 @@ const OutboundItem = sequelize.define(
     timestamps: false,
   }
 );
+
+
+OutboundItem.associate = (models) => {
+  OutboundItem.belongsTo(models.Outbound, {
+    foreignKey: "outbound_id",
+    as: "outbound",
+  });
+  OutboundItem.belongsTo(models.Item, {
+    foreignKey: "sku_code",
+    targetKey: "sku_code",
+    as: "metadata",
+  });
+};
 
 module.exports = OutboundItem;
